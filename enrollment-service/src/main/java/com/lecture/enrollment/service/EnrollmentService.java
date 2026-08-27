@@ -22,23 +22,53 @@ public class EnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final CourseServiceClient courseServiceClient;
-    private final PaymentServiceClient paymentServiceClient;
     private final EnrollmentKafkaProducer kafkaProducer;
     private final EnrollmentWriteService enrollmentWriteService;
 
     /**
-     * 주식 투자 전체 흐름
-     * 1. 주식 존재 확인
-     * 2. 중복 투자 확인
-     * 3. 주식 가격 조회
-     * 4. 투자 금액 계산
-     * 5. Enrollment 생성 및 즉시 커밋(PENDING)
+     * 여러 주식을 한 번에 구매
      */
+    @Transactional
+    public List<EnrollmentDto.EnrollmentResponse> enrollAll(
+            Long userId,
+            List<EnrollmentDto.EnrollItem> items
+    ) {
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "구매할 주식을 하나 이상 선택해야 합니다"
+            );
+        }
+
+        return items.stream()
+                .map(item -> enroll(
+                        userId,
+                        item.getCourseId(),
+                        item.getQuantity()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 주식 한 종목 구매
+     */
+    @Transactional
     public EnrollmentDto.EnrollmentResponse enroll(
             Long userId,
             Long courseId,
             Long quantity
     ) {
+        if (userId == null) {
+            throw new IllegalArgumentException(
+                    "사용자 ID는 필수입니다"
+            );
+        }
+
+        if (courseId == null) {
+            throw new IllegalArgumentException(
+                    "주식 ID는 필수입니다"
+            );
+        }
+
         if (quantity == null || quantity <= 0) {
             throw new IllegalArgumentException(
                     "구매 주수는 1주 이상이어야 합니다"
@@ -51,20 +81,28 @@ public class EnrollmentService {
             );
         }
 
+        /*
+         * 동일한 사용자가 같은 주식을 다시 구매하지 못하게 하는 검증입니다.
+         * 추가 매수를 허용하려면 이 부분과 저장 로직을 변경해야 합니다.
+         */
         if (enrollmentRepository.existsByUserIdAndCourseId(
                 userId,
                 courseId
         )) {
             throw new IllegalArgumentException(
-                    "이미 구매한 주식입니다"
+                    "이미 구매한 주식입니다: " + courseId
             );
         }
 
-        // Course Service에서 주식 상세 정보 조회
         Map<String, Object> courseInfo =
                 courseServiceClient.getCourse(courseId);
 
-        // API 응답에서 주당 가격 추출
+        if (courseInfo == null || courseInfo.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "주식 정보를 조회할 수 없습니다: " + courseId
+            );
+        }
+
         Long purchasePrice = toLong(
                 firstNonNullObject(
                         courseInfo.get("purchasePrice"),
@@ -75,11 +113,10 @@ public class EnrollmentService {
 
         if (purchasePrice == null || purchasePrice <= 0) {
             throw new IllegalArgumentException(
-                    "유효하지 않은 주식 가격입니다"
+                    "유효하지 않은 주식 가격입니다: " + courseId
             );
         }
 
-        // 총 투자금액 = 주당 가격 × 구매 주수
         Long investedAmount;
 
         try {
@@ -96,7 +133,7 @@ public class EnrollmentService {
 
         if (investedAmount > 10_000_000L) {
             throw new IllegalArgumentException(
-                    "투자 금액은 1,000만 원을 초과할 수 없습니다"
+                    "종목별 투자 금액은 1,000만 원을 초과할 수 없습니다"
             );
         }
 
@@ -110,16 +147,21 @@ public class EnrollmentService {
                 );
 
         log.info(
-                "[EnrollmentService] 주식 구매 완료 (결제 대기) " +
-                        "- enrollmentId: {}",
-                enrollment.getId()
+                "[EnrollmentService] 주식 구매 완료 - " +
+                        "enrollmentId: {}, userId: {}, " +
+                        "courseId: {}, quantity: {}, amount: {}",
+                enrollment.getId(),
+                userId,
+                courseId,
+                quantity,
+                investedAmount
         );
 
         return EnrollmentDto.EnrollmentResponse.from(enrollment);
     }
 
     /**
-     * 수강 활성화
+     * 수강 상태 활성화
      */
     @Transactional
     public void activateEnrollment(Long userId, Long courseId) {
@@ -144,15 +186,14 @@ public class EnrollmentService {
         );
 
         log.info(
-                "[EnrollmentService] 수강 활성화 완료 " +
-                        "- enrollmentId: {}",
+                "[EnrollmentService] 수강 활성화 완료 - " +
+                        "enrollmentId: {}",
                 enrollment.getId()
         );
     }
 
     /**
-     * 사용자 수강 목록 조회
-     * course-service에서 강의 상세 정보를 붙여서 반환
+     * 사용자의 전체 구매 목록 조회
      */
     public List<EnrollmentDto.EnrollmentResponse> getEnrollmentsByUser(
             Long userId
@@ -168,61 +209,7 @@ public class EnrollmentService {
                             );
 
                     EnrollmentDto.CourseSummary courseSummary =
-                            EnrollmentDto.CourseSummary.builder()
-                                    .id(toLong(
-                                            courseInfo.get("id")
-                                    ))
-                                    .title(toStringValue(
-                                            courseInfo.get("title")
-                                    ))
-                                    .description(toStringValue(
-                                            courseInfo.get("description")
-                                    ))
-                                    .category(normalizeCategory(
-                                            toStringValue(
-                                                    courseInfo.get("category")
-                                            )
-                                    ))
-                                    .price(toInteger(
-                                            firstNonNullObject(
-                                                    courseInfo.get("price"),
-                                                    courseInfo.get("purchasePrice"),
-                                                    courseInfo.get("temp_price")
-                                            )
-                                    ))
-                                    .thumbnail(toStringValue(
-                                            courseInfo.get("thumbnail")
-                                    ))
-                                    .instructorName(
-                                            firstNonNull(
-                                                    toStringValue(
-                                                            courseInfo.get(
-                                                                    "instructorName"
-                                                            )
-                                                    ),
-                                                    toStringValue(
-                                                            courseInfo.get(
-                                                                    "teacherName"
-                                                            )
-                                                    ),
-                                                    toStringValue(
-                                                            courseInfo.get(
-                                                                    "instructor_name"
-                                                            )
-                                                    )
-                                            )
-                                    )
-                                    .enrollmentCount(toInteger(
-                                            firstNonNullObject(
-                                                    courseInfo.get(
-                                                            "enrollmentCount"
-                                                    ),
-                                                    courseInfo.get(
-                                                            "enrollment_count"
-                                                    )
-                                            )
-                                    ))
-                                    .build();
+                            createCourseSummary(courseInfo);
 
                     return EnrollmentDto.EnrollmentResponse.from(
                             enrollment,
@@ -233,7 +220,60 @@ public class EnrollmentService {
     }
 
     /**
-     * 수강 이력 조회 - 추천 서비스용
+     * Course Service 응답을 CourseSummary DTO로 변환
+     */
+    private EnrollmentDto.CourseSummary createCourseSummary(
+            Map<String, Object> courseInfo
+    ) {
+        if (courseInfo == null || courseInfo.isEmpty()) {
+            return null;
+        }
+
+        return EnrollmentDto.CourseSummary.builder()
+                .id(toLong(courseInfo.get("id")))
+                .title(toStringValue(
+                        courseInfo.get("title")
+                ))
+                .description(toStringValue(
+                        courseInfo.get("description")
+                ))
+                .category(normalizeCategory(
+                        toStringValue(courseInfo.get("category"))
+                ))
+                .price(toInteger(
+                        firstNonNullObject(
+                                courseInfo.get("price"),
+                                courseInfo.get("purchasePrice"),
+                                courseInfo.get("temp_price")
+                        )
+                ))
+                .thumbnail(toStringValue(
+                        courseInfo.get("thumbnail")
+                ))
+                .instructorName(
+                        firstNonNull(
+                                toStringValue(
+                                        courseInfo.get("instructorName")
+                                ),
+                                toStringValue(
+                                        courseInfo.get("teacherName")
+                                ),
+                                toStringValue(
+                                        courseInfo.get("instructor_name")
+                                )
+                        )
+                )
+                .enrollmentCount(toInteger(
+                        firstNonNullObject(
+                                courseInfo.get("enrollmentCount"),
+                                courseInfo.get("enrollment_count")
+                        )
+                ))
+                .build();
+    }
+
+    /**
+     * 추천 서비스용 투자 이력 조회
      */
     public EnrollmentDto.EnrollmentHistoryResponse getEnrollmentHistory(
             Long userId

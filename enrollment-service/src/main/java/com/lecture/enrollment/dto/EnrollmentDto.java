@@ -1,21 +1,28 @@
 package com.lecture.enrollment.dto;
 
 import com.lecture.enrollment.entity.Enrollment;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class EnrollmentDto {
 
-    // 주식 투자 요청
+    /**
+     * 주식 한 종목의 구매 정보
+     */
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class EnrollRequest {
+    public static class EnrollItem {
 
         @NotNull(message = "주식 ID는 필수입니다")
         private Long courseId;
@@ -23,18 +30,31 @@ public class EnrollmentDto {
         @NotNull(message = "구매 주수는 필수입니다")
         @Positive(message = "구매 주수는 1주 이상이어야 합니다")
         private Long quantity;
-
-        @NotNull(message = "투자 금액은 필수입니다")
-        @Positive(message = "투자 금액은 0보다 커야 합니다")
-        private Long investedAmount;
     }
 
-    // 주식 요약 정보
+    /**
+     * 여러 주식 구매 요청
+     */
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class EnrollRequest {
+
+        @NotEmpty(message = "구매할 주식을 하나 이상 선택해야 합니다")
+        @Valid
+        private List<EnrollItem> items;
+    }
+
+    /**
+     * 주식 요약 정보
+     */
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class CourseSummary {
+
         private Long id;
         private String title;
         private String description;
@@ -45,12 +65,15 @@ public class EnrollmentDto {
         private Integer enrollmentCount;
     }
 
-    // 주식 투자 응답
+    /**
+     * 주식 구매 응답
+     */
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class EnrollmentResponse {
+
         private Long id;
         private Long userId;
         private Long courseId;
@@ -91,22 +114,28 @@ public class EnrollmentDto {
         }
     }
 
-    // 추천 서비스용: 수강 이력 조회 응답
+    /**
+     * 추천 서비스용 투자 이력
+     */
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class EnrollmentHistoryResponse {
+
         private Long userId;
         private List<Long> activeCourseIds;
     }
 
-    // 공통 API 응답 래퍼
+    /**
+     * 공통 API 응답
+     */
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class ApiResponse<T> {
+
         private boolean success;
         private String message;
         private T data;
