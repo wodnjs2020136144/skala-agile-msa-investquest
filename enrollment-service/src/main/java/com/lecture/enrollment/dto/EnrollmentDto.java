@@ -15,11 +15,11 @@ public class EnrollmentDto {
     @AllArgsConstructor
     @Builder
     public static class EnrollRequest {
-        @NotNull(message = "강의 ID는 필수입니다")
+        @NotNull(message = "주식 ID는 필수입니다")
         private Long courseId;
     }
 
-    // 강의 요약 정보 (내 수강 목록 표시용)
+    // 강의 요약 정보 (내 주식 목록 표시용)
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -35,7 +35,7 @@ public class EnrollmentDto {
         private Integer enrollmentCount;
     }
 
-    // 수강 응답
+    // 주식 응답
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -46,6 +46,7 @@ public class EnrollmentDto {
         private Long courseId;
         private Enrollment.Status status;
         private LocalDateTime createdAt;
+        private price;
 
         // 추가
         private CourseSummary course;
@@ -57,6 +58,7 @@ public class EnrollmentDto {
                     .courseId(enrollment.getCourseId())
                     .status(enrollment.getStatus())
                     .createdAt(enrollment.getCreatedAt())
+                    .price(enrollment.getPrice())
                     .build();
         }
 
@@ -68,6 +70,7 @@ public class EnrollmentDto {
                     .status(enrollment.getStatus())
                     .createdAt(enrollment.getCreatedAt())
                     .course(course)
+                    .price(enrollment.getPrice())
                     .build();
         }
     }
