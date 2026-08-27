@@ -148,15 +148,15 @@ async function handleRegister() {
 }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; }
-.brand-name { font-size: 18px; font-weight: 700; color: var(--color-on-primary); }
+.brand-name { font-size: 18px; font-weight: 700; color: var(--color-text-primary); }
 .brand-content h2 {
-  font-size: 32px; font-weight: 700; color: var(--color-on-primary);
+  font-size: 32px; font-weight: 700; color: var(--color-text-primary);
   line-height: 1.35; margin-bottom: 14px;
 }
-.brand-content p { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 28px; }
+.brand-content p { font-size: 15px; color: var(--color-text-secondary); margin-bottom: 28px; }
 .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-.feature-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,0.85); }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.6); flex-shrink: 0; }
+.feature-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--color-text-secondary); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-primary); flex-shrink: 0; }
 
 .login-right {
   display: flex;
