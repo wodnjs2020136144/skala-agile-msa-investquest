@@ -29,12 +29,35 @@ spring:
           jwk-set-uri: http://localhost:9000/oauth2/jwks
           issuer-uri: http://localhost:9000
 
+  # Kafka 설정 (reward.granted 수신 전용)
+  kafka:
+    bootstrap-servers: kafka:9092
+
+    consumer:
+      group-id: user-service
+      auto-offset-reset: earliest
+
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: java.util.HashMap
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
+# Kafka 토픽명
+kafka:
+  topic:
+    reward-granted: reward.granted
 
 springdoc:
   api-docs:

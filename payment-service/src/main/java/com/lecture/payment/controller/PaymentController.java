@@ -27,18 +27,19 @@ public class PaymentController {
         return ResponseEntity.ok(result);
     }
 
-    /** 게임 결과에 따라 5,000P 또는 10,000P 리워드 재투자를 시작한다. */
-    @PostMapping("/internal/rewards")
-    public ResponseEntity<PaymentDto.RewardResponse> createReward(
-            @Valid @RequestBody PaymentDto.InternalRewardRequest request) {
-        return ResponseEntity.ok(paymentService.createReward(request));
-    }
+    /**
+     * POST /payments/internal/result - 투자 결과 수신 (Course Service 호출)
+     *
+     * 3일 후 확정된 수익/손해 결과를 받아 보상금을 지급한다.
+     * SUCCESS → 10,000원 / FAILURE → 5,000원
+     * users.money 반영은 reward.granted 이벤트로 User Service가 처리한다.
+     */
+    @PostMapping("/internal/result")
+    public ResponseEntity<PaymentDto.InvestmentResultResponse> grantReward(
+            @Valid @RequestBody PaymentDto.InvestmentResultRequest request) {
 
-    /** 기존 Payment의 생성 시각을 기준으로 3일 재투자와 출금 가능 여부를 확인한다. */
-    @GetMapping("/internal/rewards/{paymentId}")
-    public ResponseEntity<PaymentDto.RewardResponse> getReward(
-            @PathVariable Long paymentId) {
-        return ResponseEntity.ok(paymentService.getReward(paymentId));
+        PaymentDto.InvestmentResultResponse response = paymentService.grantReward(request);
+        return ResponseEntity.ok(response);
     }
 
     /**

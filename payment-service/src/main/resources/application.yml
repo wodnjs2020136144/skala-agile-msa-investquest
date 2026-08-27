@@ -48,6 +48,7 @@ eureka:
 kafka:
   topic:
     payment-completed: payment.completed
+    reward-granted: reward.granted
 
 springdoc:
   api-docs:

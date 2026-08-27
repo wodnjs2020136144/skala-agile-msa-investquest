@@ -1,6 +1,7 @@
 package com.lecture.payment.dto;
 
 import com.lecture.payment.entity.Payment;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -73,35 +74,42 @@ public class PaymentDto {
         private String status;
     }
 
-    /** 게임 결과에 따른 리워드 생성 요청. 기존 payments 테이블을 재사용한다. */
+    /**
+     * 투자 결과 수신 요청 (Course Service → Payment Service, REST)
+     * 3일 후 확정된 수익/손해 결과를 전달받는다.
+     */
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class InternalRewardRequest {
+    public static class InvestmentResultRequest {
+
         @NotNull(message = "사용자 ID는 필수입니다")
         private Long userId;
 
-        @NotNull(message = "대표 종목 ID는 필수입니다")
+        @NotNull(message = "종목 ID는 필수입니다")
         private Long courseId;
 
-        @NotNull(message = "수익률은 필수입니다")
-        private BigDecimal returnRate;
+        @NotBlank(message = "투자 결과는 필수입니다")
+        private String result;   // SUCCESS | FAILURE
     }
 
-    /** PENDING은 3일 재투자 중, COMPLETED는 출금 가능 상태를 뜻한다. */
+    /**
+     * 보상금 지급 결과 응답 (Payment Service → Course Service)
+     * users.money 반영은 Kafka로 비동기 처리되지만,
+     * "얼마가 지급 결정되었는지"는 이 응답으로 즉시 확인할 수 있다.
+     */
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class RewardResponse {
-        private Long paymentId;
+    public static class InvestmentResultResponse {
+        private Long paymentId;      // 생성된 결제 기록 id
         private Long userId;
-        private BigDecimal rewardPoints;
-        private String status;
-        private LocalDateTime reinvestmentStartedAt;
-        private LocalDateTime withdrawalAvailableAt;
-        private boolean withdrawable;
+        private Long courseId;
+        private String result;       // SUCCESS | FAILURE
+        private BigDecimal amount;   // 지급 금액 (10000 / 5000)
+        private String status;       // GRANTED
     }
 
     // 공통 API 응답 래퍼
