@@ -31,15 +31,27 @@
 ## 동선
 
 ```mermaid
-flowchart TD
-    S1["① 안내<br/>/game/guide"]
-    S2["② 시나리오<br/>/game/scenario"]
-    S3["③ 배분<br/>/game/invest"]
-    S4["④ 확정<br/>/game/confirm"]
-    S1 --> S2 --> S3 --> S4
+sequenceDiagram
+    actor U as 사용자
+    participant FE as 프런트
+    participant EN as enrollment 8083
+    participant CO as course 8082
+    participant PA as payment 8084
 
-    classDef mock fill:#FFF7E6,stroke:#E89200,color:#191F28
-    class S1,S2,S3,S4 mock
+    U->>FE: ① 안내 — 게임 시작
+    Note over FE: POST enrollments/games<br/>엔드포인트 없음 → 목이 대신
+    U->>FE: ② 시나리오
+    Note over FE: GET courses/scenarios<br/>엔드포인트 없음 → 목이 대신
+    U->>FE: ③ 배분 — 정수 주 단위
+    Note over FE: GET courses/offered<br/>엔드포인트 없음 → 목이 대신
+    Note over FE: 성향 신호 7종 수집 시작
+    U->>FE: ④ 확정
+    FE->>EN: POST /api/enrollments
+    Note right of FE: EnrollRequest 가 courseId 뿐<br/>배분 금액을 못 보냄
+    EN->>CO: 존재 확인 · 수강생 수 (WebClient)
+    EN->>PA: 결제 요청 (WebClient)
+    PA-->>EN: Kafka payment.completed
+    Note over EN: PENDING → ACTIVE
 ```
 
 네 화면 모두 **목 데이터로 동작한다.** 아래 경로는 전부 "제안"이고 백엔드에 없다.
@@ -106,21 +118,31 @@ payment     ─Kafka payment.completed→  enrollment  : PENDING → ACTIVE
 ## 무엇이 더해졌나
 
 ```mermaid
-flowchart TD
-    S4["④ 확정<br/>Sprint1 화면"]
-    AN["성향 분석<br/>POST recommend/analyze"]
-    S5["⑤ 결과<br/>/game/result"]
-    S6["⑥ 리워드<br/>/game/reward"]
+sequenceDiagram
+    actor U as 사용자
+    participant FE as 프런트
+    participant RE as recommend 8085
+    participant CO as course 8082
+    participant PA as payment 8084
+    participant EN as enrollment 8083
 
-    S4 --> AN
-    S4 --> S5 --> S6
+    U->>FE: ④ 확정 — Sprint1 화면
+    FE->>RE: POST /api/recommend/analyze
+    RE-->>FE: 성향 분석 결과
+    Note over RE: 손익을 입력으로 받지 않는다<br/>배분 행동만 본다
+    EN-)RE: Kafka enrollment.completed
+    Note over RE: 현재는 로그만 남긴다
 
-    classDef old  fill:#F1F3F5,stroke:#CDD3D9,color:#4E5968
-    classDef ok   fill:#E8FAF1,stroke:#00A86B,color:#191F28
-    classDef part fill:#FFF7E6,stroke:#E89200,color:#191F28
-    class S4 old
-    class AN,S6 ok
-    class S5 part
+    U->>FE: ⑤ 결과 — 신규
+    FE->>CO: POST /api/courses/internal/result
+    CO-->>FE: SUCCESS 또는 FAILED
+    Note right of CO: 수익률·금액이 없다<br/>quantity 도 무시한다
+    CO--xPA: Feign 리워드 생성
+    Note over PA: DTO 불일치로 400<br/>리워드가 생성되지 않는다
+
+    U->>FE: ⑥ 리워드 — 신규
+    FE->>PA: GET /api/payments/internal/rewards/:id
+    PA-->>FE: RewardResponse
 ```
 
 > **성향 분석은 Sprint2 기능이지만 Sprint1 화면(④ 확정)에 얹혔다.**
