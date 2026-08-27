@@ -1,0 +1,49 @@
+name: GitHub Pages 배포
+
+# main 에 vue-frontend 변경이 들어오면 자동으로 다시 빌드해 배포한다.
+# 수동으로도 Actions 탭에서 바로 돌릴 수 있다 (workflow_dispatch).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'vue-frontend/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: vue-frontend/package-lock.json
+      - run: npm ci
+        working-directory: vue-frontend
+      - run: npm run build
+        working-directory: vue-frontend
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: vue-frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
