@@ -22,6 +22,24 @@ jobs:
   # ── Spring Boot 서비스 5개 ─────────────────────────────
   gradle:
     runs-on: ubuntu-latest
+
+    # application.yml 의 datasource.url 이 컨테이너명(lecturedb)으로 하드코딩돼 있어
+    # Spring Initializr 가 만들어 둔 contextLoads() 테스트가 DB 에 붙으려다 실패한다.
+    # (UnknownHostException — CLAUDE.md §4-8 에 기록된 함정)
+    # compose 가 하는 것과 같은 방식으로, 실제 DB 를 띄우고 환경변수로 덮는다.
+    services:
+      mariadb:
+        image: mariadb:11.2
+        env:
+          MARIADB_ROOT_PASSWORD: SqlDba-1
+          MARIADB_DATABASE: lecture_db
+          MARIADB_USER: manager
+          MARIADB_PASSWORD: SqlDba-1
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+
     strategy:
       fail-fast: false          # 한 서비스가 깨져도 나머지 결과를 본다
       matrix:
@@ -44,6 +62,14 @@ jobs:
 
       - name: build ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
+        env:
+          # 컨테이너명 대신 러너의 localhost 로. 스키마는 ddl-auto: update 가 만든다.
+          SPRING_DATASOURCE_URL: jdbc:mariadb://127.0.0.1:3306/lecture_db
+          SPRING_DATASOURCE_USERNAME: manager
+          SPRING_DATASOURCE_PASSWORD: SqlDba-1
+          # 테스트 중 Eureka 에 등록하려 들지 않게 한다
+          EUREKA_CLIENT_REGISTER_WITH_EUREKA: 'false'
+          EUREKA_CLIENT_FETCH_REGISTRY: 'false'
         run: ./gradlew build --no-daemon
 
   # ── FastAPI ────────────────────────────────────────────
