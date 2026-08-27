@@ -9,7 +9,9 @@
       </div>
 
       <template v-else>
-        <div class="done-mark" aria-hidden="true">✓</div>
+        <div class="done-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+        </div>
         <h1 class="page-title center">투자를 확정했습니다</h1>
         <p class="page-sub center">
           결과는 <strong>{{ resultDate }}</strong>에 확인할 수 있습니다.
@@ -17,45 +19,50 @@
 
         <section class="receipt">
           <h2 class="sec-title">내 포트폴리오</h2>
-          <ul class="rc-list">
-            <li v-for="row in rows" :key="row.key" class="rc-row">
-              <span class="rc-name">
-                {{ row.name }}
-              </span>
-              <span class="rc-qty">{{ row.qty }}</span>
-              <span class="rc-amount">{{ format(row.amount) }}원</span>
-              <span class="rc-weight">{{ row.weight.toFixed(0) }}%</span>
-            </li>
-          </ul>
-          <div class="rc-total">
-            <span>합계</span>
-            <strong>{{ format(game.initialCash) }}원</strong>
+          <div class="card">
+            <ul class="rc-list">
+              <li v-for="row in rows" :key="row.key" class="rc-row">
+                <span class="rc-name">{{ row.name }}</span>
+                <span class="rc-amount num">{{ format(row.amount) }}원</span>
+                <span class="rc-qty">{{ row.qty }}</span>
+                <span class="rc-weight num">{{ row.weight.toFixed(0) }}%</span>
+              </li>
+            </ul>
+            <div class="rc-total">
+              <span>합계</span>
+              <strong class="num num-md">{{ format(game.initialCash) }}원</strong>
+            </div>
           </div>
         </section>
 
-        <section class="profile-card" aria-live="polite">
+        <section class="profile-card card" aria-live="polite">
           <div class="profile-head">
             <div>
               <span class="profile-kicker">행동 기반 AI 분석</span>
               <h2 class="sec-title">나의 투자 성향 미리보기</h2>
             </div>
-            <span v-if="game.profile" class="score">{{ game.profile.riskScore }}점</span>
+            <span v-if="game.profile" class="score"><span class="num num-xl">{{ game.profile.riskScore }}</span><span class="score-unit">점</span></span>
           </div>
 
-          <div v-if="game.analyzing" class="profile-state">투자 행동을 분석하고 있습니다...</div>
+          <div v-if="game.analyzing" class="profile-state">
+            <div class="iq-skeleton" style="width: 40%"></div>
+            <div class="iq-skeleton"></div>
+            <div class="iq-skeleton" style="width: 80%"></div>
+            <span class="sr-only">투자 행동을 분석하고 있습니다...</span>
+          </div>
           <div v-else-if="game.analysisError" class="profile-state error-msg">
             {{ game.analysisError }}
-            <button type="button" class="retry" @click="game.analyzeProfile()">다시 분석</button>
+            <button type="button" class="text-btn retry" @click="game.analyzeProfile()">다시 분석</button>
           </div>
           <template v-else-if="game.profile">
             <strong class="profile-name">{{ game.profile.profileName }}</strong>
             <p class="profile-summary">{{ game.profile.summary }}</p>
 
             <dl class="metric-grid">
-              <div><dt>투자 비율</dt><dd>{{ game.profile.metrics.investmentRatio }}%</dd></div>
-              <div><dt>포트폴리오 변동성</dt><dd>{{ game.profile.metrics.weightedRiskRatio }}점</dd></div>
-              <div><dt>최대 종목 비중</dt><dd>{{ game.profile.metrics.concentrationRatio }}%</dd></div>
-              <div><dt>분산 점수</dt><dd>{{ game.profile.metrics.diversificationScore }}점</dd></div>
+              <div><dt>투자 비율</dt><dd class="num">{{ game.profile.metrics.investmentRatio }}%</dd></div>
+              <div><dt>포트폴리오 변동성</dt><dd class="num">{{ game.profile.metrics.weightedRiskRatio }}점</dd></div>
+              <div><dt>최대 종목 비중</dt><dd class="num">{{ game.profile.metrics.concentrationRatio }}%</dd></div>
+              <div><dt>분산 점수</dt><dd class="num">{{ game.profile.metrics.diversificationScore }}점</dd></div>
             </dl>
 
             <h3 class="profile-subtitle">이렇게 분석했어요</h3>
@@ -93,9 +100,9 @@
           ]"
         />
 
-        <div class="actions center-actions">
+        <BottomCta>
           <router-link to="/" class="btn btn-primary">홈으로</router-link>
-        </div>
+        </BottomCta>
       </template>
     </div>
   </div>
@@ -107,6 +114,7 @@ import { useGameStore } from '@/store/game.js'
 import GameProgress from '@/components/game/GameProgress.vue'
 import NoticeCard from '@/components/game/NoticeCard.vue'
 import { REWARD_POLICY } from '@/mock/scenario.js'
+import BottomCta from '@/components/ui/BottomCta.vue'
 
 const game = useGameStore()
 const r = computed(() => game.result)
@@ -167,179 +175,212 @@ const rows = computed(() => {
 <style scoped>
 @import './game-page.css';
 
-.done-mark {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  margin: 8px auto 20px;
-  border-radius: 50%;
-  background: var(--color-success-light);
-  color: var(--color-success);
-  font-size: 1.7rem;
-  font-weight: 800;
-}
-
-.page-title.center,
-.page-sub.center { text-align: center; }
-.page-sub.center strong { color: var(--color-primary); }
-
-.receipt { margin-bottom: 24px; }
-
-.profile-card {
-  margin-bottom: 24px;
-  padding: 22px;
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  background: var(--color-primary-light);
-}
-
-.profile-head {
+.empty {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-10) 0;
+  font-size: var(--fs-15);
+  color: var(--text);
 }
 
-.profile-kicker {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--color-primary);
-  font-size: 0.75rem;
-  font-weight: 800;
+@keyframes pop {
+  from { transform: scale(.8); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 }
-
-.profile-head .sec-title { margin: 0; }
-
-.score {
-  flex: 0 0 auto;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: var(--color-primary);
-  color: white;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
+.done-mark {
+  width: 64px;
+  height: 64px;
+  margin: var(--space-2) auto var(--space-5);
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop .3s var(--ease) both;
 }
+.center { text-align: center; }
+.page-sub strong { color: var(--brand); font-weight: var(--fw-bold); }
 
-.profile-state { padding: 28px 0 8px; text-align: center; }
-.profile-name { display: block; margin-top: 20px; font-size: 1.35rem; color: var(--color-text-primary); }
-.profile-summary { margin: 8px 0 18px; line-height: 1.6; color: var(--color-text-secondary); }
-
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin: 0;
-}
-
-.metric-grid div {
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-primary);
-  text-align: center;
-}
-
-.metric-grid dt { font-size: 0.72rem; color: var(--color-text-secondary); }
-.metric-grid dd { margin: 5px 0 0; font-weight: 800; color: var(--color-text-primary); }
-.profile-subtitle { margin: 20px 0 8px; font-size: 0.9rem; color: var(--color-text-primary); }
-.reason-list { margin: 0; padding-left: 20px; color: var(--color-text-secondary); line-height: 1.7; font-size: 0.85rem; }
-
-.decision-box {
-  display: grid;
-  gap: 4px;
-  margin-top: 16px;
-  padding: 14px;
-  border-left: 3px solid var(--color-primary);
-  background: var(--color-bg-primary);
-}
-
-.decision-box span,
-.content-list span { color: var(--color-text-secondary); font-size: 0.82rem; line-height: 1.5; }
-.content-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.content-list li { display: grid; gap: 4px; padding: 12px; border-radius: var(--radius-sm); background: var(--color-bg-primary); }
-
-.retry {
-  margin-left: 8px;
-  border: 0;
-  background: transparent;
-  color: var(--color-primary);
-  font-weight: 700;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
+/* 영수증 — 행마다 2×2 */
+.receipt { margin: var(--space-2) 0 var(--space-4); }
 .rc-list {
   list-style: none;
   margin: 0;
-  padding: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
+  padding: 0 var(--space-5);
 }
-
 .rc-row {
   display: grid;
-  grid-template-columns: 1fr auto auto 44px;
-  align-items: center;
-  gap: 12px;
-  padding: 13px 16px;
-  border-bottom: 1px solid var(--color-border);
-  font-size: 0.88rem;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'name amount'
+    'qty weight';
+  row-gap: 2px;
+  column-gap: var(--space-4);
+  padding: var(--space-4) 0;
 }
-
-.rc-row:last-child { border-bottom: none; }
-
-.rc-name { font-weight: 600; color: var(--color-text-primary); }
-
-.rc-qty,
-.rc-amount,
-.rc-weight {
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text-secondary);
-  text-align: right;
-}
-
-.rc-amount { color: var(--color-text-primary); font-weight: 600; }
-.rc-weight { font-weight: 700; color: var(--color-primary); }
-
+.rc-row + .rc-row { border-top: 1px solid var(--line); }
+.rc-name { grid-area: name; font-size: var(--fs-15); font-weight: var(--fw-semibold); color: var(--text-strong); }
+.rc-amount { grid-area: amount; font-size: var(--fs-15); font-weight: var(--fw-semibold); text-align: right; }
+.rc-qty { grid-area: qty; font-size: var(--fs-13); color: var(--text-weak); }
+.rc-weight { grid-area: weight; font-size: var(--fs-13); font-weight: var(--fw-medium); color: var(--text-weak); text-align: right; }
 .rc-total {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
-  margin-top: 8px;
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-md);
-  font-size: 0.92rem;
-  color: var(--color-text-secondary);
+  justify-content: space-between;
+  margin: 0 var(--space-3) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-12);
+  background: var(--fill-weak);
+  font-size: var(--fs-15);
+  color: var(--text);
 }
 
-.rc-total strong {
-  font-size: 1.05rem;
-  color: var(--color-text-primary);
-  font-variant-numeric: tabular-nums;
+/* 성향 분석 카드 — 흰 카드, 점수가 큰 숫자 */
+.profile-card {
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+.profile-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.profile-head .sec-title { margin-bottom: 0; }
+.profile-kicker {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--space-2);
+  border-radius: var(--r-8);
+  background: var(--brand-weak);
+  color: var(--brand);
+  font-size: var(--fs-12);
+  font-weight: var(--fw-bold);
+  margin-bottom: var(--space-2);
+}
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--brand);
+  flex-shrink: 0;
+}
+.score .num { color: var(--brand); }
+.score-unit { font-size: var(--fs-15); font-weight: var(--fw-bold); }
+
+.profile-state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+.profile-state.error-msg { margin: 0; }
+.retry { margin-left: var(--space-2); }
+
+.profile-name {
+  display: block;
+  font-size: var(--fs-24);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-title);
+  color: var(--text-strong);
+  margin-bottom: var(--space-2);
+}
+.profile-summary {
+  font-size: var(--fs-15);
+  line-height: var(--lh-loose);
+  color: var(--text);
+  margin: 0 0 var(--space-5);
 }
 
-.legal { margin-top: 12px; }
-
-.center-actions { justify-content: center; }
-
-.empty {
-  padding: 60px 0;
-  text-align: center;
+.metric-grid {
   display: grid;
-  gap: 20px;
-  justify-items: center;
-  color: var(--color-text-secondary);
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-6);
 }
+.metric-grid > div {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-12);
+  background: var(--fill-weak);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.metric-grid dt { font-size: var(--fs-12); color: var(--text-weak); font-weight: var(--fw-medium); }
+.metric-grid dd { margin: 0; font-size: var(--fs-20); }
 
-@media (max-width: 560px) {
-  .metric-grid { grid-template-columns: repeat(2, 1fr); }
-  .rc-row {
-    grid-template-columns: 1fr auto;
-    row-gap: 4px;
-  }
-  .rc-qty { grid-column: 1; font-size: 0.8rem; }
-  .rc-weight { grid-column: 2; }
+.profile-subtitle {
+  font-size: var(--fs-15);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
+  margin: 0 0 var(--space-3);
+}
+.reason-list {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.reason-list li {
+  position: relative;
+  padding-left: 14px;
+  font-size: var(--fs-14);
+  line-height: var(--lh-loose);
+  color: var(--text);
+}
+.reason-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 10px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+.decision-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--r-12);
+  background: var(--fill-weak);
+  margin-bottom: var(--space-6);
+}
+.decision-box strong { font-size: var(--fs-15); color: var(--text-strong); }
+.decision-box span { font-size: var(--fs-13); line-height: var(--lh); color: var(--text); }
+.content-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.content-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-12);
+  background: var(--fill-weak);
+}
+.content-list strong { font-size: var(--fs-15); font-weight: var(--fw-semibold); color: var(--text-strong); }
+.content-list span { font-size: var(--fs-13); line-height: var(--lh); color: var(--text); }
+
+.legal { margin-top: var(--space-3); }
+
+@media (min-width: 768px) {
+  .metric-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .done-mark { animation: none; }
 }
 </style>

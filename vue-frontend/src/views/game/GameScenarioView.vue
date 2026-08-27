@@ -3,13 +3,14 @@
     <div class="page-inner fade-in-up">
       <GameProgress :current="1" />
 
-      <div v-if="game.loading && !s" class="skeleton-box" aria-busy="true">
+      <div v-if="game.loading && !s" class="loading" aria-busy="true">
+        <div class="iq-spinner" aria-hidden="true"></div>
         불러오는 중...
       </div>
 
       <p v-else-if="game.error" class="error-msg" role="alert">
         {{ game.error }}
-        <button type="button" class="retry" @click="load">다시 시도</button>
+        <button type="button" class="text-btn retry" @click="load">다시 시도</button>
       </p>
 
       <template v-else-if="s">
@@ -19,10 +20,10 @@
         <p class="situation">{{ s.description }}</p>
         <p class="guide-text">{{ s.guide }}</p>
 
-        <dl class="terms">
+        <dl class="terms card">
           <div class="term">
             <dt>보유 투자금</dt>
-            <dd class="amount">{{ format(s.initialCash) }}원</dd>
+            <dd class="amount num num-lg">{{ format(s.initialCash) }}원</dd>
           </div>
           <div class="term">
             <dt>게임 기간</dt>
@@ -44,8 +45,10 @@
         />
       </template>
 
-      <div class="actions">
-        <router-link to="/" class="btn btn-outline">홈으로</router-link>
+      <BottomCta>
+        <template #secondary>
+          <router-link to="/" class="btn btn-ghost">홈으로</router-link>
+        </template>
         <router-link
           to="/game/invest"
           class="btn btn-primary"
@@ -53,7 +56,7 @@
         >
           종목 선택하기
         </router-link>
-      </div>
+      </BottomCta>
     </div>
   </div>
 </template>
@@ -63,6 +66,7 @@ import { computed, onMounted } from 'vue'
 import { useGameStore } from '@/store/game.js'
 import GameProgress from '@/components/game/GameProgress.vue'
 import NoticeCard from '@/components/game/NoticeCard.vue'
+import BottomCta from '@/components/ui/BottomCta.vue'
 
 const game = useGameStore()
 const s = computed(() => game.scenario)
@@ -87,83 +91,65 @@ onMounted(() => {
 <style scoped>
 @import './game-page.css';
 
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-10) 0;
+  font-size: var(--fs-15);
+  color: var(--text-weak);
+}
+.retry { margin-left: var(--space-2); }
+
 .scenario-tag {
-  display: inline-block;
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  font-size: 0.76rem;
-  font-weight: 700;
-  margin-bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--r-full);
+  background: var(--brand-weak);
+  color: var(--brand);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-bold);
+  margin-bottom: var(--space-3);
 }
-
 .situation {
-  font-size: 1.02rem;
-  line-height: 1.8;
-  color: var(--color-text-primary);
-  margin: 0 0 14px;
+  font-size: var(--fs-17);
+  line-height: var(--lh-loose);
+  color: var(--text-strong);
+  margin: var(--space-4) 0 var(--space-3);
 }
-
 .guide-text {
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-  margin: 0 0 28px;
+  font-size: var(--fs-15);
+  line-height: var(--lh-loose);
+  color: var(--text);
+  margin: 0 0 var(--space-6);
 }
 
+/* 조건 — 카드 안 라벨·값 행. 금액은 검정으로 크게, 파랑은 액션에만. */
 .terms {
-  margin: 0 0 28px;
-  padding: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
+  margin: 0 0 var(--space-4);
+  padding: var(--space-2) var(--space-5);
 }
-
 .term {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--color-border);
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
 }
-
-.term:last-child { border-bottom: none; }
-
+.term + .term { border-top: 1px solid var(--line); }
 .term dt {
-  font-size: 0.88rem;
-  color: var(--color-text-secondary);
+  font-size: var(--fs-15);
+  color: var(--text);
+  flex-shrink: 0;
 }
-
 .term dd {
   margin: 0;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-15);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
   text-align: right;
 }
-
-.term dd.amount {
-  font-size: 1.15rem;
-  color: var(--color-primary);
-}
-
-.skeleton-box {
-  padding: 60px 0;
-  text-align: center;
-  color: var(--color-text-muted);
-}
-
-.retry {
-  margin-left: 10px;
-  background: none;
-  border: none;
-  color: var(--color-danger);
-  font-weight: 700;
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: inherit;
-}
-
-.btn.disabled { pointer-events: none; opacity: 0.5; }
 </style>

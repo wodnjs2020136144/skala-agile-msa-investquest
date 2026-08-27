@@ -12,20 +12,21 @@
           선택 하나하나가 당신의 투자 성향을 말해 줍니다.
         </p>
 
-        <div class="status-row">
+        <!-- 참여 상태 카드 — 지금은 '참여 전' 하나뿐이다 -->
+        <div class="status-card card card-pad">
           <span class="status-chip">참여 전</span>
           <span class="status-note">아직 참여한 게임이 없습니다.</span>
         </div>
-
-        <router-link to="/game/guide" class="btn btn-primary btn-lg">
-          게임 시작하기
-        </router-link>
 
         <NoticeCard
           class="signed-notice"
           title="시작하기 전에 확인해 주세요"
           :items="noticeItems"
         />
+
+        <BottomCta>
+          <router-link to="/game/guide" class="btn btn-primary">게임 시작하기</router-link>
+        </BottomCta>
       </div>
     </section>
 
@@ -50,17 +51,19 @@
           </div>
 
           <div class="hero-visual fade-in" aria-hidden="true">
-            <div class="mock-panel">
+            <div class="mock-panel card card-lg">
               <div class="mp-head">
                 <span class="mp-title">가상 포트폴리오</span>
-                <span class="mp-amount">10,000,000원</span>
+                <span class="mp-amount num num-xl">10,000,000원</span>
               </div>
-              <div v-for="row in previewRows" :key="row.name" class="mp-row">
-                <span class="mp-name">{{ row.name }}</span>
-                <div class="mp-bar">
-                  <div class="mp-fill" :style="{ width: row.weight + '%' }"></div>
+              <div class="mp-rows">
+                <div v-for="row in previewRows" :key="row.name" class="mp-row">
+                  <span class="mp-name">{{ row.name }}</span>
+                  <div class="track">
+                    <div class="track-fill" :style="{ width: row.weight + '%' }"></div>
+                  </div>
+                  <span class="mp-weight num">{{ row.weight }}%</span>
                 </div>
-                <span class="mp-weight">{{ row.weight }}%</span>
               </div>
             </div>
           </div>
@@ -69,12 +72,14 @@
 
       <section class="steps-section">
         <div class="section-inner">
-          <h2 class="section-title center">게임은 이렇게 진행됩니다</h2>
+          <h2 class="section-title">게임은 이렇게 진행됩니다</h2>
           <ol class="steps-grid">
             <li v-for="(s, i) in steps" :key="s.title" class="step-card">
-              <span class="step-num">{{ i + 1 }}</span>
-              <h3 class="step-title">{{ s.title }}</h3>
-              <p class="step-desc">{{ s.desc }}</p>
+              <span class="step-num num">{{ i + 1 }}</span>
+              <div class="step-body">
+                <h3 class="step-title">{{ s.title }}</h3>
+                <p class="step-desc">{{ s.desc }}</p>
+              </div>
             </li>
           </ol>
         </div>
@@ -85,6 +90,11 @@
           <NoticeCard tone="warn" icon="⚠️" title="안내" :items="legalItems" />
         </div>
       </section>
+
+      <!-- 데스크톱은 히어로 안 버튼으로 충분하다. 모바일만 하단 고정. -->
+      <BottomCta mobile-only>
+        <router-link to="/login" class="btn btn-primary">로그인하고 시작하기</router-link>
+      </BottomCta>
     </template>
   </div>
 </template>
@@ -92,6 +102,7 @@
 <script setup>
 import { useAuthStore } from '@/store/auth.js'
 import NoticeCard from '@/components/game/NoticeCard.vue'
+import BottomCta from '@/components/ui/BottomCta.vue'
 
 const auth = useAuthStore()
 
@@ -128,238 +139,221 @@ const previewRows = [
 <style scoped>
 /* ── 로그인 홈 ───────────────────────────────────────────── */
 .signed {
-  padding: 64px 24px 80px;
   background: var(--gradient-hero);
-  min-height: calc(100vh - 64px);
+  min-height: calc(100dvh - var(--header-h));
 }
-
 .signed-inner {
-  max-width: 640px;
+  max-width: var(--content-max);
   margin: 0 auto;
-}
-
-.welcome {
-  font-size: 0.95rem;
-  color: var(--color-text-secondary);
-  margin: 0 0 8px;
-}
-
-.welcome strong { color: var(--color-primary); }
-
-.signed-title {
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  font-weight: 800;
-  line-height: 1.3;
-  margin: 0 0 12px;
-  color: var(--color-text-primary);
-}
-
-.signed-desc {
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-  margin: 0 0 24px;
-}
-
-.status-row {
+  padding: var(--space-7) var(--space-5) 0;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-4);
 }
-
+.welcome {
+  font-size: var(--fs-15);
+  color: var(--text);
+  margin: 0;
+}
+.welcome strong { color: var(--text-strong); font-weight: var(--fw-bold); }
+.signed-title {
+  font-size: var(--fs-28);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-title);
+  color: var(--text-strong);
+  margin: 0;
+  text-wrap: balance;
+}
+.signed-desc {
+  font-size: var(--fs-15);
+  line-height: var(--lh-loose);
+  color: var(--text);
+  margin: 0 0 var(--space-2);
+}
+.status-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
 .status-chip {
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  font-size: 0.8rem;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--r-full);
+  background: var(--brand-weak);
+  color: var(--brand);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-bold);
+}
+.status-note {
+  font-size: var(--fs-15);
+  color: var(--text);
 }
 
-.status-note { font-size: 0.85rem; color: var(--color-text-muted); }
-
-.signed-notice { margin-top: 28px; }
-
-/* ── 비로그인 히어로 ─────────────────────────────────────── */
+/* ── 비로그인 홈 ─────────────────────────────────────────── */
 .hero {
-  background: var(--gradient-hero);
-  padding: 72px 24px;
+  background: var(--surface);
+  padding: var(--space-8) var(--space-5) var(--space-9);
 }
-
 .hero-inner {
-  max-width: 1120px;
+  max-width: var(--content-max-wide);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 48px;
+  gap: var(--space-8);
   align-items: center;
 }
-
 .hero-badge {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  font-size: 0.78rem;
-  font-weight: 700;
-  margin-bottom: 18px;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--r-full);
+  background: var(--brand-weak);
+  color: var(--brand);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-bold);
+  margin-bottom: var(--space-4);
 }
-
 .hero-title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  line-height: 1.25;
-  margin: 0 0 16px;
-  color: var(--color-text-primary);
+  font-size: var(--fs-32);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-title);
+  color: var(--text-strong);
+  margin: 0 0 var(--space-4);
 }
-
 .hero-desc {
-  font-size: 1.05rem;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-  margin: 0 0 28px;
+  font-size: var(--fs-17);
+  line-height: var(--lh-loose);
+  color: var(--text);
+  margin: 0 0 var(--space-6);
+  max-width: 34ch;
 }
-
-.hero-actions { margin-bottom: 16px; }
-
+.hero-actions { display: none; }
 .hero-disclaimer {
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
+  font-size: var(--fs-13);
+  color: var(--text-weak);
   margin: 0;
 }
 
-/* 히어로 시각 요소 — 배분 화면을 미리 보여 준다 */
+/* 가짜 포트폴리오 — 이 화면의 주인공 */
 .mock-panel {
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 22px;
+  padding: var(--space-6);
+  background: var(--surface-elevated);
+  box-shadow: var(--elev-card), inset 0 0 0 1px var(--line);
 }
-
 .mp-head {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding-bottom: 14px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--color-border);
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
 }
-
-.mp-title { font-size: 0.85rem; color: var(--color-text-secondary); font-weight: 600; }
-.mp-amount {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--color-text-primary);
-  font-variant-numeric: tabular-nums;
+.mp-title {
+  font-size: var(--fs-13);
+  color: var(--text-weak);
+  font-weight: var(--fw-medium);
 }
-
+.mp-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
 .mp-row {
   display: grid;
-  grid-template-columns: 48px 1fr 40px;
+  grid-template-columns: 44px 1fr 44px;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: var(--space-3);
 }
-
-.mp-row:last-child { margin-bottom: 0; }
-.mp-name { font-size: 0.82rem; color: var(--color-text-secondary); }
-
-.mp-bar {
-  height: 8px;
-  background: var(--color-bg-tertiary);
-  border-radius: 999px;
-  overflow: hidden;
+.mp-name {
+  font-size: var(--fs-14);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
 }
-
-.mp-fill { height: 100%; background: var(--color-primary); border-radius: 999px; }
-
 .mp-weight {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-size: var(--fs-14);
   text-align: right;
-  font-variant-numeric: tabular-nums;
 }
 
-/* ── 3단계 소개 ──────────────────────────────────────────── */
-.steps-section { padding: 72px 24px; }
-.notice-section { padding: 0 24px 72px; }
-
-.section-inner { max-width: 1120px; margin: 0 auto; }
-.section-inner.narrow { max-width: 720px; }
-
+/* 진행 3단계 */
+.steps-section {
+  padding: var(--space-9) var(--space-5);
+}
+.section-inner {
+  max-width: var(--content-max-wide);
+  margin: 0 auto;
+}
+.section-inner.narrow { max-width: var(--content-max); }
 .section-title {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--color-text-primary);
-  margin: 0 0 36px;
+  font-size: var(--fs-24);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-title);
+  color: var(--text-strong);
+  margin: 0 0 var(--space-6);
 }
-
-.section-title.center { text-align: center; }
-
 .steps-grid {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
-
 .step-card {
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 26px 22px;
-  transition: var(--transition);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
 }
-
-.step-card:hover {
-  border-color: var(--color-border-hover);
-  box-shadow: var(--shadow-md);
-}
-
 .step-num {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-weight: 800;
-  margin-bottom: 14px;
+  background: var(--brand-weak);
+  color: var(--brand);
+  font-size: var(--fs-15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-
 .step-title {
-  font-size: 1.02rem;
-  font-weight: 700;
-  margin: 0 0 8px;
-  color: var(--color-text-primary);
+  font-size: var(--fs-17);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
+  margin: 4px 0 var(--space-1);
 }
-
 .step-desc {
-  font-size: 0.88rem;
-  line-height: 1.65;
-  color: var(--color-text-secondary);
+  font-size: var(--fs-14);
+  line-height: var(--lh-loose);
+  color: var(--text);
   margin: 0;
 }
-
-/* 공통 버튼 크기 — global.css 의 .btn 을 확장한다 */
-.btn-lg { padding: 13px 28px; font-size: 1rem; }
-
-@media (max-width: 860px) {
-  .hero-inner { grid-template-columns: 1fr; gap: 36px; }
-  .hero { padding: 48px 20px; }
-  .hero-visual { order: -1; }
+.notice-section {
+  padding: 0 var(--space-5) var(--space-9);
 }
 
-@media (max-width: 480px) {
-  .signed { padding: 40px 18px 60px; }
-  .steps-section { padding: 48px 18px; }
-  .btn-lg { width: 100%; justify-content: center; }
+@media (min-width: 768px) {
+  .signed-inner { padding-top: var(--space-10); }
+  .signed-title { font-size: var(--fs-32); }
+  .hero { padding: var(--space-10) var(--space-6); }
+  .hero-inner { grid-template-columns: 1.1fr 1fr; gap: var(--space-10); }
+  .hero-title { font-size: 44px; }
+  .hero-actions { display: block; margin-bottom: var(--space-4); }
+  .hero-actions .btn-lg { height: 56px; padding: 0 var(--space-7); font-size: var(--fs-17); font-weight: var(--fw-bold); border-radius: var(--r-16); }
+  .hero-visual { max-width: 440px; justify-self: end; width: 100%; }
+  .steps-section { padding: var(--space-10) var(--space-6); }
+  .steps-grid { flex-direction: row; gap: var(--space-4); }
+  .step-card {
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--surface);
+    border-radius: var(--r-20);
+    box-shadow: var(--elev-card);
+  }
+  .step-title { margin-top: 0; }
 }
 </style>

@@ -1,75 +1,73 @@
 <template>
   <div class="login-page">
-    <div class="login-layout">
-      <!-- 좌측 브랜딩 -->
-      <div class="login-left">
-        <div class="brand">
-          <img src="@/assets/images/logo/main_logo.png" alt="InvestQuest" class="brand-logo" />
-          <span class="brand-name">InvestQuest</span>
-        </div>
-        <div class="brand-content">
-          <h2>게임으로 알아보는<br>나의 투자 성향</h2>
-          <p>로그인하고 가상 투자 게임에 참여해 보세요.</p>
-          <ul class="feature-list">
-            <li v-for="f in features" :key="f">
-              <span class="dot"></span>{{ f }}
-            </li>
-          </ul>
-        </div>
+    <div class="login-col fade-in-up">
+      <router-link to="/" class="back-link">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        홈으로
+      </router-link>
+
+      <!-- 브랜딩 — 원래 좌측 패널에 있던 카피를 그대로 옮겼다 -->
+      <div class="brand">
+        <img src="@/assets/images/logo/main_logo.png" alt="InvestQuest" class="brand-logo" />
+        <span class="brand-name">InvestQuest</span>
+      </div>
+      <div class="brand-content">
+        <h2>게임으로 알아보는<br>나의 투자 성향</h2>
+        <p>로그인하고 가상 투자 게임에 참여해 보세요.</p>
+        <ul class="feature-list">
+          <li v-for="f in features" :key="f">
+            <svg class="check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+            {{ f }}
+          </li>
+        </ul>
       </div>
 
-      <!-- 우측 -->
-      <div class="login-right">
-        <div class="login-box fade-in-up">
-          <router-link to="/" class="back-link">← 홈으로</router-link>
-
-          <!-- 로그인 영역 -->
-          <div v-if="!showRegister" class="section">
-            <h3 class="section-title">로그인</h3>
-            <p class="section-desc">InvestQuest 계정으로 로그인합니다.</p>
-            <button class="btn btn-primary btn-full" @click="handleOAuth">로그인</button>
-            <div class="switch-link">
-              계정이 없으신가요?
-              <button class="text-btn" @click="showRegister = true">회원가입</button>
-            </div>
+      <div class="login-box">
+        <!-- 로그인 영역 -->
+        <div v-if="!showRegister" class="section">
+          <h3 class="section-title">로그인</h3>
+          <p class="section-desc">InvestQuest 계정으로 로그인합니다.</p>
+          <button class="btn btn-primary btn-full" @click="handleOAuth">로그인</button>
+          <div class="switch-link">
+            계정이 없으신가요?
+            <button class="text-btn" @click="showRegister = true">회원가입</button>
           </div>
+        </div>
 
-          <!-- 회원가입 영역 -->
-          <div v-else class="section">
-            <h3 class="section-title">회원가입</h3>
-            <form @submit.prevent="handleRegister" class="form">
-              <div class="form-group">
-                <label class="form-label">이름</label>
-                <input v-model="registerForm.name" type="text" class="form-input" placeholder="홍길동" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">이메일</label>
-                <input v-model="registerForm.email" type="email" class="form-input" placeholder="user@example.com" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">비밀번호</label>
-                <input v-model="registerForm.password" type="password" class="form-input" placeholder="8자 이상" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">역할</label>
-                <select v-model="registerForm.role" class="form-input">
-                  <option value="STUDENT">학생</option>
-                  <option value="INSTRUCTOR">강사</option>
-                </select>
-              </div>
-              <div v-if="error" class="error-msg">{{ error }}</div>
-              <div v-if="success" class="success-msg">{{ success }}</div>
-              <button type="submit" class="btn btn-primary btn-full" :disabled="loading">
-                <span v-if="loading">가입 중...</span>
-                <span v-else>회원가입</span>
-              </button>
-            </form>
-            <div class="switch-link">
-              이미 계정이 있으신가요?
-              <button class="text-btn" @click="showRegister = false">로그인</button>
+        <!-- 회원가입 영역 -->
+        <div v-else class="section">
+          <h3 class="section-title">회원가입</h3>
+          <form @submit.prevent="handleRegister" class="form">
+            <div class="form-group">
+              <label class="form-label">이름</label>
+              <input v-model="registerForm.name" type="text" class="form-input" placeholder="홍길동" required />
             </div>
+            <div class="form-group">
+              <label class="form-label">이메일</label>
+              <input v-model="registerForm.email" type="email" class="form-input" placeholder="user@example.com" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">비밀번호</label>
+              <input v-model="registerForm.password" type="password" class="form-input" placeholder="8자 이상" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">역할</label>
+              <select v-model="registerForm.role" class="form-input">
+                <option value="STUDENT">학생</option>
+                <option value="INSTRUCTOR">강사</option>
+              </select>
+            </div>
+            <div v-if="error" class="error-msg">{{ error }}</div>
+            <div v-if="success" class="success-msg">{{ success }}</div>
+            <button type="submit" class="btn btn-primary btn-full" :disabled="loading">
+              <span v-if="loading">가입 중...</span>
+              <span v-else>회원가입</span>
+            </button>
+          </form>
+          <div class="switch-link">
+            이미 계정이 있으신가요?
+            <button class="text-btn" @click="showRegister = false">로그인</button>
           </div>
-
         </div>
       </div>
     </div>
@@ -122,104 +120,164 @@ async function handleRegister() {
 </script>
 
 <style scoped>
+/* 스플릿 화면 대신 흰 바닥 위 단일 컬럼 — 토스 로그인 문법 */
 .login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: stretch;
+  min-height: 100dvh;
+  background: var(--surface);
+  padding: var(--space-6) var(--space-5) var(--space-10);
 }
-.login-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 100%;
-  min-height: 100vh;
-}
-.login-left {
-  background: var(--gradient-brand);
-  padding: 48px;
+.login-col {
+  max-width: 400px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: var(--space-6);
 }
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; }
-.brand-name { font-size: 18px; font-weight: 700; color: var(--color-on-primary); }
-.brand-content h2 {
-  font-size: 32px; font-weight: 700; color: var(--color-on-primary);
-  line-height: 1.35; margin-bottom: 14px;
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  font-size: var(--fs-14);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  margin-left: -4px;
 }
-.brand-content p { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 28px; }
-.feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-.feature-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,0.85); }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.6); flex-shrink: 0; }
-
-.login-right {
+.back-link:hover { color: var(--text-strong); }
+.brand {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 48px;
-  background: var(--color-bg-primary);
+  gap: var(--space-2);
 }
-.login-box { width: 100%; max-width: 400px; }
-.back-link {
-  display: inline-block;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  margin-bottom: 32px;
-  transition: var(--transition);
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-8);
+  object-fit: contain;
 }
-.back-link:hover { color: var(--color-primary); }
-
-.section { display: flex; flex-direction: column; gap: 16px; }
-.section-title { font-size: 22px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 4px; }
-.section-desc { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 4px; }
-
-.form { display: flex; flex-direction: column; gap: 14px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-label { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); }
-.form-input {
-  padding: 10px 14px;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-family: var(--font-sans);
-  color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-  transition: var(--transition);
-  outline: none;
+.brand-name {
+  font-size: var(--fs-17);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-title);
+  color: var(--text-strong);
 }
-.form-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
-.btn-full { width: 100%; padding: 12px; font-size: 15px; justify-content: center; margin-top: 4px; }
+.brand-content h2 {
+  font-size: var(--fs-28);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-title);
+  color: var(--text-strong);
+  margin: 0 0 var(--space-3);
+}
+.brand-content p {
+  font-size: var(--fs-15);
+  line-height: var(--lh-loose);
+  color: var(--text);
+  margin: 0 0 var(--space-5);
+}
+.feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-15);
+  color: var(--text-strong);
+}
+.check { flex-shrink: 0; color: var(--brand); }
 
+.login-box {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+.section-title {
+  font-size: var(--fs-20);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
+  margin: 0 0 var(--space-1);
+}
+.section-desc {
+  font-size: var(--fs-14);
+  color: var(--text);
+  margin: 0 0 var(--space-5);
+}
+.btn-full {
+  width: 100%;
+  height: var(--cta-h);
+  border-radius: var(--r-16);
+  font-size: var(--fs-17);
+  font-weight: var(--fw-bold);
+}
 .switch-link {
+  margin-top: var(--space-5);
   text-align: center;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  margin-top: 4px;
+  font-size: var(--fs-14);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
 }
-.text-btn {
-  background: none;
+
+/* 인풋 — 테두리 없이 한 단 낮은 면, 포커스에만 브랜드 링 */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.form-label {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+}
+.form-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--space-4);
   border: none;
-  color: var(--color-primary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0 2px;
-  text-decoration: underline;
+  border-radius: var(--r-12);
+  background: var(--fill-weak);
+  color: var(--text-strong);
+  font-size: 16px; /* iOS 자동 줌 방지 */
+  transition: box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
-.error-msg {
-  padding: 10px 14px;
-  background: var(--color-danger-light);
-  border: 1px solid var(--color-danger-border);
-  border-radius: var(--radius-md);
-  font-size: 13px;
-  color: var(--color-danger);
+.form-input::placeholder { color: var(--text-disabled); }
+.form-input:hover { background: var(--fill); }
+.form-input:focus {
+  outline: none;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1.5px var(--brand);
 }
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: var(--space-9);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238B95A1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-4) center;
+  background-size: 18px;
+}
+.error-msg,
 .success-msg {
-  padding: 10px 14px;
-  background: var(--color-success-light);
-  border: 1px solid var(--color-success-border);
-  border-radius: var(--radius-md);
-  font-size: 13px;
-  color: var(--color-success);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-12);
+  font-size: var(--fs-14);
+  line-height: var(--lh);
+}
+.error-msg { background: var(--negative-weak); color: var(--negative); }
+.success-msg { background: var(--positive-weak); color: var(--positive); }
+
+@media (min-width: 768px) {
+  .login-page { padding-top: var(--space-10); }
 }
 </style>

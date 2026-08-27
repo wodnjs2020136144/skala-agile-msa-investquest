@@ -1,7 +1,7 @@
 <template>
   <div class="callback-page">
     <div class="callback-box">
-      <div class="spinner"></div>
+      <div class="iq-spinner" aria-hidden="true"></div>
       <p>{{ message }}</p>
     </div>
   </div>
@@ -62,35 +62,19 @@ onMounted(async () => {
 
 <style scoped>
 .callback-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg-secondary);
+  background: var(--bg);
+  padding: var(--space-6);
 }
-
 .callback-box {
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  color: var(--color-text-secondary);
-  font-size: 15px;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  gap: var(--space-4);
+  font-size: var(--fs-15);
+  color: var(--text);
 }
 </style>

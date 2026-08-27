@@ -7,7 +7,7 @@
       :class="{ done: i < current - 1, active: i === current - 1 }"
       :aria-current="i === current - 1 ? 'step' : undefined"
     >
-      <span class="gp-num" aria-hidden="true">{{ i < current - 1 ? '✓' : i + 1 }}</span>
+      <span class="gp-bar" aria-hidden="true"></span>
       <span class="gp-label">{{ step }}</span>
     </li>
   </ol>
@@ -27,59 +27,34 @@ const steps = ['상황 확인', '종목 선택', '투자 확정']
 </script>
 
 <style scoped>
+/* 번호 원 대신 3분할 트랙. 지난 단계와 현재 단계는 브랜드색, 남은 단계는 회색. */
 .game-progress {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
   list-style: none;
-  margin: 0 0 24px;
+  margin: 0 0 var(--space-6);
   padding: 0;
-  flex-wrap: wrap;
 }
-
 .gp-step {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-  font-weight: 600;
+  flex-direction: column;
+  gap: var(--space-2);
 }
-
-.gp-step:not(:last-child)::after {
-  content: '';
-  width: 28px;
-  height: 1px;
-  background: var(--color-border);
-  margin-left: 8px;
+.gp-bar {
+  display: block;
+  height: 4px;
+  border-radius: var(--r-full);
+  background: var(--fill);
+  transition: background-color var(--dur) var(--ease);
 }
-
-.gp-num {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  flex-shrink: 0;
+.gp-step.done .gp-bar,
+.gp-step.active .gp-bar { background: var(--brand); }
+.gp-label {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  color: var(--text-weak);
 }
-
-.gp-step.active { color: var(--color-primary); }
-.gp-step.active .gp-num {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-}
-
-.gp-step.done { color: var(--color-success); }
-.gp-step.done .gp-num {
-  background: var(--color-success-light);
-  color: var(--color-success);
-}
-
-@media (max-width: 480px) {
-  .gp-label { font-size: 0.82rem; }
-  .gp-step:not(:last-child)::after { width: 14px; margin-left: 4px; }
-}
+.gp-step.done .gp-label { color: var(--text); }
+.gp-step.active .gp-label { color: var(--text-strong); font-weight: var(--fw-bold); }
 </style>

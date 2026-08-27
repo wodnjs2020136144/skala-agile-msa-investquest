@@ -1,7 +1,15 @@
 <template>
   <aside class="notice-card" :class="tone">
     <h3 v-if="title" class="nc-title">
-      <span class="nc-icon" aria-hidden="true">{{ icon }}</span>
+      <!-- 아이콘은 톤으로 그린다. icon 프롭은 호출부 호환용으로 남긴다. -->
+      <svg v-if="tone === 'warn'" class="nc-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+        <path d="M12 9v4M12 17h.01" />
+      </svg>
+      <svg v-else class="nc-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 11v5M12 8h.01" />
+      </svg>
       {{ title }}
     </h3>
     <ul class="nc-list">
@@ -27,40 +35,48 @@ defineProps({
 </script>
 
 <style scoped>
+/* 페이지 바닥보다 한 단 낮은 면. 테두리 없음. */
 .notice-card {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 16px 18px;
-  background: var(--color-bg-secondary);
+  background: var(--fill-weak);
+  border-radius: var(--r-16);
+  padding: var(--space-5);
 }
-
-.notice-card.warn {
-  background: var(--color-warning-light);
-  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
-}
-
+.notice-card.warn { background: var(--caution-weak); }
 .nc-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 10px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
+  gap: var(--space-2);
+  font-size: var(--fs-15);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
+  margin: 0 0 var(--space-3);
 }
-
-.notice-card.warn .nc-title { color: var(--color-warning); }
-
+.nc-icon { flex-shrink: 0; color: var(--text-weak); }
+.notice-card.warn .nc-title,
+.notice-card.warn .nc-icon { color: var(--caution-text); }
 .nc-list {
+  list-style: none;
   margin: 0;
-  padding-left: 18px;
+  padding: 0;
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
 }
-
 .nc-list li {
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: var(--color-text-secondary);
+  position: relative;
+  padding-left: 14px;
+  font-size: var(--fs-14);
+  line-height: var(--lh-loose);
+  color: var(--text);
 }
+.nc-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 10px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-weak);
+}
+.notice-card.warn .nc-list li::before { background: var(--caution); }
 </style>

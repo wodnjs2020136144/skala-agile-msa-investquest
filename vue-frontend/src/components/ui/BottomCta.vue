@@ -4,7 +4,7 @@
     모바일에서는 하단에 고정되고(토스 앱), 768px 이상에서는 컬럼 안 제자리에 놓인다.
     고정될 때 내용이 가려지지 않도록 같은 높이의 스페이서를 남긴다.
   -->
-  <div class="bottom-cta">
+  <div class="bottom-cta" :class="{ 'mobile-only': mobileOnly }">
     <div class="bc-spacer" aria-hidden="true"></div>
     <div class="bc-bar">
       <div class="bc-inner actions">
@@ -14,6 +14,13 @@
     </div>
   </div>
 </template>
+
+<script setup>
+defineProps({
+  /** 데스크톱에서는 화면 안에 이미 같은 액션이 있을 때 — 모바일 고정 바만 남긴다 */
+  mobileOnly: { type: Boolean, default: false }
+})
+</script>
 
 <style scoped>
 .bc-bar {
@@ -46,6 +53,7 @@
 .bc-inner :deep(.btn-ghost) { padding: 0 var(--space-6); }
 
 @media (min-width: 768px) {
+  .mobile-only { display: none; }
   .bc-bar {
     position: static;
     padding: 0;

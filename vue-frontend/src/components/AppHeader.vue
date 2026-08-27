@@ -26,6 +26,7 @@
 
       <!-- 우측 액션 -->
       <div class="header-actions">
+        <ThemeToggle />
         <template v-if="auth.isAuthenticated">
           <!--
             로그인 사용자 표시는 Sprint1 완료 조건이라 목 모드에서도 남긴다.
@@ -52,6 +53,7 @@
 import { useAuthStore } from '@/store/auth.js'
 import { useRouter } from 'vue-router'
 import { USE_MOCK } from '@/config.js'
+import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -63,112 +65,104 @@ function handleLogout() {
 </script>
 
 <style scoped>
+/* 선 없이 반투명 흰 면 + 블러. 바닥(--bg)과의 명도차가 경계다. */
 .app-header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: rgba(255,255,255,0.92);
+  z-index: var(--z-header);
+  background: var(--header-glass);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-border);
+  -webkit-backdrop-filter: blur(12px);
 }
 .header-inner {
-  max-width: 1200px;
+  max-width: var(--content-max-wide);
   margin: 0 auto;
-  padding: 0 24px;
-  height: 64px;
+  padding: 0 var(--space-5);
+  height: var(--header-h);
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: var(--space-6);
 }
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   flex-shrink: 0;
 }
 .logo-img {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: var(--r-8);
 }
 .logo-text {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  letter-spacing: -0.3px;
+  font-size: var(--fs-17);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
+  letter-spacing: var(--tracking-title);
 }
 .nav-links {
   display: flex;
-  gap: 4px;
+  gap: var(--space-1);
   flex: 1;
 }
 .nav-link {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 var(--space-3);
+  border-radius: var(--r-8);
+  font-size: var(--fs-15);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
   white-space: nowrap;
-  padding: 6px 14px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  transition: var(--transition);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
-.nav-link:hover,
-.nav-link.active {
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-}
+.nav-link:hover { background: var(--fill-weak); color: var(--text-strong); }
+.nav-link.active { color: var(--brand); background: var(--brand-weak); }
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin-left: auto;
 }
 .btn-sm {
-  padding: 7px 16px;
-  font-size: 13px;
+  height: 34px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-13);
+  border-radius: var(--r-8);
 }
 .user-avatar {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  font-size: 13px;
-  font-weight: 600;
+  background: var(--fill-weak);
+  color: var(--text-strong);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-bold);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: var(--transition);
+  transition: background-color var(--dur) var(--ease);
 }
-.user-avatar:hover {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-}
+.user-avatar:hover { background: var(--fill); }
 /* 목 모드의 아바타는 클릭할 곳이 없다. 눌릴 것처럼 보이지 않게 한다. */
-.user-avatar.is-static {
-  cursor: default;
-}
-.user-avatar.is-static:hover {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-}
+.user-avatar.is-static { cursor: default; }
+.user-avatar.is-static:hover { background: var(--fill-weak); }
 
 /*
  * 좁은 폭 대응.
- * 원본 헤더에는 미디어쿼리가 없어, 링크를 하나만 늘려도 좁은 화면에서
- * 글자가 세로로 쪼개지며 헤더 밖으로 튀어나온다.
  * 게임이 주 흐름이므로 보조 링크(강의·내 학습)부터 접는다.
  */
-@media (max-width: 720px) {
-  .header-inner { gap: 12px; padding: 0 14px; }
+@media (max-width: 767px) {
+  .header-inner { gap: var(--space-3); padding: 0 var(--space-4); }
   .nav-secondary { display: none; }
-  .logo-text { font-size: 15px; }
-  .logo-img { width: 30px; height: 30px; }
+  .logo-text { font-size: var(--fs-15); }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .logo-text { display: none; }
-  .btn-sm { padding: 7px 12px; }
+  .btn-sm { padding: 0 var(--space-3); }
 }
 </style>

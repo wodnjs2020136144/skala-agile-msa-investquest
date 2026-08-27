@@ -6,10 +6,10 @@
       <h1 class="page-title">게임 안내</h1>
       <p class="page-sub">시작하기 전에 진행 방식을 확인해 주세요.</p>
 
-      <ul class="fact-grid">
+      <ul class="fact-grid card">
         <li v-for="f in facts" :key="f.label" class="fact">
           <span class="fact-label">{{ f.label }}</span>
-          <strong class="fact-value">{{ f.value }}</strong>
+          <strong class="fact-value num" :class="{ 'num-lg': f.label === '가상 투자금' }">{{ f.value }}</strong>
         </li>
       </ul>
 
@@ -24,8 +24,10 @@
 
       <p v-if="game.error" class="error-msg" role="alert">{{ game.error }}</p>
 
-      <div class="actions">
-        <router-link to="/" class="btn btn-outline">홈으로</router-link>
+      <BottomCta>
+        <template #secondary>
+          <router-link to="/" class="btn btn-ghost">홈으로</router-link>
+        </template>
         <button
           type="button"
           class="btn btn-primary"
@@ -34,7 +36,7 @@
         >
           {{ game.loading ? '준비 중...' : '동의하고 게임 시작' }}
         </button>
-      </div>
+      </BottomCta>
     </div>
   </div>
 </template>
@@ -44,6 +46,7 @@ import { useRouter } from 'vue-router'
 import { useGameStore } from '@/store/game.js'
 import GameProgress from '@/components/game/GameProgress.vue'
 import NoticeCard from '@/components/game/NoticeCard.vue'
+import BottomCta from '@/components/ui/BottomCta.vue'
 
 const router = useRouter()
 const game = useGameStore()
@@ -84,42 +87,72 @@ async function start() {
 <style scoped>
 @import './game-page.css';
 
+/* 핵심 숫자 4개 — 흰 카드 한 장 안의 2×2 */
 .fact-grid {
   list-style: none;
-  margin: 0 0 32px;
-  padding: 0;
+  margin: 0 0 var(--space-7);
+  padding: var(--space-2) var(--space-5);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr 1fr;
 }
-
 .fact {
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  display: grid;
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) 0;
 }
-
-.fact-label { font-size: 0.8rem; color: var(--color-text-secondary); }
+.fact:nth-child(odd) { padding-right: var(--space-4); }
+.fact:nth-child(n + 3) { border-top: 1px solid var(--line); }
+.fact-label {
+  font-size: var(--fs-13);
+  color: var(--text-weak);
+  font-weight: var(--fw-medium);
+}
 .fact-value {
-  font-size: 1.05rem;
-  color: var(--color-text-primary);
-  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-17);
 }
 
-.how { margin-bottom: 28px; }
-
+/* 진행 방식 — 마크업은 <ol> 그대로, 번호 원은 CSS counter */
+.how { margin-bottom: var(--space-7); }
 .how-list {
+  list-style: none;
   margin: 0;
-  padding-left: 20px;
-  display: grid;
-  gap: 10px;
+  padding: 0;
+  counter-reset: how;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.how-list li {
+  counter-increment: how;
+  position: relative;
+  padding-left: 36px;
+  font-size: var(--fs-15);
+  line-height: var(--lh-loose);
+  color: var(--text);
+  min-height: 24px;
+}
+.how-list li::before {
+  content: counter(how);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--brand-weak);
+  color: var(--brand);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-bold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.how-list li {
-  color: var(--color-text-secondary);
-  line-height: 1.7;
+@media (min-width: 768px) {
+  .fact-grid { grid-template-columns: repeat(4, 1fr); padding: var(--space-3) var(--space-6); }
+  .fact:nth-child(n + 3) { border-top: none; }
+  .fact + .fact { padding-left: var(--space-5); border-left: 1px solid var(--line); }
+  .fact:nth-child(odd) { padding-right: 0; }
 }
 </style>
