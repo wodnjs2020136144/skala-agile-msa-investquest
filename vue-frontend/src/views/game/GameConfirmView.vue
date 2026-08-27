@@ -128,8 +128,12 @@
           ]"
         />
 
-        <div class="actions center-actions">
-          <router-link to="/" class="btn btn-primary">홈으로</router-link>
+        <div class="actions">
+          <router-link to="/" class="btn btn-outline">홈으로</router-link>
+          <router-link to="/game/result" class="btn btn-primary">
+            결과 확인하러 가기
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          </router-link>
         </div>
       </template>
     </div>
@@ -390,7 +394,6 @@ const rows = computed(() => {
 
 .legal { margin-top: 12px; }
 
-.center-actions { justify-content: center; }
 
 .empty {
   padding: 60px 0;
