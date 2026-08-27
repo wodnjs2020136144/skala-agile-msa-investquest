@@ -95,21 +95,30 @@ document.querySelector('#app').__vue_app__
 {
   type: 'INVESTMENT_SUBMITTED', at: '...',
   totalAmount: 5000, cashBalance: 5000,
-  cashWeight: 50, maxConcentration: 25, highRiskWeight: 25,
-  sectorWeights: { IT: 25, 금융: 25 },
-  stockCount: 2, changeCount: 3, decisionSeconds: 27
+  cashWeight: 50, concentrationRatio: 50, highRiskRatio: 50,
+  sectorWeights: { IT: 50, 금융: 50 },
+  stockCount: 2, changeCount: 3, decisionSeconds: 18
 }
 ```
 
-| 지표 | 초안 §7의 해석 |
-|---|---|
-| `cashWeight` | 현금 비중 — 안정성 선호 |
-| `maxConcentration` | 한 종목 최대 비중 — 집중 vs 분산 |
-| `highRiskWeight` | 고변동성 종목 비중 — 위험 감수 |
-| `sectorWeights` | 업종별 비중 — 관심 산업·테마 |
-| `stockCount` | 선택 종목 수 — 분산 수준 |
-| `changeCount` | 선택을 바꾼 횟수 — 신중함 / 판단 변동성 |
-| `decisionSeconds` | 시나리오를 본 뒤 확정까지 걸린 시간 — 즉흥형 vs 숙고형 |
+| 지표 | 분모 | 초안 §7의 해석 |
+|---|---|---|
+| `cashWeight` | 초기자금 | 현금 비중 — 안정성 선호 |
+| `concentrationRatio` | **투자금** | 한 종목 최대 비중 — 집중 vs 분산 |
+| `highRiskRatio` | **투자금** | 고변동성 종목 비중 — 위험 감수 |
+| `sectorWeights` | **투자금** | 업종별 비중 — 관심 산업·테마 |
+| `stockCount` | — | 선택 종목 수 — 분산 수준 |
+| `changeCount` | — | 선택을 바꾼 횟수 — 신중함 / 판단 변동성 |
+| `decisionSeconds` | — | 게임 시작부터 확정까지 걸린 시간 — 즉흥형 vs 숙고형 |
+
+> **분모가 두 계열이다.** 배분 화면에 보이는 비중(종목 25% · 현금 50%)은
+> **초기자금 기준**이라 현금을 포함해 합이 100%가 된다.
+> 위 성향 지표 3종은 **투자금 기준**이라 "투자한 5,000원을 어떻게 나눴나"를 본다.
+> 같은 배분에서 종목 하나가 화면에는 25%, 지표에는 50%로 나오는 이유다.
+> 성향 분석 서비스가 투자금 기준으로 계산하므로 거기에 맞췄다.
+
+질문이 나오면: "현금을 얼마나 남겼는지는 `cashWeight`가 따로 답합니다.
+투자금 기준 지표는 그 위에서 '쓴 돈의 성격'만 봅니다."
 
 > "Sprint2의 AI 분석 **입력**은 이미 준비돼 있습니다.
 > 어떤 방식으로 분석할지(규칙 기반이냐 LLM이냐)는 아직 정하지 않았지만,
