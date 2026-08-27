@@ -27,10 +27,56 @@
           <div v-if="!showRegister" class="section">
             <h3 class="section-title">로그인</h3>
             <p class="section-desc">InvestQuest 계정으로 로그인합니다.</p>
-            <button class="btn btn-primary btn-full" @click="handleOAuth">로그인</button>
+
+            <!--
+              목 모드에서는 자격증명이 의미가 없다. 입력칸을 두면 검증하는 척이 되므로
+              버튼 하나만 둔다. 실 모드는 아래 폼을 쓴다.
+            -->
+            <button v-if="MOCK.auth" class="btn btn-primary btn-full" @click="handleMockLogin">
+              로그인
+            </button>
+
+            <!--
+              auth-server 는 소스가 없어 기본 로그인 페이지를 고칠 수 없다.
+              그래서 여기서 자격증명을 받아 Spring Security 의 폼 로그인으로 보낸다
+              (store/auth.js 의 loginWithPassword). 회원가입 폼과 같은 클래스를 써서
+              두 화면의 서체·간격·포커스 링이 어긋나지 않게 한다.
+            -->
+            <form v-else @submit.prevent="handleLogin" class="form">
+              <div class="form-group">
+                <label class="form-label" for="login-email">이메일</label>
+                <input
+                  id="login-email"
+                  v-model="loginForm.email"
+                  type="email"
+                  class="form-input"
+                  placeholder="user@example.com"
+                  autocomplete="username"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="login-password">비밀번호</label>
+                <input
+                  id="login-password"
+                  v-model="loginForm.password"
+                  type="password"
+                  class="form-input"
+                  placeholder="비밀번호"
+                  autocomplete="current-password"
+                  required
+                />
+              </div>
+              <div v-if="error" class="error-msg">{{ error }}</div>
+              <button type="submit" class="btn btn-primary btn-full" :disabled="loading">
+                <span v-if="loading">로그인 중...</span>
+                <span v-else>로그인</span>
+              </button>
+            </form>
+
             <div class="switch-link">
               계정이 없으신가요?
-              <button class="text-btn" @click="showRegister = true">회원가입</button>
+              <button class="text-btn" @click="switchTo(true)">회원가입</button>
             </div>
           </div>
 
@@ -66,7 +112,7 @@
             </form>
             <div class="switch-link">
               이미 계정이 있으신가요?
-              <button class="text-btn" @click="showRegister = false">로그인</button>
+              <button class="text-btn" @click="switchTo(false)">로그인</button>
             </div>
           </div>
 
@@ -81,6 +127,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth.js'
 import { authApi } from '@/api/auth.js'
+import { MOCK } from '@/config.js'
 
 const auth = useAuthStore()
 
@@ -89,16 +136,43 @@ const loading = ref(false)
 const error = ref('')
 const success = ref('')
 
+const loginForm = ref({ email: '', password: '' })
 const registerForm = ref({ name: '', email: '', password: '', role: 'STUDENT' })
 
 const features = ['가상 자금으로 하는 모의 투자', '행동 기반 투자 성향 분석', '참여 리워드 지급']
 
 const route = useRoute()
 
-function handleOAuth() {
-  // 라우터 가드가 넘겨 준 원래 목적지로 돌려보낸다.
-  // 게임 URL 을 직접 열었다가 로그인으로 튕긴 경우가 여기에 해당한다.
-  auth.redirectToLogin(route.query.redirect || '/')
+/**
+ * 로그인 후 돌아갈 곳.
+ * 라우터 가드가 넘겨 준 원래 목적지다 — 게임 URL 을 직접 열었다가
+ * 로그인으로 튕긴 경우가 여기에 해당한다.
+ */
+const backTo = () => route.query.redirect || '/'
+
+/** 로그인 ↔ 회원가입 전환. 남아 있던 오류·안내 문구를 지운다 */
+function switchTo(register) {
+  showRegister.value = register
+  error.value = ''
+  success.value = ''
+}
+
+/** 목 모드 — 자격증명 없이 가짜 사용자로 들어간다 */
+function handleMockLogin() {
+  auth.redirectToLogin(backTo())
+}
+
+async function handleLogin() {
+  error.value = ''
+  loading.value = true
+  try {
+    // 성공하면 OAuth 리다이렉트가 걸려 이 페이지를 떠난다.
+    // 그래서 finally 의 loading=false 는 실패했을 때만 의미가 있다.
+    await auth.loginWithPassword(loginForm.value.email, loginForm.value.password, backTo())
+  } catch (e) {
+    error.value = e.message || '로그인에 실패했습니다.'
+    loading.value = false
+  }
 }
 
 async function handleRegister() {
@@ -202,6 +276,23 @@ async function handleRegister() {
   outline: none;
 }
 .form-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
+/*
+  크롬 자동완성이 파란 배경과 검은 글자를 강제로 덮어씌운다. 다크 모드에서는 글자가
+  배경에 묻히고, 라이트 모드에서도 다른 입력칸과 색이 달라진다.
+  background-color 는 !important 로도 못 이기므로 inset 그림자로 칠하고
+  글자색은 -webkit-text-fill-color 로 되돌린다.
+*/
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 100px var(--color-bg-tertiary) inset;
+  -webkit-text-fill-color: var(--color-text-primary);
+  caret-color: var(--color-text-primary);
+  transition: background-color 9999s ease-in-out 0s;
+}
+.form-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 100px var(--color-bg-tertiary) inset, 0 0 0 3px var(--color-primary-light);
+}
 .btn-full { width: 100%; padding: 12px; font-size: 15px; justify-content: center; margin-top: 4px; }
 
 .switch-link {

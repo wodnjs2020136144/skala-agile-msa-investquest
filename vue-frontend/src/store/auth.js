@@ -120,6 +120,20 @@ export const useAuthStore = defineStore('auth', () => {
     window.location.href = `${AUTH_SERVER_URL}/oauth2/authorize?${params.toString()}`
   }
 
+  /**
+   * 앱 안의 폼으로 로그인한다.
+   *
+   * auth-server 의 기본 로그인 페이지를 거치지 않으려고 자격증명을 직접 보내
+   * 세션을 만든 뒤, 곧바로 평소의 OAuth 리다이렉트를 태운다. 세션이 있으므로
+   * /oauth2/authorize 가 폼 없이 인가 코드를 내주고 /callback 으로 돌아온다.
+   *
+   * @throws {Error} 자격증명이 틀렸을 때 — 화면이 받아서 표시한다
+   */
+  async function loginWithPassword(username, password, redirectTo = '/') {
+    await authApi.login(username, password)
+    redirectToLogin(redirectTo)
+  }
+
   async function handleCallback(code) {
     const res = await authApi.exchangeCode(code)
 
@@ -143,6 +157,7 @@ export const useAuthStore = defineStore('auth', () => {
     fetchUser,
     logout,
     redirectToLogin,
+    loginWithPassword,
     handleCallback
   }
 })
