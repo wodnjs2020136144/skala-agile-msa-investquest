@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authApi } from '@/api/auth.js'
+import { USE_MOCK } from '@/config.js'
 
 const AUTH_SERVER_URL = import.meta.env.VITE_AUTH_SERVER_URL || 'http://localhost:8080'
 
@@ -14,8 +15,9 @@ const AUTH_SERVER_URL = import.meta.env.VITE_AUTH_SERVER_URL || 'http://localhos
  *
  * ⚠️ 아래 OAuth2 코드는 한 줄도 지우지 않았다. VITE_USE_MOCK=false 로 두면
  *    기존 Authorization Code Flow 가 그대로 동작한다.
+ *
+ * 스위치 자체는 @/config.js 가 들고 있다.
  */
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
 const MOCK_USER = {
   id: 1,
