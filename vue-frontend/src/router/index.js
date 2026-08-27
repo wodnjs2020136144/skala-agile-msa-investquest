@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/auth.js'
 import { USE_MOCK } from '@/config.js'
 
@@ -106,7 +106,9 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  // GitHub Pages는 SPA의 서버 측 경로 재작성 기능이 없다.
+  // 배포본만 hash URL을 써서 /game/invest 등을 새로고침해도 홈으로 404가 나지 않게 한다.
+  history: import.meta.env.PROD ? createWebHashHistory() : createWebHistory(),
   routes,
   scrollBehavior() {
     return { top: 0 }
