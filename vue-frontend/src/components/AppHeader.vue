@@ -7,19 +7,36 @@
         <span class="logo-text">InvestQuest</span>
       </router-link>
 
-      <!-- 네비게이션 -->
+      <!--
+        네비게이션.
+
+        강의·내 학습·마이페이지는 강사 템플릿 화면이고 목 분기가 없다
+        (목은 게임 API 에만 있다). 목 모드에서 누르면 vite 프록시가
+        localhost:8080 으로 나갔다가 연결 실패해 에러 화면이 뜬다.
+        그래서 목 모드에서는 링크를 내린다. 라우트와 뷰 파일은 그대로 두므로
+        VITE_USE_MOCK=false 면 지금까지와 똑같이 보인다.
+      -->
       <nav class="nav-links" v-if="auth.isAuthenticated">
         <router-link to="/game/guide" class="nav-link" :class="{ active: $route.path.startsWith('/game') }">투자 게임</router-link>
-        <router-link to="/courses" class="nav-link nav-secondary" :class="{ active: $route.path.startsWith('/courses') }">강의</router-link>
-        <router-link to="/enrollments" class="nav-link nav-secondary" :class="{ active: $route.path === '/enrollments' }">내 학습</router-link>
+        <template v-if="!USE_MOCK">
+          <router-link to="/courses" class="nav-link nav-secondary" :class="{ active: $route.path.startsWith('/courses') }">강의</router-link>
+          <router-link to="/enrollments" class="nav-link nav-secondary" :class="{ active: $route.path === '/enrollments' }">내 학습</router-link>
+        </template>
       </nav>
 
       <!-- 우측 액션 -->
       <div class="header-actions">
         <template v-if="auth.isAuthenticated">
-          <router-link to="/mypage" class="user-avatar" :title="auth.user?.name">
+          <!--
+            로그인 사용자 표시는 Sprint1 완료 조건이라 목 모드에서도 남긴다.
+            마이페이지로 나가는 링크만 뗀다.
+          -->
+          <router-link v-if="!USE_MOCK" to="/mypage" class="user-avatar" :title="auth.user?.name">
             {{ auth.user?.name?.charAt(0) || '?' }}
           </router-link>
+          <span v-else class="user-avatar is-static" :title="auth.user?.name">
+            {{ auth.user?.name?.charAt(0) || '?' }}
+          </span>
           <button class="btn btn-ghost btn-sm" @click="handleLogout">로그아웃</button>
         </template>
         <template v-else>
@@ -34,6 +51,7 @@
 <script setup>
 import { useAuthStore } from '@/store/auth.js'
 import { useRouter } from 'vue-router'
+import { USE_MOCK } from '@/config.js'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -126,6 +144,14 @@ function handleLogout() {
 .user-avatar:hover {
   background: var(--color-primary);
   color: var(--color-on-primary);
+}
+/* 목 모드의 아바타는 클릭할 곳이 없다. 눌릴 것처럼 보이지 않게 한다. */
+.user-avatar.is-static {
+  cursor: default;
+}
+.user-avatar.is-static:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 /*
