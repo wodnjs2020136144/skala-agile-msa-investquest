@@ -4,6 +4,7 @@ import { gameApi } from '@/api/game.js'
 import { recommendApi } from '@/api/recommend.js'
 import { resultApi } from '@/api/result.js'
 import { GAME_RULES } from '@/mock/scenario.js'
+import { MOCK } from '@/config.js'
 
 /**
  * 게임 세션 스토어.
@@ -273,7 +274,7 @@ export const useGameStore = defineStore('game', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await gameApi.getOfferedStocks(participation.value?.participationId)
+      const res = await gameApi.getOfferedStocks()
       stocks.value = res?.data?.data ?? res?.data ?? []
       return stocks.value
     } catch (e) {
@@ -377,6 +378,16 @@ export const useGameStore = defineStore('game', () => {
    */
   async function loadGameResult({ reveal = false, outcome = 'actual' } = {}) {
     if (!result.value) return null
+
+    /*
+     * 실 모드에서 결과 조회는 조회가 아니라 **지급**이다.
+     * course-service 의 getResult 가 매번 payment 에 리워드를 발급해
+     * 부를 때마다 payments 행이 생기고 users.money 가 늘어난다.
+     * 화면 재진입·새로고침으로 중복 지급되지 않게 세션당 1회만 나간다.
+     *
+     * 목 모드는 발표 데모용 reveal·outcome 토글이 매번 다시 계산돼야 하므로 제외한다.
+     */
+    if (MOCK.result === false && gameResult.value) return gameResult.value
 
     loadingResult.value = true
     resultError.value = null

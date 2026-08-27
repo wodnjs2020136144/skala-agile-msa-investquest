@@ -1,14 +1,14 @@
 import api from './index.js'
-import { USE_MOCK } from '@/config.js'
+import { MOCK } from '@/config.js'
 import { wrap } from '@/mock/index.js'
 import { createMockInvestmentProfile } from '@/mock/investmentProfile.js'
 
-// 이 파일만 env 를 직접 읽고 있었다. config.js 가 단일 진실원이고,
-// 런타임 오버라이드(시연용 토글)도 거기에만 반영되므로 맞춰 둔다.
+// 게임 API 중 유일하게 백엔드와 계약이 처음부터 맞았던 곳이다.
+// 요청·응답 DTO 가 mock/investmentProfile.js 와 1:1이라 플래그만 바꾸면 붙는다.
 
 export const recommendApi = {
   analyzeInvestment(payload) {
-    if (USE_MOCK) {
+    if (MOCK.profile) {
       return wrap(createMockInvestmentProfile(payload), '투자 성향 분석 성공')
     }
     return api.post('/api/recommend/analyze', payload)

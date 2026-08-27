@@ -196,3 +196,123 @@ course-service 가 `86e922d` 로 카테고리를 String 으로 바꿨는데
 - `/game/result` · `/game/reward` 화면 (목 모드로 전 구간 동작)
 - 목 응답 필드명을 `PaymentDto.RewardResponse` 와 1:1로 맞춤
 - 리워드 정책 숫자는 `mock/scenario.js` 의 `REWARD_POLICY` 한 곳에서만 온다
+
+---
+
+# 갱신 — `6dcd760` 기준 (2026-08-27)
+
+프런트를 실 API 에 부분 연동하면서 컨트롤러·DTO 를 전부 다시 읽었다.
+**위의 1·2·4번은 해결됐다.** 대신 새로 확인된 것이 있다.
+
+## ✅ 해결된 것
+
+`6dcd760` "feat: return investment results through enrollment flow" 가 세 가지를 한 번에 고쳤다.
+
+| 위 항목 | 지금 |
+|---|---|
+| §2 수익 판정이 `quantity` 무시 | `Σ(tempPrice−price)×quantity`. **수량 가중 적용됨** |
+| §4 결과 응답에 숫자가 없다 | `ResultResponse{result, returnRate, profitAmount, investedTotal, evaluatedTotal}` 반환. `returnRate` 분모가 `investedTotal`(현금 제외)이라 **프런트 계산과 같다** |
+| §1 `course → payment` 리워드 400 | `"SUCCESS"/"FAILURE"` 로 맞춰짐. 리워드가 실제로 생성되고 Kafka `reward.granted` → `users.money` 에 적립된다 |
+
+`GET /api/users/me` 응답에 `money` 가 추가돼 적립 결과를 프런트가 관측할 수 있게 됐다.
+
+## 🔴 지금 막힌 것
+
+### N-1. `EnrollmentController` 가 게이트웨이 밖이다 — **1줄**
+
+```java
+@RequestMapping("/enrollments")      // 지금
+@RequestMapping("/api/enrollments")  // 되돌려야 한다
+```
+
+PR #12(`c870619`)가 `/api/enrollments` → `/enrollments` 로 바꿨다. 게이트웨이는
+`/api/enrollments` 만 라우팅하므로 **세 엔드포인트 전부 404** 다. 투자 확정이 실 API 로 못 간다.
+프런트는 이것 하나만 풀리면 붙는다 (payload 어댑터는 프런트가 맡는다 —
+백엔드 `EnrollRequest{items:[{courseId, quantity}]}` 를 그대로 쓴다).
+
+### N-2. main 의 CI `build` 가 깨져 있다 — 코드 문제가 아니다
+
+```
+gradle (user-service)    Process completed with exit code 126
+gradle (payment-service) Process completed with exit code 126
+```
+
+126 = 실행 권한 없음. PR #11 에서 `user-service/gradlew` · `payment-service/gradlew` 의
+실행 비트가 날아갔다. 복구:
+
+```bash
+git update-index --chmod=+x user-service/gradlew payment-service/gradlew
+```
+
+### N-3. `POST /api/courses/internal/result` 가 조회가 아니라 **지급**이다
+
+`CourseService.getResult()` 가 매번 `paymentClient.sendResult()` 를 부른다.
+**부를 때마다 `payments` 행이 생기고 `users.money` 가 늘어난다.**
+화면 새로고침·재진입만으로 리워드가 중복 지급된다.
+
+프런트는 임시로 세션당 1회 가드를 걸었지만(`store/game.js`), 근본적으로는
+**참여당 멱등 처리**나 **조회/지급 분리**가 필요하다.
+
+또한 `PaymentRewardRequest(userId, 1L, result)` 의 `courseId` 가 여전히 하드코딩(`1L`)이다.
+
+## 🟡 남은 요청
+
+### N-4. 리워드 **조회** 엔드포인트가 없다
+
+payment 에는 생성(`POST /api/payments/internal/result`)뿐이다.
+`ResultResponse` 에 `paymentId` 를 실어 주거나 `GET /api/payments/internal/rewards/{paymentId}` 가 필요하다.
+
+지금 프런트는 우회 중이다 — 지급액은 정책 상수로 계산하고(백엔드 `PaymentService` 의
+10,000 / 5,000 과 같은 값), 잔액은 `GET /api/users/me` 의 `money` 를 재조회해서 보여 준다.
+Kafka 가 비동기라 즉시 반영되지 않아 1초 간격으로 짧게 폴링한다.
+
+### N-5. `ResultResponse` 에 종목별 내역이 없다
+
+합계만 온다. `CourseResponse` 에 `tempPrice` 도 없어 **프런트가 계산할 방법도 없다.**
+결과 화면의 "종목별 결과" 표를 띄울 수 없어 지금은 안내 문구로 대체했다.
+
+필요한 형태 (§4 의 `orders[]` 와 동일):
+
+```json
+"orders": [{ "courseId": 1, "quantity": 10, "buyPrice": 76500, "resultPrice": 82400,
+             "investedAmount": 765000, "evaluatedAmount": 824000,
+             "profitAmount": 59000, "returnRate": 7.71 }]
+```
+
+### N-6. 종목 코드 분리 (위 §5 그대로)
+
+프런트는 `/^(.*?)\s*\((\d{6})\)\s*$/` 로 떼어 쓰고 있다(`api/game.js` 의 `splitTitle`).
+6자리 숫자 괄호만 코드로 보므로 당장은 안전하지만, `code` 컬럼 분리가 정석이다.
+
+### N-7. Pages 배포 워크플로우가 둘로 갈라져 있다
+
+리포 설정은 **`gh-pages` 브랜치 방식**(`build_type: legacy`)인데,
+`feat/hwangjaewon-github-pages` 의 `.github/workflows/deploy-pages.yml` 은
+`actions/deploy-pages@v4`(Actions 방식)이라 **현재 설정으로는 동작하지 않는다.**
+`feat/parksungwoo-stock-options` 에도 **같은 경로**로 peaceiris→gh-pages 방식이 따로 있다.
+둘 다 머지되면 파일이 충돌한다. 한 방식으로 합쳐야 한다.
+
+### N-8. `6dcd760` 이 PR 없이 main 에 직접 push 됐다
+
+팀 DoD(브랜치 → PR → 리뷰 1명 → squash merge) 위반이다. 리뷰 없이 들어가서
+N-3 같은 부작용이 걸러지지 않았다.
+
+---
+
+## 프런트가 지금 어디까지 붙었나
+
+`VITE_USE_MOCK` 하나로는 "절반만 붙은" 상태를 표현할 수 없어 **영역별 스위치**로 쪼갰다
+(`vue-frontend/src/config.js` 의 `MOCK` 맵). 백엔드에 없는 영역은 막힌 이유를 주석으로
+달아 `true` 로 고정해 두었으니, 경로가 생기면 그 줄만 `USE_MOCK` 으로 바꾸면 된다.
+
+| 영역 | 경로 | 상태 |
+|---|---|---|
+| 로그인 | `POST /oauth2/token` | ✅ 실 API |
+| 사용자 | `GET /api/users/me` | ✅ 실 API |
+| 종목 목록 | `GET /api/courses` | ✅ 실 API (시드 6종) |
+| 성향 분석 | `POST /api/recommend/analyze` | ✅ 실 API |
+| 결과 | `POST /api/courses/internal/result` | ✅ 실 API (합계만, 종목별은 N-5) |
+| 리워드 | — | ⚠ `users.me.money` 로 우회 (N-4) |
+| 게임 세션 | `POST /api/enrollments/games` | ❌ 목 — 엔드포인트 없음 |
+| 시나리오 | `GET /api/courses/scenarios/{id}` | ❌ 목 — 엔드포인트 없음 |
+| 투자 확정 | `POST /api/enrollments` | ❌ 목 — **N-1** |
