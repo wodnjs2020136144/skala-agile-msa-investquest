@@ -120,7 +120,7 @@ async function handleRegister() {
 </script>
 
 <style scoped>
-/* 스플릿 화면 대신 흰 바닥 위 단일 컬럼 — 토스 로그인 문법 */
+/* 스플릿 화면 대신 흰 바닥 위 단일 컬럼 — 토스 앱의 인증 화면은 카드 없이 흰 바탕에 폼만 둔다 */
 .login-page {
   min-height: 100dvh;
   background: var(--surface);
@@ -251,9 +251,11 @@ async function handleRegister() {
   font-size: 16px; /* iOS 자동 줌 방지 */
   transition: box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
-.form-input::placeholder { color: var(--text-disabled); }
+.form-input::placeholder { color: var(--text-weak); }
 /* 브라우저 자동완성의 연파랑 배경을 토큰 면으로 덮는다 */
-.form-input:-webkit-autofill {
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus {
   -webkit-box-shadow: inset 0 0 0 1000px var(--fill-weak);
   -webkit-text-fill-color: var(--text-strong);
   caret-color: var(--text-strong);

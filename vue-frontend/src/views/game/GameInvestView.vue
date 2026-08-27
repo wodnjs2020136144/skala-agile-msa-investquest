@@ -13,7 +13,7 @@
         잔여 현금이 이 화면의 유일한 큰 숫자다.
         (isOverBudget 은 스토어가 클램프해서 실제로는 도달하지 않는다. 스타일만 남긴다.)
       -->
-      <div class="summary card" :class="{ over: game.isOverBudget }">
+      <div class="summary card" :class="{ over: game.isOverBudget, stuck }">
         <div class="sum-row">
           <span class="sum-label">보유 투자금</span>
           <strong class="sum-value num">{{ format(game.initialCash) }}원</strong>
@@ -24,7 +24,7 @@
         </div>
         <div class="cash-meter">
           <div class="track">
-            <div class="track-fill" :style="{ width: game.cashWeight + '%' }"></div>
+            <div class="track-fill" :style="{ transform: 'scaleX(' + game.cashWeight / 100 + ')' }"></div>
           </div>
           <span class="cm-label">현금 보유 비중 <span class="cm-weight num">{{ game.cashWeight.toFixed(0) }}%</span></span>
         </div>
@@ -36,7 +36,7 @@
 
       <div class="toolbar">
         <span class="tb-count">{{ game.selectedCount }}종목 선택됨</span>
-        <button type="button" class="chip" @click="game.allocateAllToCash()">
+        <button type="button" class="chip chip-on-ground" @click="game.allocateAllToCash()">
           전부 현금으로
         </button>
       </div>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '@/store/game.js'
 import GameProgress from '@/components/game/GameProgress.vue'
@@ -127,9 +127,17 @@ async function confirm() {
   }
 }
 
+/* 화면 표시용 — 요약 카드가 붙은 뒤에는 모바일에서 한 줄로 접는다 (스토어와 무관) */
+const stuck = ref(false)
+function onScroll() {
+  stuck.value = window.scrollY > 160
+}
+
 onMounted(() => {
   if (!game.stocks.length) load()
+  window.addEventListener('scroll', onScroll, { passive: true })
 })
+onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 </script>
 
 <style scoped>
@@ -177,6 +185,13 @@ onMounted(() => {
 .sum-row .sum-label { font-size: var(--fs-12); }
 .sum-row .sum-value { font-size: var(--fs-14); font-weight: var(--fw-semibold); }
 .sum-hero .sum-value { font-size: var(--fs-24); }
+/* 붙은 상태(모바일) — 보유·합계 행을 접고 큰 숫자를 줄여 리스트를 가리지 않는다 */
+@media (max-width: 767px) {
+  .summary.stuck { padding-top: var(--space-3); padding-bottom: var(--space-3); row-gap: var(--space-2); }
+  .summary.stuck .sum-row { display: none; }
+  .summary.stuck .sum-hero { flex-direction: row; align-items: baseline; justify-content: space-between; }
+  .summary.stuck .sum-hero .sum-value { font-size: var(--fs-20); }
+}
 .summary.over { background: var(--negative-weak); }
 .summary.over .sum-hero .sum-value { color: var(--negative); }
 
@@ -230,7 +245,8 @@ onMounted(() => {
   margin: var(--space-4) 0 0;
   padding: var(--space-3) var(--space-4);
   border-radius: var(--r-12);
-  background: var(--fill-weak);
+  background: var(--surface);
+  box-shadow: var(--elev-card);
   font-size: var(--fs-14);
   color: var(--text);
   text-align: center;

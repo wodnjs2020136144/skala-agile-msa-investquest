@@ -37,9 +37,9 @@
 
         <section class="profile-card card" aria-live="polite">
           <div class="profile-head">
-            <div>
-              <span class="profile-kicker">행동 기반 AI 분석</span>
+            <div class="profile-title">
               <h2 class="sec-title">나의 투자 성향 미리보기</h2>
+              <span class="profile-kicker">행동 기반 AI 분석</span>
             </div>
             <span v-if="game.profile" class="score"><span class="num num-xl">{{ game.profile.riskScore }}</span><span class="score-unit">점</span></span>
           </div>
@@ -226,14 +226,14 @@ const rows = computed(() => {
 .rc-amount { grid-area: amount; font-size: var(--fs-15); font-weight: var(--fw-semibold); text-align: right; }
 .rc-qty { grid-area: qty; font-size: var(--fs-13); color: var(--text-weak); }
 .rc-weight { grid-area: weight; font-size: var(--fs-13); font-weight: var(--fw-medium); color: var(--text-weak); text-align: right; }
+/* 합계 — 상자가 아니라 굵은 선 위의 행 */
 .rc-total {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0 var(--space-3) var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--r-12);
-  background: var(--fill-weak);
+  margin: 0 var(--space-5);
+  padding: var(--space-4) 0;
+  border-top: 1.5px solid var(--line-strong);
   font-size: var(--fs-15);
   color: var(--text);
 }
@@ -251,17 +251,22 @@ const rows = computed(() => {
   margin-bottom: var(--space-4);
 }
 .profile-head .sec-title { margin-bottom: 0; }
+.profile-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
 .profile-kicker {
   display: inline-flex;
   align-items: center;
-  height: 24px;
+  height: 22px;
   padding: 0 var(--space-2);
   border-radius: var(--r-8);
   background: var(--brand-weak);
   color: var(--brand);
   font-size: var(--fs-12);
   font-weight: var(--fw-bold);
-  margin-bottom: var(--space-2);
 }
 .score {
   display: flex;
@@ -297,22 +302,23 @@ const rows = computed(() => {
   margin: 0 0 var(--space-5);
 }
 
+/* 지표 — 타일이 아니라 라벨·값 행 */
 .metric-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-2);
-  margin: 0 0 var(--space-6);
-}
-.metric-grid > div {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--r-12);
-  background: var(--fill-weak);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  margin: 0 0 var(--space-6);
+  border-top: 1px solid var(--line);
 }
-.metric-grid dt { font-size: var(--fs-12); color: var(--text-weak); font-weight: var(--fw-medium); }
-.metric-grid dd { margin: 0; font-size: var(--fs-20); }
+.metric-grid > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+.metric-grid dt { font-size: var(--fs-14); color: var(--text); }
+.metric-grid dd { margin: 0; font-size: var(--fs-17); }
 
 .profile-subtitle {
   font-size: var(--fs-15);
@@ -349,9 +355,9 @@ const rows = computed(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-4);
-  border-radius: var(--r-12);
-  background: var(--fill-weak);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   margin-bottom: var(--space-6);
 }
 .decision-box strong { font-size: var(--fs-15); color: var(--text-strong); }
@@ -362,24 +368,20 @@ const rows = computed(() => {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
 }
 .content-list li {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--r-12);
-  background: var(--fill-weak);
+  padding: var(--space-3) 0;
 }
+.content-list li + li { border-top: 1px solid var(--line); }
 .content-list strong { font-size: var(--fs-15); font-weight: var(--fw-semibold); color: var(--text-strong); }
 .content-list span { font-size: var(--fs-13); line-height: var(--lh); color: var(--text); }
 
 .legal { margin-top: var(--space-3); }
 
-@media (min-width: 768px) {
-  .metric-grid { grid-template-columns: repeat(4, 1fr); }
-}
+
 @media (prefers-reduced-motion: reduce) {
   .done-mark { animation: none; }
 }

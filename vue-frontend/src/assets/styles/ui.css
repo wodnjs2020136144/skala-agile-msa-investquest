@@ -83,6 +83,9 @@
   transform: none;
 }
 .chip-brand { background: var(--brand-weak); color: var(--brand); }
+/* 회색 바닥 위에 직접 놓이는 칩 — 바닥과 같은 --fill-weak 로는 보이지 않는다 */
+.chip-on-ground { background: var(--surface); box-shadow: var(--elev-card); }
+.chip-on-ground:hover { background: var(--surface); }
 .chip-brand:hover { background: color-mix(in srgb, var(--brand-weak) 80%, var(--brand)); }
 
 /* 진행 트랙 */
@@ -93,10 +96,14 @@
   background: var(--fill);
   overflow: hidden;
 }
+/* 채움은 width 100% 고정, 길이는 scaleX 로 — 레이아웃을 건드리지 않고 움직인다 */
 .track-fill {
+  width: 100%;
   height: 100%;
   border-radius: inherit;
   background: var(--brand);
+  transform-origin: left center;
+  transition: transform .35s var(--ease);
 }
 
 /* 텍스트 버튼 */

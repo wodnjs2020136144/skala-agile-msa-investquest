@@ -35,8 +35,8 @@
       <section class="hero">
         <div class="hero-inner">
           <div class="hero-content fade-in-up">
-            <span class="hero-badge">증권사 신규 고객 온보딩</span>
             <h1 class="hero-title">게임으로 알아보는<br />나의 투자 성향</h1>
+            <span class="hero-badge">증권사 신규 고객 온보딩</span>
             <p class="hero-desc">
               가상 투자 게임에 참여하고 3일 뒤 결과와 최대 1만원의 리워드를 확인하세요.
             </p>
@@ -60,7 +60,7 @@
                 <div v-for="row in previewRows" :key="row.name" class="mp-row">
                   <span class="mp-name">{{ row.name }}</span>
                   <div class="track">
-                    <div class="track-fill" :style="{ width: row.weight + '%' }"></div>
+                    <div class="track-fill" :style="{ transform: 'scaleX(' + row.weight / 100 + ')' }"></div>
                   </div>
                   <span class="mp-weight num">{{ row.weight }}%</span>
                 </div>
@@ -195,7 +195,7 @@ const previewRows = [
 
 /* ── 비로그인 홈 ─────────────────────────────────────────── */
 .hero {
-  background: var(--surface);
+  background: var(--bg);
   padding: var(--space-8) var(--space-5) var(--space-9);
 }
 .hero-inner {
@@ -215,7 +215,7 @@ const previewRows = [
   color: var(--brand);
   font-size: var(--fs-13);
   font-weight: var(--fw-bold);
-  margin-bottom: var(--space-4);
+  margin: 0 0 var(--space-4);
 }
 .hero-title {
   font-size: var(--fs-32);
@@ -223,7 +223,7 @@ const previewRows = [
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-title);
   color: var(--text-strong);
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-3);
 }
 .hero-desc {
   font-size: var(--fs-17);
@@ -242,8 +242,7 @@ const previewRows = [
 /* 가짜 포트폴리오 — 이 화면의 주인공 */
 .mock-panel {
   padding: var(--space-6);
-  background: var(--surface-elevated);
-  box-shadow: var(--elev-card), inset 0 0 0 1px var(--line);
+  background: var(--surface);
 }
 .mp-head {
   display: flex;
@@ -293,19 +292,22 @@ const previewRows = [
   color: var(--text-strong);
   margin: 0 0 var(--space-6);
 }
+/* 흰 카드 한 장 안의 번호 행 3개 — 번호는 순서라서 남긴다 */
 .steps-grid {
   list-style: none;
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+  padding: var(--space-2) var(--space-5);
+  background: var(--surface);
+  border-radius: var(--r-20);
+  box-shadow: var(--elev-card);
 }
 .step-card {
   display: flex;
   align-items: flex-start;
   gap: var(--space-4);
+  padding: var(--space-4) 0;
 }
+.step-card + .step-card { border-top: 1px solid var(--line); }
 .step-num {
   flex-shrink: 0;
   width: 32px;
@@ -344,16 +346,7 @@ const previewRows = [
   .hero-actions .btn-lg { height: 56px; padding: 0 var(--space-7); font-size: var(--fs-17); font-weight: var(--fw-bold); border-radius: var(--r-16); }
   .hero-visual { max-width: 440px; justify-self: end; width: 100%; }
   .steps-section { padding: var(--space-10) var(--space-6); }
-  .steps-grid { flex-direction: row; gap: var(--space-4); }
-  .step-card {
-    flex: 1;
-    flex-direction: column;
-    gap: var(--space-4);
-    padding: var(--space-6);
-    background: var(--surface);
-    border-radius: var(--r-20);
-    box-shadow: var(--elev-card);
-  }
-  .step-title { margin-top: 0; }
+  .steps-grid { padding: var(--space-3) var(--space-7); }
+  .step-card { padding: var(--space-5) 0; }
 }
 </style>

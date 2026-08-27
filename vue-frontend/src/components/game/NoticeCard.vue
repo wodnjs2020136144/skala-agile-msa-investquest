@@ -35,9 +35,10 @@ defineProps({
 </script>
 
 <style scoped>
-/* 페이지 바닥보다 한 단 낮은 면. 테두리 없음. */
+/* 회색 바닥 위 흰 카드. 테두리 없음. (--fill-weak 는 라이트에서 바닥과 같은 값이라 안 보인다) */
 .notice-card {
-  background: var(--fill-weak);
+  background: var(--surface);
+  box-shadow: var(--elev-card);
   border-radius: var(--r-16);
   padding: var(--space-5);
 }

@@ -65,14 +65,12 @@ function handleLogout() {
 </script>
 
 <style scoped>
-/* 선 없이 반투명 흰 면 + 블러. 바닥(--bg)과의 명도차가 경계다. */
+/* 선 없는 불투명 흰 면. 바닥(--bg)과의 명도차가 경계다. */
 .app-header {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
   background: var(--header-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 .header-inner {
   max-width: var(--content-max-wide);

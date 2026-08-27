@@ -20,7 +20,7 @@
         <span class="ar-qty">{{ quantity }}주</span>
       </div>
       <div class="track" role="presentation">
-        <div class="track-fill" :style="{ width: weight + '%' }"></div>
+        <div class="track-fill" :style="{ transform: 'scaleX(' + weight / 100 + ')' }"></div>
       </div>
     </div>
 

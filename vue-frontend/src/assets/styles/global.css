@@ -23,7 +23,7 @@
   --l-fill-strong: #DDE1E6;
   --l-text-strong: #191F28;
   --l-text: #4E5968;
-  --l-text-weak: #8B95A1;
+  --l-text-weak: #6B7684;   /* 13px 캡션도 4.5:1 을 넘긴다 — #8B95A1 은 3.2:1 이라 뺐다 */
   --l-text-disabled: #B0B8C1;
   --l-line: #E5E8EB;
   --l-line-strong: #D1D6DB;
@@ -112,7 +112,7 @@
   --elev-sticky: 0 2px 12px rgba(0, 0, 0, .06);
   --elev-cta: 0 -2px 12px rgba(0, 0, 0, .05);
   --ring: 0 0 0 3px rgba(49, 130, 246, .32);
-  --header-glass: rgba(255, 255, 255, .88);
+  --header-glass: var(--l-surface);
 
   /* ── Layer 2 · 스케일 ─────────────────────────────────────── */
   --space-1: 4px;
@@ -255,7 +255,7 @@
     --elev-sticky: 0 4px 16px rgba(0, 0, 0, .45);
     --elev-cta: 0 -2px 16px rgba(0, 0, 0, .5);
     --ring: 0 0 0 3px rgba(69, 147, 252, .45);
-    --header-glass: rgba(32, 32, 39, .88);
+    --header-glass: var(--d-surface);
     --color-accent-purple: #B7B0FF;
     --color-accent-purple-light: #242040;
     --color-accent-pink: #F0A0BC;
@@ -302,7 +302,7 @@
   --elev-sticky: 0 4px 16px rgba(0, 0, 0, .45);
   --elev-cta: 0 -2px 16px rgba(0, 0, 0, .5);
   --ring: 0 0 0 3px rgba(69, 147, 252, .45);
-  --header-glass: rgba(32, 32, 39, .88);
+  --header-glass: var(--d-surface);
   --color-accent-purple: #B7B0FF;
   --color-accent-purple-light: #242040;
   --color-accent-pink: #F0A0BC;

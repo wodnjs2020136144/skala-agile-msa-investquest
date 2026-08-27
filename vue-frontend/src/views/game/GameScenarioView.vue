@@ -14,8 +14,8 @@
       </p>
 
       <template v-else-if="s">
-        <span class="scenario-tag">가상 시나리오 {{ String(s.id).padStart(2, '0') }}</span>
         <h1 class="page-title">{{ s.title }}</h1>
+        <span class="scenario-tag">가상 시나리오 {{ String(s.id).padStart(2, '0') }}</span>
 
         <p class="situation">{{ s.description }}</p>
         <p class="guide-text">{{ s.guide }}</p>
@@ -112,7 +112,7 @@ onMounted(() => {
   color: var(--brand);
   font-size: var(--fs-13);
   font-weight: var(--fw-bold);
-  margin-bottom: var(--space-3);
+  margin-top: var(--space-1);
 }
 .situation {
   font-size: var(--fs-17);
