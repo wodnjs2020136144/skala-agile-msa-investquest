@@ -1,0 +1,161 @@
+/*
+ * 전역 유틸 — 토스 문법의 조립 블록.
+ *
+ * game-page.css 는 각 뷰의 <style scoped> 안에서 @import 되므로 scoped 속성이 붙는다.
+ * 여러 화면·컴포넌트가 같이 쓰는 클래스는 반드시 여기(전역)에 둔다.
+ */
+
+/* 카드 — 테두리·그림자 대신 바닥(--bg)과의 명도차로 선다 */
+.card {
+  background: var(--surface);
+  border-radius: var(--r-16);
+  box-shadow: var(--elev-card);
+}
+.card-pad { padding: var(--space-5); }
+.card-lg  { border-radius: var(--r-20); }
+
+/* 리스트 행 — [라벨 · 값] 또는 [제목/부제 · 값] */
+.iq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.iq-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 52px;
+  padding: var(--space-3) 0;
+}
+.iq-row + .iq-row { border-top: 1px solid var(--line); }
+.iq-row-label {
+  font-size: var(--fs-15);
+  color: var(--text);
+}
+.iq-row-value {
+  font-size: var(--fs-15);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
+  text-align: right;
+}
+.iq-row-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-13);
+  color: var(--text-weak);
+}
+
+/* 숫자 — 크기 단계 */
+.num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-num);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
+}
+.num-md { font-size: var(--fs-20); line-height: var(--lh-tight); }
+.num-lg { font-size: var(--fs-24); line-height: var(--lh-tight); letter-spacing: var(--tracking-title); }
+.num-xl { font-size: var(--fs-32); line-height: var(--lh-tight); letter-spacing: var(--tracking-title); }
+
+/* 칩 — pill 형태의 작은 액션 */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 var(--space-4);
+  border-radius: var(--r-full);
+  background: var(--fill-weak);
+  color: var(--text);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.chip:hover { background: var(--fill); }
+.chip:active { transform: scale(.96); }
+.chip:disabled {
+  color: var(--text-disabled);
+  background: var(--fill-weak);
+  cursor: default;
+  transform: none;
+}
+.chip-brand { background: var(--brand-weak); color: var(--brand); }
+.chip-brand:hover { background: color-mix(in srgb, var(--brand-weak) 80%, var(--brand)); }
+
+/* 진행 트랙 */
+.track {
+  position: relative;
+  height: 6px;
+  border-radius: var(--r-full);
+  background: var(--fill);
+  overflow: hidden;
+}
+.track-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand);
+  transition: width .3s var(--ease);
+}
+
+/* 텍스트 버튼 */
+.text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
+  color: var(--brand);
+  font-size: var(--fs-14);
+  font-weight: var(--fw-semibold);
+  background: none;
+}
+.text-btn:hover { color: var(--brand-strong); }
+
+/* 눌림 */
+.press { transition: transform var(--dur) var(--ease); }
+.press:active { transform: scale(.97); }
+
+/* 세로 간격 */
+.stack-2 > * + * { margin-top: var(--space-2); }
+.stack-3 > * + * { margin-top: var(--space-3); }
+.stack-4 > * + * { margin-top: var(--space-4); }
+.stack-6 > * + * { margin-top: var(--space-6); }
+
+/* 스켈레톤 */
+@keyframes iq-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+.iq-skeleton {
+  height: 14px;
+  border-radius: var(--r-8);
+  background: linear-gradient(90deg, var(--fill-weak) 25%, var(--fill) 50%, var(--fill-weak) 75%);
+  background-size: 200% 100%;
+  animation: iq-shimmer 1.4s linear infinite;
+}
+
+/* 로딩 스피너 */
+@keyframes iq-spin { to { transform: rotate(360deg); } }
+.iq-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--fill);
+  border-top-color: var(--brand);
+  animation: iq-spin .8s linear infinite;
+}
+
+/* 스크린리더 전용 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

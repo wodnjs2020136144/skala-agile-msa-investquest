@@ -1,73 +1,318 @@
+/*
+ * 디자인 토큰 — 토스증권 문법.
+ *
+ * 4층 구조.
+ *   Layer 0  팔레트 원시값 (--l-* 라이트 / --d-* 다크). 컴포넌트에서 직접 쓰지 않는다.
+ *   Layer 1  시맨틱 (--bg --surface --text-* --brand ...). 새 코드가 쓰는 유일한 층.
+ *   Layer 2  스케일 (--space-* --fs-* --r-* --z-*).
+ *   Layer 3  옛 이름 alias (--color-* --radius-* --shadow-*). 강사 템플릿 화면이 아직 소비한다.
+ *            전부 var(Layer 1) 참조라 :root 에 한 번만 두면 다크에서도 자동으로 따라온다.
+ *            다크 블록에 복사하지 않는다.
+ *
+ * 다크 블록은 두 개이고 내용이 같다 — 항상 쌍으로 고친다.
+ *   @media (prefers-color-scheme: dark) :root:not([data-theme='light'])   OS 선호
+ *   :root[data-theme='dark']                                              헤더 토글
+ */
 :root {
-  --color-primary: #185FA5;
-  --color-primary-dark: #0C447C;
-  --color-primary-light: #E6F1FB;
-  --color-secondary: #378ADD;
-  --color-text-primary: #1a1a2e;
-  --color-text-secondary: #6b7280;
-  --color-text-muted: #9ca3af;
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8fafc;
-  --color-bg-tertiary: #f1f5f9;
-  --color-border: #e2e8f0;
-  --color-border-hover: #cbd5e1;
-  --color-success: #0F6E56;
-  --color-success-light: #E1F5EE;
-  --color-warning: #854F0B;
-  --color-warning-light: #FAEEDA;
-  --color-danger: #dc2626;
-  --color-danger-light: #FEF2F2;
-  --color-danger-border: #FECACA;
-  --color-success-border: #BBF7D0;
+  /* ── Layer 0 · 라이트 ─────────────────────────────────────── */
+  --l-bg: #F2F4F6;
+  --l-surface: #FFFFFF;
+  --l-surface-el: #FFFFFF;
+  --l-fill-weak: #F2F4F6;
+  --l-fill: #E8EBED;
+  --l-fill-strong: #DDE1E6;
+  --l-text-strong: #191F28;
+  --l-text: #4E5968;
+  --l-text-weak: #8B95A1;
+  --l-text-disabled: #B0B8C1;
+  --l-line: #E5E8EB;
+  --l-line-strong: #D1D6DB;
+  --l-brand: #3182F6;
+  --l-brand-strong: #1B64DA;
+  --l-brand-weak: #E8F3FF;
+  --l-brand-weaker: #F4F9FF;
+  --l-up: #F04452;
+  --l-up-weak: #FDECEE;
+  --l-down: #3182F6;
+  --l-down-weak: #E8F3FF;
+  --l-flat: #8B95A1;
+  --l-positive: #0B8F63;
+  --l-positive-weak: #E4F7F0;
+  --l-negative: #F04452;
+  --l-negative-weak: #FDECEE;
+  --l-caution: #FF9500;
+  --l-caution-text: #B26A00;
+  --l-caution-weak: #FFF6E5;
+  --l-on-brand: #FFFFFF;
 
-  /* 흰 배경 위가 아니라 색상 위에 얹는 글자색 */
-  --color-on-primary: #ffffff;
+  /* ── Layer 0 · 다크 ───────────────────────────────────────── */
+  --d-bg: #17171C;
+  --d-surface: #202027;
+  --d-surface-el: #26262E;
+  --d-fill-weak: #26262E;
+  --d-fill: #2E2E36;
+  --d-fill-strong: #3A3A45;
+  --d-text-strong: #E4E4E5;
+  --d-text: #A5ACB4;
+  --d-text-weak: #8B95A1;
+  --d-text-disabled: #5F666E;
+  --d-line: #2E2E36;
+  --d-line-strong: #3C3C46;
+  --d-brand: #4593FC;
+  --d-brand-strong: #6AA9FF;
+  --d-brand-weak: #1B2436;
+  --d-brand-weaker: #151B26;
+  --d-up: #F86D75;
+  --d-up-weak: #2C1D21;
+  --d-down: #4593FC;
+  --d-down-weak: #16233A;
+  --d-flat: #8B95A1;
+  --d-positive: #2FD08C;
+  --d-positive-weak: #152A23;
+  --d-negative: #F86D75;
+  --d-negative-weak: #2C1D21;
+  --d-caution: #FFB84D;
+  --d-caution-text: #FFC46B;
+  --d-caution-weak: #2A2318;
+  --d-on-brand: #FFFFFF;
 
-  /* 중립 보조 — 상태 배지의 '해당 없음' 톤 */
-  --color-neutral-light: #F3F4F6;
+  /* ── Layer 1 · 시맨틱 (기본 = 라이트) ─────────────────────── */
+  color-scheme: light dark;
+  --bg: var(--l-bg);
+  --surface: var(--l-surface);
+  --surface-elevated: var(--l-surface-el);
+  --fill-weak: var(--l-fill-weak);
+  --fill: var(--l-fill);
+  --fill-strong: var(--l-fill-strong);
+  --text-strong: var(--l-text-strong);
+  --text: var(--l-text);
+  --text-weak: var(--l-text-weak);
+  --text-disabled: var(--l-text-disabled);
+  --text-on-brand: var(--l-on-brand);
+  --line: var(--l-line);
+  --line-strong: var(--l-line-strong);
+  --brand: var(--l-brand);
+  --brand-strong: var(--l-brand-strong);
+  --brand-weak: var(--l-brand-weak);
+  --brand-weaker: var(--l-brand-weaker);
+  --up: var(--l-up);
+  --up-weak: var(--l-up-weak);
+  --down: var(--l-down);
+  --down-weak: var(--l-down-weak);
+  --flat: var(--l-flat);
+  --positive: var(--l-positive);
+  --positive-weak: var(--l-positive-weak);
+  --negative: var(--l-negative);
+  --negative-weak: var(--l-negative-weak);
+  --caution: var(--l-caution);
+  --caution-text: var(--l-caution-text);
+  --caution-weak: var(--l-caution-weak);
 
-  /*
-   * 배지·썸네일 팔레트.
-   * 원본은 이 3쌍에 토큰이 없어서 6개 파일이 값을 각자 다시 타이핑했다.
-   */
+  --elev-card: 0 1px 2px rgba(0, 0, 0, .04), 0 4px 16px rgba(0, 0, 0, .04);
+  --elev-sticky: 0 2px 12px rgba(0, 0, 0, .06);
+  --elev-cta: 0 -2px 12px rgba(0, 0, 0, .05);
+  --ring: 0 0 0 3px rgba(49, 130, 246, .32);
+  --header-glass: rgba(255, 255, 255, .88);
+
+  /* ── Layer 2 · 스케일 ─────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-17: 17px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+  --fs-28: 28px;
+  --fs-32: 32px;
+  --lh-tight: 1.32;
+  --lh: 1.5;
+  --lh-loose: 1.7;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --tracking-title: -0.02em;
+  --tracking-num: -0.01em;
+
+  --r-8: 8px;
+  --r-12: 12px;
+  --r-16: 16px;
+  --r-20: 20px;
+  --r-24: 24px;
+  --r-full: 999px;
+
+  --z-sticky: 50;
+  --z-cta: 90;
+  --z-header: 100;
+  --z-overlay: 200;
+
+  --content-max: 640px;        /* 게임 흐름 컬럼 */
+  --content-max-wide: 1120px;  /* 홈 */
+  --header-h: 56px;
+  --cta-h: 56px;
+
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI', Roboto, sans-serif;
+  --ease: cubic-bezier(.25, .8, .5, 1);
+  --dur: 180ms;
+
+  /* ── Layer 3 · 옛 이름 alias (여기 한 번만) ───────────────── */
+  --color-primary: var(--brand);
+  --color-primary-dark: var(--brand-strong);
+  --color-primary-light: var(--brand-weak);
+  --color-secondary: var(--brand);
+  --color-text-primary: var(--text-strong);
+  --color-text-secondary: var(--text);
+  --color-text-muted: var(--text-weak);
+  --color-bg-primary: var(--surface);
+  --color-bg-secondary: var(--bg);
+  --color-bg-tertiary: var(--fill);          /* 흰 카드 위 회색 트랙·칩 — --bg 가 아니라 --fill */
+  --color-border: var(--line);
+  --color-border-hover: var(--line-strong);
+  --color-success: var(--positive);
+  --color-success-light: var(--positive-weak);
+  --color-success-border: color-mix(in srgb, var(--positive) 28%, transparent);
+  --color-warning: var(--caution-text);
+  --color-warning-light: var(--caution-weak);
+  --color-danger: var(--negative);
+  --color-danger-light: var(--negative-weak);
+  --color-danger-border: color-mix(in srgb, var(--negative) 28%, transparent);
+  --color-on-primary: var(--text-on-brand);
+  --color-neutral-light: var(--fill-weak);
   --color-accent-purple: #534AB7;
   --color-accent-purple-light: #EEEDFE;
   --color-accent-pink: #993556;
   --color-accent-pink-light: #FBEAF0;
-  --color-accent-gray: #5F5E5A;
-  --color-accent-gray-light: #F1EFE8;
-
-  /* 스켈레톤 시머 */
-  --color-skeleton-base: #F0F0F0;
-  --color-skeleton-highlight: #E0E0E0;
-
-  /*
-   * 등락 색 — 한국 금융 관례를 따른다: 빨강 = 상승, 파랑 = 하락.
-   * 브랜드 색(파랑)과 반드시 분리한다. 원본은 모든 가격을 --color-primary(파랑)로
-   * 칠해서 전 종목이 '하락'으로 보였다.
-   */
-  --color-up: #D8232A;
-  --color-up-light: #FDECEC;
-  --color-down: #1261C4;
-  --color-down-light: #E8F1FB;
-  --color-flat: #6B7280;
-
-  /* 그라디언트 */
-  --gradient-hero: linear-gradient(135deg, #F0F7FF 0%, #E8F4FD 50%, #F0F9FF 100%);
-  --gradient-brand: linear-gradient(160deg, #1A4F8A 0%, #185FA5 50%, #1E7BC4 100%);
-
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
-  --shadow-lg: 0 10px 32px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
-  --font-sans: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
-  --transition: all 0.2s ease;
-  --focus-ring: 0 0 0 3px rgba(24, 95, 165, 0.35);
+  --color-accent-gray: var(--text);
+  --color-accent-gray-light: var(--fill-weak);
+  --color-skeleton-base: var(--fill-weak);
+  --color-skeleton-highlight: var(--fill);
+  /* 등락 — 한국 관례: 빨강 상승, 파랑 하락. 토스 팔레트에서는 하락 파랑 == 브랜드 파랑이다 (의도된 수렴) */
+  --color-up: var(--up);
+  --color-up-light: var(--up-weak);
+  --color-down: var(--down);
+  --color-down-light: var(--down-weak);
+  --color-flat: var(--flat);
+  --gradient-hero: linear-gradient(180deg, var(--brand-weaker) 0%, var(--bg) 320px);
+  --gradient-brand: linear-gradient(160deg, var(--brand-strong) 0%, var(--brand) 100%);
+  --radius-sm: var(--r-8);
+  --radius-md: var(--r-12);
+  --radius-lg: var(--r-16);
+  --radius-xl: var(--r-20);
+  --shadow-sm: var(--elev-card);
+  --shadow-md: var(--elev-sticky);
+  --shadow-lg: var(--elev-card);
+  --transition: all var(--dur) var(--ease);
+  --focus-ring: var(--ring);
 }
 
+/* ── 다크 · OS 선호 (data-theme=light 로 명시하면 제외) ─────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: var(--d-bg);
+    --surface: var(--d-surface);
+    --surface-elevated: var(--d-surface-el);
+    --fill-weak: var(--d-fill-weak);
+    --fill: var(--d-fill);
+    --fill-strong: var(--d-fill-strong);
+    --text-strong: var(--d-text-strong);
+    --text: var(--d-text);
+    --text-weak: var(--d-text-weak);
+    --text-disabled: var(--d-text-disabled);
+    --text-on-brand: var(--d-on-brand);
+    --line: var(--d-line);
+    --line-strong: var(--d-line-strong);
+    --brand: var(--d-brand);
+    --brand-strong: var(--d-brand-strong);
+    --brand-weak: var(--d-brand-weak);
+    --brand-weaker: var(--d-brand-weaker);
+    --up: var(--d-up);
+    --up-weak: var(--d-up-weak);
+    --down: var(--d-down);
+    --down-weak: var(--d-down-weak);
+    --flat: var(--d-flat);
+    --positive: var(--d-positive);
+    --positive-weak: var(--d-positive-weak);
+    --negative: var(--d-negative);
+    --negative-weak: var(--d-negative-weak);
+    --caution: var(--d-caution);
+    --caution-text: var(--d-caution-text);
+    --caution-weak: var(--d-caution-weak);
+    --elev-card: none;
+    --elev-sticky: 0 4px 16px rgba(0, 0, 0, .45);
+    --elev-cta: 0 -2px 16px rgba(0, 0, 0, .5);
+    --ring: 0 0 0 3px rgba(69, 147, 252, .45);
+    --header-glass: rgba(32, 32, 39, .88);
+    --color-accent-purple: #B7B0FF;
+    --color-accent-purple-light: #242040;
+    --color-accent-pink: #F0A0BC;
+    --color-accent-pink-light: #331E27;
+    --gradient-hero: linear-gradient(180deg, #1A2233 0%, var(--bg) 320px);
+    --gradient-brand: linear-gradient(160deg, #16233A 0%, #1E3A6B 100%);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, .55);
+  }
+}
+
+/* ── 다크 · 헤더 토글 (위 블록과 내용 동일) ─────────────────── */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: var(--d-bg);
+  --surface: var(--d-surface);
+  --surface-elevated: var(--d-surface-el);
+  --fill-weak: var(--d-fill-weak);
+  --fill: var(--d-fill);
+  --fill-strong: var(--d-fill-strong);
+  --text-strong: var(--d-text-strong);
+  --text: var(--d-text);
+  --text-weak: var(--d-text-weak);
+  --text-disabled: var(--d-text-disabled);
+  --text-on-brand: var(--d-on-brand);
+  --line: var(--d-line);
+  --line-strong: var(--d-line-strong);
+  --brand: var(--d-brand);
+  --brand-strong: var(--d-brand-strong);
+  --brand-weak: var(--d-brand-weak);
+  --brand-weaker: var(--d-brand-weaker);
+  --up: var(--d-up);
+  --up-weak: var(--d-up-weak);
+  --down: var(--d-down);
+  --down-weak: var(--d-down-weak);
+  --flat: var(--d-flat);
+  --positive: var(--d-positive);
+  --positive-weak: var(--d-positive-weak);
+  --negative: var(--d-negative);
+  --negative-weak: var(--d-negative-weak);
+  --caution: var(--d-caution);
+  --caution-text: var(--d-caution-text);
+  --caution-weak: var(--d-caution-weak);
+  --elev-card: none;
+  --elev-sticky: 0 4px 16px rgba(0, 0, 0, .45);
+  --elev-cta: 0 -2px 16px rgba(0, 0, 0, .5);
+  --ring: 0 0 0 3px rgba(69, 147, 252, .45);
+  --header-glass: rgba(32, 32, 39, .88);
+  --color-accent-purple: #B7B0FF;
+  --color-accent-purple-light: #242040;
+  --color-accent-pink: #F0A0BC;
+  --color-accent-pink-light: #331E27;
+  --gradient-hero: linear-gradient(180deg, #1A2233 0%, var(--bg) 320px);
+  --gradient-brand: linear-gradient(160deg, #16233A 0%, #1E3A6B 100%);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, .55);
+}
+
+/* ── 리셋 ───────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -77,16 +322,18 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-sans);
-  color: var(--color-text-primary);
-  background: var(--color-bg-secondary);
-  line-height: 1.6;
+  color: var(--text-strong);
+  background: var(--bg);
+  line-height: var(--lh);
   -webkit-font-smoothing: antialiased;
   /* 금액·비중이 세로로 줄맞춤되도록 고정폭 숫자를 쓴다 */
   font-variant-numeric: tabular-nums;
+  word-break: keep-all;
 }
 
 a {
@@ -98,17 +345,25 @@ button {
   cursor: pointer;
   font-family: var(--font-sans);
   border: none;
+  background: none;
+  color: inherit;
 }
 
-/*
- * 원본은 button에 outline:none만 걸고 대체 표시가 없어서
- * 키보드 사용자가 앱 전체에서 포커스를 볼 수 없었다.
- * 마우스 클릭에는 링을 띄우지 않고 키보드 포커스에만 띄운다.
- */
+input, select, textarea {
+  font-family: var(--font-sans);
+  color: inherit;
+}
+
+::selection {
+  background: var(--brand-weak);
+  color: var(--text-strong);
+}
+
+/* 키보드 포커스에만 링을 띄운다. 마우스 클릭에는 띄우지 않는다. */
 :focus-visible {
   outline: none;
-  box-shadow: var(--focus-ring);
-  border-radius: var(--radius-sm);
+  box-shadow: var(--ring);
+  border-radius: var(--r-8);
 }
 
 img {
@@ -117,95 +372,101 @@ img {
 }
 
 /* 스크롤바 */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--color-bg-tertiary); }
-::-webkit-scrollbar-thumb { background: var(--color-border-hover); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--fill-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-disabled); }
 
 /* 애니메이션 */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.fade-in-up  { animation: fadeInUp  0.4s ease both; }
-.fade-in     { animation: fadeIn    0.3s ease both; }
+.fade-in-up { animation: fadeInUp .36s var(--ease) both; }
+.fade-in    { animation: fadeIn .3s var(--ease) both; }
 
-/* 공통 버튼 */
+/*
+ * 공통 버튼 — 토스 문법.
+ * 들어 올리기(translateY + shadow) 대신 배경이 짙어지고, 누르면 살짝 줄어든다.
+ */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
-  transition: var(--transition);
+  justify-content: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-5);
+  border-radius: var(--r-12);
+  font-size: var(--fs-15);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(.97); }
+.btn:disabled,
+.btn.disabled {
+  background: var(--fill);
+  color: var(--text-disabled);
+  cursor: default;
+  pointer-events: none;
+  transform: none;
 }
 .btn-primary {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  border: 1.5px solid var(--color-primary);
+  background: var(--brand);
+  color: var(--text-on-brand);
 }
-.btn-primary:hover {
-  background: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+.btn-primary:hover { background: var(--brand-strong); }
+.btn-secondary {
+  background: var(--brand-weak);
+  color: var(--brand);
 }
+.btn-secondary:hover { background: color-mix(in srgb, var(--brand-weak) 80%, var(--brand)); }
 .btn-outline {
   background: transparent;
-  color: var(--color-primary);
-  border: 1.5px solid var(--color-primary);
+  color: var(--text-strong);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
 }
-.btn-outline:hover {
-  background: var(--color-primary-light);
-}
+.btn-outline:hover { background: var(--fill-weak); }
 .btn-ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-  border: 1.5px solid var(--color-border);
+  background: var(--fill-weak);
+  color: var(--text);
 }
-.btn-ghost:hover {
-  background: var(--color-bg-tertiary);
-  border-color: var(--color-border-hover);
-}
+.btn-ghost:hover { background: var(--fill); }
 
-/* 배지 */
+/* 배지 — pill */
 .badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--space-3);
+  border-radius: var(--r-full);
+  font-size: var(--fs-12);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
 }
-.badge-blue   { background: var(--color-primary-light);      color: var(--color-primary); }
-.badge-teal   { background: var(--color-success-light);      color: var(--color-success); }
-.badge-amber  { background: var(--color-warning-light);      color: var(--color-warning); }
+.badge-blue   { background: var(--brand-weak);                color: var(--brand); }
+.badge-teal   { background: var(--positive-weak);             color: var(--positive); }
+.badge-amber  { background: var(--caution-weak);              color: var(--caution-text); }
 .badge-purple { background: var(--color-accent-purple-light); color: var(--color-accent-purple); }
 .badge-pink   { background: var(--color-accent-pink-light);   color: var(--color-accent-pink); }
-.badge-gray   { background: var(--color-accent-gray-light);   color: var(--color-accent-gray); }
+.badge-gray   { background: var(--fill-weak);                 color: var(--text); }
 
-/*
- * 썸네일 배경 팔레트.
- * 원본은 4개 파일에 각자 정의돼 있었고 파일마다 종류가 달라서
- * (CourseDetailView·LandingView 에는 amber 가 없다) 카테고리를 늘리면
- * 일부 화면에서만 배경이 사라졌다.
- */
-.thumb-teal   { background: var(--color-success-light); }
-.thumb-blue   { background: var(--color-primary-light); }
-.thumb-amber  { background: var(--color-warning-light); }
+/* 썸네일 배경 팔레트 — 템플릿 화면 전용 */
+.thumb-teal   { background: var(--positive-weak); }
+.thumb-blue   { background: var(--brand-weak); }
+.thumb-amber  { background: var(--caution-weak); }
 .thumb-purple { background: var(--color-accent-purple-light); }
 .thumb-pink   { background: var(--color-accent-pink-light); }
-.thumb-gray   { background: var(--color-accent-gray-light); }
+.thumb-gray   { background: var(--fill-weak); }
 
-/*
- * 원본에는 prefers-reduced-motion 대응이 0건인데
- * shimmer(1.4s)·spin(0.8s) 무한 루프가 무조건 돌았다.
- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

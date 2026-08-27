@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/src/assets/images/logo/main_logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F2F4F6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#17171C" />
+    <!-- 저장된 테마를 첫 페인트 전에 적용한다. 없으면 시스템 설정을 따른다. -->
+    <script>try{var t=localStorage.getItem('iq-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
     <title>InvestQuest — 게임으로 알아보는 나의 투자 성향</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="app"></div>
