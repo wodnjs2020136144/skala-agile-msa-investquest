@@ -8,10 +8,13 @@
   <main class="app-content" :class="{ 'with-header': !$route.meta.hideChrome }">
     <router-view />
   </main>
+  <!-- 시연용 목/실 API 전환. 로그인·콜백 화면에서도 필요하므로 hideChrome 과 무관하게 둔다. -->
+  <MockToggle />
 </template>
 
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
+import MockToggle from '@/components/ui/MockToggle.vue'
 </script>
 
 <style scoped>
