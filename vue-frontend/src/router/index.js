@@ -47,6 +47,22 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
+  // ── 결과·리워드 (Sprint2 범위) ──────────────────────────────
+  // 확정 이후 단계라 GameProgress(3단계) 밖이다.
+  // 확정 내역(game.result)이 없으면 각 화면이 빈 상태를 보여 준다.
+  {
+    path: '/game/result',
+    name: 'GameResult',
+    component: () => import('@/views/game/GameResultView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/game/reward',
+    name: 'GameReward',
+    component: () => import('@/views/game/GameRewardView.vue'),
+    meta: { requiresAuth: true }
+  },
+
   // ── 강사 배포 템플릿의 강의 화면 ─────────────────────────────
   // 백엔드가 아직 강의 API 그대로라 살려 둔다. 도메인 용어 교체는
   // 스키마·섹터명(안건 2-3)이 확정된 뒤 한 번에 한다.

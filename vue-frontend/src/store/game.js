@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { gameApi } from '@/api/game.js'
 import { recommendApi } from '@/api/recommend.js'
+import { resultApi } from '@/api/result.js'
 import { GAME_RULES } from '@/mock/scenario.js'
 
 /**
@@ -28,6 +29,19 @@ export const useGameStore = defineStore('game', () => {
   const profile = ref(null)
   const analyzing = ref(false)
   const analysisError = ref(null)
+
+  /**
+   * 3일 뒤 결과와 참여 리워드.
+   *
+   * 둘 다 확정(result) 이후에만 의미가 있다. 새로고침하면 result 가 날아가므로
+   * 결과 화면은 result 가 없을 때 빈 상태를 보여 준다 — 확정 화면과 같은 방식이다.
+   */
+  const gameResult = ref(null)
+  const loadingResult = ref(false)
+  const resultError = ref(null)
+  const reward = ref(null)
+  const loadingReward = ref(false)
+  const rewardError = ref(null)
 
   /**
    * 행동 이벤트 로그.
@@ -355,6 +369,65 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  /**
+   * 3일 뒤 결과를 불러온다.
+   *
+   * @param {boolean} reveal 예정일 전이라도 결과를 공개한다 (발표 데모용, 목 모드에서만 의미 있음)
+   */
+  async function loadGameResult({ reveal = false } = {}) {
+    if (!result.value) return null
+
+    loadingResult.value = true
+    resultError.value = null
+    try {
+      const res = await resultApi.getGameResult({
+        submitResult: result.value,
+        stocks: stocks.value,
+        initialCash: initialCash.value,
+        reveal
+      })
+      gameResult.value = res?.data?.data ?? res?.data
+      return gameResult.value
+    } catch (e) {
+      resultError.value = '투자 결과를 불러오지 못했습니다.'
+      throw e
+    } finally {
+      loadingResult.value = false
+    }
+  }
+
+  /**
+   * 참여 리워드 상태.
+   *
+   * 결과가 공개된 뒤에만 호출한다 — 지급액이 수익률로 갈리기 때문이다.
+   * paymentId 는 실 모드에서 결과 응답이 알려 줘야 한다(아직 없음). 목에서는 자체 발급한다.
+   */
+  async function loadReward() {
+    if (!gameResult.value || gameResult.value.status !== 'CONFIRMED') return null
+
+    loadingReward.value = true
+    rewardError.value = null
+    try {
+      /*
+       * 재투자는 결과가 실제로 공개된 시점부터 센다.
+       * 예정일이 지나 정상 공개됐다면 그 날짜가 시작점이고,
+       * 발표용으로 미리 열어 본 경우(revealed)에는 예정일이 아직 미래라
+       * 그대로 쓰면 "재투자 중 D-6" 처럼 시간축이 섞인다. 그때는 지금부터 센다.
+       */
+      const res = await resultApi.getReward(gameResult.value.paymentId ?? null, {
+        returnRate: gameResult.value.returnRate,
+        startedAt: gameResult.value.revealed ? undefined : gameResult.value.resultAvailableAt
+      })
+      reward.value = res?.data?.data ?? res?.data
+      return reward.value
+    } catch (e) {
+      rewardError.value = '리워드 정보를 불러오지 못했습니다.'
+      throw e
+    } finally {
+      loadingReward.value = false
+    }
+  }
+
   function reset() {
     participation.value = null
     scenario.value = null
@@ -364,6 +437,12 @@ export const useGameStore = defineStore('game', () => {
     profile.value = null
     analyzing.value = false
     analysisError.value = null
+    gameResult.value = null
+    loadingResult.value = false
+    resultError.value = null
+    reward.value = null
+    loadingReward.value = false
+    rewardError.value = null
     error.value = null
     events.value = []
   }
@@ -371,12 +450,14 @@ export const useGameStore = defineStore('game', () => {
   return {
     participation, scenario, stocks, allocations, loading, error, submitting, result, events,
     profile, analyzing, analysisError,
+    gameResult, loadingResult, resultError, reward, loadingReward, rewardError,
     initialCash, investedTotal, cashBalance, selectedCount, changeCount,
     isOverBudget, canSubmit, cashWeight,
     concentrationRatio, sectorWeights, highRiskRatio,
     rules: GAME_RULES,
     weightOf, setAllocation, clearAllocations, allocateAllToCash,
     decisionSeconds, behaviorMetrics,
-    startGame, loadScenario, loadStocks, submit, analyzeProfile, reset, track
+    startGame, loadScenario, loadStocks, submit, analyzeProfile,
+    loadGameResult, loadReward, reset, track
   }
 })
