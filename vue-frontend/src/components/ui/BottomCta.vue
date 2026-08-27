@@ -6,24 +6,36 @@
   -->
   <div class="bottom-cta" :class="{ 'mobile-only': mobileOnly }">
     <div class="bc-spacer" aria-hidden="true"></div>
-    <div class="bc-bar">
-      <div class="bc-inner actions">
-        <slot name="secondary"></slot>
-        <slot></slot>
+    <!-- 모바일에서는 body 로 보낸다. 조상에 transform(fade-in-up)이 있으면 fixed 기준이 뷰포트가 아니게 되기 때문이다. -->
+    <Teleport to="body" :disabled="!isMobile">
+      <div class="bc-bar" :class="{ 'is-fixed': isMobile }">
+        <div class="bc-inner actions">
+          <slot name="secondary"></slot>
+          <slot></slot>
+        </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
 defineProps({
   /** 데스크톱에서는 화면 안에 이미 같은 액션이 있을 때 — 모바일 고정 바만 남긴다 */
   mobileOnly: { type: Boolean, default: false }
 })
+
+/* CSS 의 768px 경계와 같은 값. 텔레포트 여부를 정한다. */
+const mq = typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)') : null
+const isMobile = ref(mq ? mq.matches : false)
+const onChange = (e) => { isMobile.value = e.matches }
+onMounted(() => mq?.addEventListener('change', onChange))
+onBeforeUnmount(() => mq?.removeEventListener('change', onChange))
 </script>
 
 <style scoped>
-.bc-bar {
+.bc-bar.is-fixed {
   position: fixed;
   left: 0;
   right: 0;
@@ -54,12 +66,6 @@ defineProps({
 
 @media (min-width: 768px) {
   .mobile-only { display: none; }
-  .bc-bar {
-    position: static;
-    padding: 0;
-    background: transparent;
-    box-shadow: none;
-  }
   .bc-spacer { height: var(--space-8); }
   .bc-inner :deep(.btn) { height: 52px; font-size: var(--fs-15); }
 }

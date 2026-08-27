@@ -97,7 +97,6 @@
   height: 100%;
   border-radius: inherit;
   background: var(--brand);
-  transition: width .3s var(--ease);
 }
 
 /* 텍스트 버튼 */

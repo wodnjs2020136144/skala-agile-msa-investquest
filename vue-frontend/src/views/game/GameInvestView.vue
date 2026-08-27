@@ -137,7 +137,7 @@ onMounted(() => {
 
 .page-inner { max-width: 720px; }
 
-/* 주문 헤더 카드 — sticky */
+/* 주문 헤더 카드 — sticky. 모바일에서는 리스트를 덜 가리도록 낮게 짠다. */
 .summary {
   position: sticky;
   top: calc(var(--header-h) + var(--space-2));
@@ -145,32 +145,43 @@ onMounted(() => {
   padding: var(--space-4) var(--space-5);
   margin-bottom: var(--space-4);
   box-shadow: var(--elev-sticky);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'hero hero'
+    'meter meter'
+    'row1 row2';
+  row-gap: var(--space-3);
+  column-gap: var(--space-4);
 }
 .sum-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
 }
+.sum-row:first-child { grid-area: row1; }
+.sum-row:last-child { grid-area: row2; justify-content: flex-end; }
 .sum-hero {
+  grid-area: hero;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding-top: var(--space-1);
+  gap: 2px;
 }
 .sum-label {
   font-size: var(--fs-13);
   font-weight: var(--fw-medium);
   color: var(--text-weak);
+  white-space: nowrap;
 }
-.sum-row .sum-value { font-size: var(--fs-15); font-weight: var(--fw-semibold); }
+.sum-row .sum-label { font-size: var(--fs-12); }
+.sum-row .sum-value { font-size: var(--fs-14); font-weight: var(--fw-semibold); }
+.sum-hero .sum-value { font-size: var(--fs-24); }
 .summary.over { background: var(--negative-weak); }
 .summary.over .sum-hero .sum-value { color: var(--negative); }
 
 .cash-meter {
+  grid-area: meter;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -226,19 +237,9 @@ onMounted(() => {
 }
 
 @media (min-width: 768px) {
-  .summary {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      'hero cash'
-      'meter meter'
-      'row1 row2';
-    column-gap: var(--space-6);
-    padding: var(--space-5) var(--space-6);
-  }
-  .sum-hero { grid-area: hero; }
-  .cash-meter { grid-area: meter; }
-  .sum-row:first-child { grid-area: row1; justify-content: flex-start; gap: var(--space-2); }
-  .sum-row:last-child { grid-area: row2; justify-content: flex-end; gap: var(--space-2); }
+  .summary { padding: var(--space-5) var(--space-6); }
+  .sum-hero .sum-value { font-size: var(--fs-32); }
+  .sum-row .sum-label { font-size: var(--fs-13); }
+  .sum-row .sum-value { font-size: var(--fs-15); }
 }
 </style>

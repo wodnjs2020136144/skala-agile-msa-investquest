@@ -386,8 +386,9 @@ img {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.fade-in-up { animation: fadeInUp .36s var(--ease) both; }
-.fade-in    { animation: fadeIn .3s var(--ease) both; }
+/* fill-mode 는 backwards — both 로 두면 끝난 뒤에도 transform 이 남아 position:fixed 자식(하단 CTA)의 기준이 뷰포트가 아니게 된다 */
+.fade-in-up { animation: fadeInUp .36s var(--ease) backwards; }
+.fade-in    { animation: fadeIn .3s var(--ease) backwards; }
 
 /*
  * 공통 버튼 — 토스 문법.

@@ -252,6 +252,12 @@ async function handleRegister() {
   transition: box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
 .form-input::placeholder { color: var(--text-disabled); }
+/* 브라우저 자동완성의 연파랑 배경을 토큰 면으로 덮는다 */
+.form-input:-webkit-autofill {
+  -webkit-box-shadow: inset 0 0 0 1000px var(--fill-weak);
+  -webkit-text-fill-color: var(--text-strong);
+  caret-color: var(--text-strong);
+}
 .form-input:hover { background: var(--fill); }
 .form-input:focus {
   outline: none;
