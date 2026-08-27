@@ -24,8 +24,8 @@ public class CourseDto {
 
         private String description;
 
-        @NotNull(message = "카테고리는 필수입니다")
-        private Course.Category category;
+        @NotBlank(message = "카테고리는 필수입니다")
+        private String category;
 
         @NotNull(message = "가격은 필수입니다")
         @PositiveOrZero(message = "가격은 0 이상이어야 합니다")
@@ -41,7 +41,7 @@ public class CourseDto {
         private Long id;
         private String title;
         private String description;
-        private Course.Category category;
+        private String category;
         private BigDecimal price;
         private Long instructorId;
         private Integer enrollmentCount;
@@ -96,6 +96,6 @@ public class CourseDto {
     @Builder
     public static class RecommendResponse {
         private List<CourseResponse> courses;
-        private Course.Category category;
+        private String category;
     }
 }

@@ -36,6 +36,9 @@ dependencies {
     // Eureka Client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+    // OpenFeign (서비스 간 선언형 HTTP 통신)
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
     // WebClient (서비스 간 통신)
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 

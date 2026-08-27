@@ -1,6 +1,8 @@
 package com.lecture.course.controller;
 
 import com.lecture.course.dto.CourseDto;
+import com.lecture.course.dto.Result;
+import com.lecture.course.dto.request.ResultRequest;
 import com.lecture.course.entity.Course;
 import com.lecture.course.service.CourseService;
 import jakarta.validation.Valid;
@@ -56,13 +58,13 @@ public class CourseController {
     /**
      * GET /courses/category/{category} - 카테고리별 강의
      */
-    @GetMapping("/category/{category}")
-    public ResponseEntity<CourseDto.ApiResponse<List<CourseDto.CourseResponse>>> getCoursesByCategory(
-            @PathVariable Course.Category category) {
-        return ResponseEntity.ok(
-                CourseDto.ApiResponse.success(courseService.getCoursesByCategory(category))
-        );
-    }
+//    @GetMapping("/category/{category}")
+//    public ResponseEntity<CourseDto.ApiResponse<List<CourseDto.CourseResponse>>> getCoursesByCategory(
+//            @PathVariable String category) {
+//        return ResponseEntity.ok(
+//                CourseDto.ApiResponse.success(courseService.getCoursesByCategory(category))
+//        );
+//    }
 
     /**
      * GET /courses/internal/exists/{id} - 강의 존재 여부 (Enrollment Service 호출)
@@ -95,10 +97,18 @@ public class CourseController {
      * GET /courses/internal/recommend - 추천 서비스용 미수강 강의 조회
      * category: 카테고리, excludeIds: 이미 수강한 강의 ID 목록
      */
-    @GetMapping("/internal/recommend")
-    public ResponseEntity<List<CourseDto.CourseResponse>> getRecommendCourses(
-            @RequestParam Course.Category category,
-            @RequestParam(defaultValue = "") List<Long> excludeIds) {
-        return ResponseEntity.ok(courseService.getRecommendCourses(category, excludeIds));
+//    @GetMapping("/internal/recommend")
+//    public ResponseEntity<List<CourseDto.CourseResponse>> getRecommendCourses(
+//            @RequestParam String category,
+//            @RequestParam(defaultValue = "") List<Long> excludeIds) {
+//        return ResponseEntity.ok(courseService.getRecommendCourses(category, excludeIds));
+//    }
+
+    @PostMapping("/internal/result")
+    public ResponseEntity<Result> getResult(
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestBody List<ResultRequest> resultRequests
+            ){
+        return ResponseEntity.ok(courseService.getResult(userId, resultRequests));
     }
 }

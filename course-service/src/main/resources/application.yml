@@ -39,6 +39,8 @@ eureka:
 service:
   user-service:
     url: http://user-service
+  payment-service:
+    url: http://payment-service:8084
 
 springdoc:
   api-docs:
