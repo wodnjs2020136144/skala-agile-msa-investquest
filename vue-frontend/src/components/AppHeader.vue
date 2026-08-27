@@ -118,8 +118,10 @@ function handleLogout() {
   width: 36px;
   height: 36px;
   object-fit: contain;
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
+  /*
+    테두리·라운드는 예전 로고가 흰 배경이 박힌 JPEG 라 타일처럼 감싸 주던 것이다.
+    지금 로고는 배경이 투명해서 그대로 두면 마크 주위에 빈 상자만 그려진다.
+  */
 }
 .logo-text {
   font-size: 17px;

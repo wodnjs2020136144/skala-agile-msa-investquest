@@ -217,9 +217,27 @@ async function handleRegister() {
   overflow: hidden;
   border-right: 1px solid var(--color-border);
 }
+/*
+  히어로 아트. 좌측 패널은 브랜드 문구와 특징 3줄뿐이라 아래 절반이 비어 있었다.
+  텍스트가 왼쪽 위에 몰려 있으므로 오른쪽 아래로 밀고, overflow: hidden 이 잘라 내
+  화면 밖으로 흘러 나가는 인상을 준다. 배경이 투명한 PNG 라 다크 모드에서도 그대로 얹힌다.
+*/
 .login-left::after {
-  content: none;
+  content: '';
+  position: absolute;
+  /* 아래로만 흘린다. 꼬리가 잘리는 건 자연스럽지만 화살촉이 잘리면 실수로 보인다 */
+  right: 40px;
+  bottom: -72px;
+  width: 400px;
+  height: 400px;
+  background: url('@/assets/images/logo/hero_arrow.png') no-repeat center / contain;
+  pointer-events: none;
+  z-index: 0;
 }
+/* 세로가 짧은 화면에서 문구 위로 아트가 올라오지 않게 한다 */
+.brand,
+.brand-content { position: relative; z-index: 1; }
+
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; }
 .brand-name { font-size: 18px; font-weight: 700; color: var(--color-text-primary); }
