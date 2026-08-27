@@ -1,0 +1,19 @@
+# 리뷰어 자동 지정.
+#
+# ⚠️ GitHub Free + Private 리포에서는 브랜치 보호를 쓸 수 없어
+#    이 파일이 리뷰를 "강제"하지는 못한다. 리뷰어가 자동으로 붙는 편의 기능이다.
+#    강제는 팀 DoD 로 한다 — "PR 에 최소 1명의 승인을 받았다".
+#
+# 담당이 정해지면 docs/team.md 와 함께 채운다.
+
+/vue-frontend/          @wodnjs2020136144
+
+# /user-service/        @______
+# /course-service/      @______
+# /enrollment-service/  @______
+# /payment-service/     @______
+# /recommend-service/   @______
+
+# 공동 파일 — 누가 고치든 알림이 가야 한다
+# /init-db/             @______ @______
+# /docker-compose.yml   @______ @______

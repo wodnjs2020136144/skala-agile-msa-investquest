@@ -1,128 +1,227 @@
-# InvestQuest — Sprint 1 프런트엔드
+# InvestQuest — SKALA Agile·MSA 팀 프로젝트
 
-증권사 신규 고객 온보딩용 **모의 투자 성향 게임**의 프런트엔드다.
-SKALA "Agile 방법론 및 MSA 개발" 과정 조별 프로젝트 산출물이며,
-강사 배포 템플릿(`msa-lecture/vue-frontend`)에서 출발했다.
+증권사 신규 고객 온보딩용 **모의 투자 성향 게임**. 가상의 상황과 자금으로 모의 투자를
+하게 한 뒤, 그 과정에서 나온 **행동 데이터**로 투자 성향을 분석한다.
 
-> **현재 상태: 백엔드 미연동.** 목 데이터로 Sprint 1 전 구간이 동작한다.
-> 백엔드가 도착하면 `.env`의 `VITE_USE_MOCK=false` 한 줄로 실 API에 붙는다.
+> 설문으로 "위험을 감수하시겠습니까?"라고 묻는 대신, **위험을 감수하는지 지켜본다.**
 
-## 빠른 시작
+강사 배포 템플릿(`msa-lecture`)의 기술 구조는 그대로 두고 업무 용어만 투자 게임 도메인으로
+바꿨다. 저작권 고지는 [`NOTICE.md`](NOTICE.md) 참고.
+
+---
+
+## ⚠️ 시작 전 필수 — 2가지
+
+### 1. `uname -m` 확인
 
 ```bash
-npm install
-npm run dev      # http://localhost:3000
+uname -m
+#  arm64  → 정상
+#  x86_64 → ⚠️ 아래를 읽을 것
 ```
 
-목 모드라 백엔드가 없어도 전 구간이 돌아간다. 로그인 버튼을 누르면
-가짜 사용자로 로그인된다(아래 "목 모드" 참고).
+인프라 이미지 2종(`auth-server`, `api-gateway`)은 **`linux/arm64` 전용**이다
+(`alpine-minirootfs-3.23.5-aarch64`). Apple Silicon Mac이 아니면 기동에 실패하거나
+QEMU 에뮬레이션으로만 돈다. **`x86_64`인 사람에게 인프라 기동 담당을 맡기지 않는다.**
 
-## Sprint 1 범위
+결과를 [`docs/team.md`](docs/team.md)에 적는다.
 
+### 2. `infra-images.tar` 적재
+
+```bash
+docker load -i infra-images.tar
+docker images | grep msa-lecture
+#  msa-lecture/auth-server   1.0
+#  msa-lecture/api-gateway   1.0
 ```
-/  →  /login  →  /game/guide  →  /game/scenario  →  /game/invest  →  /game/confirm
-홈      로그인      게임 안내        가상 시나리오        투자금 배분        확정 완료
+
+**이 파일은 리포에 없다.** 343MB로 GitHub 파일 한도(100MB)를 넘어 커밋이 불가능하다.
+슬랙에 올라온 강사 배포본을 각자 받는다. **clone만 해서는 `docker compose up`이 실패한다.**
+
+`auth-server`와 `api-gateway`는 **소스 디렉터리가 아예 없다.** 완성 이미지로만 존재한다.
+
+---
+
+## 기동
+
+```bash
+docker compose up -d              # 루트에서 바로 된다
+open http://localhost:8761        # Eureka — 서비스 등록 확인
 ```
 
-발표 기획서 §3-2의 워킹 스켈레톤 정의("시나리오를 읽고 종목에 투자금을 배분한 뒤
-확정까지")를 따랐다.
+프론트는 compose에 없다:
 
-### 완료 조건 (기획 초안 §16)
+```bash
+cd vue-frontend && npm install && npm run dev
+open http://localhost:3000
+```
 
-- [x] 비로그인 사용자가 홈 화면을 볼 수 있다
-- [x] 로그인 버튼으로 로그인 흐름을 시작할 수 있다
-- [x] 로그인 후 사용자 정보가 홈에 표시된다
-- [x] 로그인 사용자에게 게임 시작하기 버튼이 표시된다
-- [x] 리워드가 약 일주일 뒤 지급된다는 안내가 표시된다
-- [x] 모의 투자이며 실제 수익을 보장하지 않는다는 안내가 표시된다
-- [x] 게임 시작 버튼이 안내·시나리오 화면으로 이동한다
-- [x] 시나리오 화면에 상황·투자금·기간·목표가 표시된다
-- [x] 보호된 게임 URL에 비로그인 접근 시 로그인 화면으로 이동한다
-- [x] 화면이 Mock Data와 연결된다
-- [x] 모바일(390px)과 데스크톱에서 정상 표시된다
-- [x] `npm run build`가 오류 없이 완료된다
-- [x] 정상 흐름과 데이터 조회 실패 흐름을 각각 확인했다
+> **프론트는 지금 백엔드 없이도 돌아간다.** `vue-frontend/.env`의 `VITE_USE_MOCK=true`가
+> 목 데이터로 Sprint1 전 구간을 태워 준다. 백엔드가 준비되면 `false`로 바꾼다.
+> 자세한 것은 [`vue-frontend/README.md`](vue-frontend/README.md).
 
-## 목 모드
+기동이 꼬이면:
 
-`.env`의 `VITE_USE_MOCK`이 스위치다.
+```bash
+docker compose down -v            # -v 로 볼륨까지. 스키마를 고쳤으면 필수
+docker compose build --no-cache && docker compose up -d
+docker compose logs -f <서비스명>
+```
 
-| 값 | 동작 |
+---
+
+## 구성
+
+| 디렉터리 | 포트 | API prefix | 비고 |
+|---|---|---|---|
+| `eureka-server/` | 8761 | — | 🔒 **수정 금지** (인프라) |
+| `user-service/` | 8081 | `/api/users/**` | |
+| `course-service/` | 8082 | `/api/courses/**` | 화면에서는 **종목·시나리오** |
+| `enrollment-service/` | 8083 | `/api/enrollments/**` | 화면에서는 **모의 투자** |
+| `payment-service/` | 8084 | `/api/payments/**` | 화면에서는 **리워드** |
+| `recommend-service/` | 8085 | `/api/recommend/**` | 화면에서는 **성향 분석** |
+| `vue-frontend/` | 3000 | — | compose에 없다 |
+| `init-db/` | — | — | DDL. 시드 INSERT 없음 |
+
+`auth-server`(9000) · `api-gateway`(8080)는 🔒 **수정 금지**이며 소스가 없다.
+
+### 도메인 매핑
+
+| 템플릿 | 우리 도메인 |
 |---|---|
-| `true` (현재) | `src/mock/` 데이터 + 가짜 로그인. 백엔드 없이 동작 |
-| `false` | API Gateway(8080) + OAuth2 Authorization Code Flow |
+| 강사 | 증권사 운영자 |
+| 과목(Course) | 게임 종목 / 가상 시나리오 |
+| 수강신청(Enrollment) | 모의 투자 (종목 선택 + 투자금 배분) |
+| 결제(Payment) | 참여 리워드 지급 |
+| 추천(Recommend) | 행동 기반 투자 성향 분석 |
 
-**왜 가짜 로그인이 필요한가**: `/game/*`은 전부 인증이 필요한데,
-백엔드가 없으면 auth-server도 안 떠 있어 OAuth2 로그인 자체가 불가능하다.
-로그인을 못 하면 게임 화면에 진입조차 못 해 목 데이터가 무의미해진다.
-**기존 OAuth2 코드는 한 줄도 지우지 않았다** — 플래그만 끄면 그대로 동작한다.
+> **테이블명은 바꾸지 않는다.** `courses`를 `stocks`로 바꾸면 서비스 간 호출 경로·Kafka·
+> 프런트가 연쇄로 깨진다. **화면에서만 종목으로 부른다.**
 
-## 구조
+---
 
-```
-src/
-├── mock/                     목 데이터 (백엔드 도착 시 제거 대상)
-│   ├── scenario.js           시나리오 + GAME_RULES (게임 규칙 기본값)
-│   ├── stocks.js             가상 종목 6종
-│   ├── participation.js      게임 세션
-│   └── index.js              { data, message } 래핑 + 지연 시뮬레이션
-├── api/
-│   ├── index.js              axios 인스턴스 (Bearer 주입, 401 처리)
-│   ├── game.js               게임 API — USE_MOCK 분기, 실 경로 주석
-│   ├── auth.js  course.js  enrollment.js
-├── store/
-│   ├── auth.js               OAuth2 + 목 로그인
-│   ├── game.js               게임 세션·배분 계산·행동 이벤트
-│   └── course.js             CATEGORY_CATALOG (섹터명 확정 시 여기 하나만 수정)
-├── views/
-│   ├── HomeView.vue          비로그인/로그인 분기 홈
-│   ├── game/                 게임 화면 4개 + 공유 스타일
-│   └── Course*.vue 등        강사 템플릿 화면 (백엔드가 아직 강의 API라 유지)
-└── components/game/          GameProgress · NoticeCard · AllocationRow
-```
+## ⚠️ 코드를 짜기 전에 알아야 할 것
 
-## 백엔드 연동 시 할 일
-
-1. `.env`에서 `VITE_USE_MOCK=false`
-2. `src/api/game.js`의 `PATH` 상수를 확정 경로로 교체
-3. `src/store/course.js`의 `CATEGORY_CATALOG`를 확정 섹터 enum으로 교체 (여기 한 곳뿐)
-4. `EnrollRequest`에 `investmentAmount`·`participationId`가 추가됐는지 확인
-
-### ⚠️ API 경로 제약
-
-API Gateway는 소스 없는 완성 이미지라 **라우트를 추가할 수 없다.**
-아래 5개 prefix 밖의 경로는 **404**가 난다.
+### API 경로는 5개 prefix 안에만
 
 ```
-/api/users  /api/courses  /api/enrollments  /api/payments  /api/recommend
+/api/users   /api/courses   /api/enrollments   /api/payments   /api/recommend
 ```
 
-기획 초안 §13의 `/api/games/available`, `/api/scenarios/{id}`는 **쓸 수 없다.**
-`src/api/game.js`에 대안 경로(제안)를 주석으로 적어 뒀다.
+**API Gateway는 소스 없는 완성 이미지라 라우트를 추가할 수 없다.** 위 5개 밖의 경로는
+**404**가 난다. 새 마이크로서비스도 만들 수 없다.
 
-## 아직 팀 결정을 기다리는 것
+```
+❌ /api/games/available        →  404
+❌ /api/scenarios/{id}         →  404
+✅ /api/courses/scenarios/{id}
+✅ /api/enrollments/games
+```
 
-코드에서 값을 지어내지 않고 한 곳에 모아 뒀다. 결정되면 그 파일만 고치면 된다.
+### 사용자 식별은 `X-User-Id` 헤더로
 
-| 항목 | 현재 기본값 | 위치 |
+게이트웨이가 JWT 클레임을 꺼내 헤더로 주입한다. **하위 서비스에서 JWT를 직접 파싱하지 않는다.**
+
+| 헤더 | 출처 클레임 |
+|---|---|
+| `X-User-Id` | **`user_id`** (스네이크 케이스. `userId` 아님) |
+| `X-User-Email` | `email` |
+| `X-User-Role` | `role` |
+
+게이트웨이를 안 거치고 8081~8084를 직접 호출하면 헤더가 없어 **400**이 난다.
+
+### `users.role` 은 바꿀 수 없다
+
+`auth-server` 이미지에 enum이 `STUDENT`/`INSTRUCTOR`로 컴파일돼 있고, 그 서버가 `users`
+테이블을 직접 읽는다. 다른 값을 넣으면 **로그인만 조용히 깨진다.**
+의미만 재해석한다 — `STUDENT` = 일반 투자자 / `INSTRUCTOR` = 운영자.
+
+### 엔티티를 고치면 DDL도 함께
+
+`init-db/01_init.sql`이 유일한 DDL이다. 엔티티만 고치면 `ddl-auto: update`가 컬럼을
+덧붙여 **DDL과 실제 스키마가 갈라진다.** 반대로 DDL만 고치면 기동이 실패한다.
+
+**스키마를 고친 뒤에는 `docker compose down -v`가 필요하다.** `init-db/`는 볼륨이 빈
+경우에만 실행되므로 `down`만으로는 반영되지 않는다.
+
+### 로그인 경로는 OAuth2 하나뿐
+
+`/api/users/login`은 게이트웨이가 열어 뒀지만 컨트롤러에 매핑이 없어 **500**이 난다.
+로그인은 `POST http://localhost:8080/oauth2/token`.
+
+초기 계정: `student@lecture.com` / `instructor@lecture.com`, 비밀번호 `password1234`.
+
+> `auth-server`를 재시작하면 RSA 서명 키가 새로 생성돼 **기존 발급 토큰이 전부 무효**가
+> 된다. 실습 중 갑자기 401이 쏟아지면 이것부터 의심한다.
+
+---
+
+## 브랜치 · PR 규칙
+
+```
+main                              ← 직접 push 금지 (팀 규칙)
+ ├─ feat/<이름>-<내용>             feat/hwangjaewon-enrollment-status
+ ├─ fix/<이름>-<내용>
+ └─ docs/<이름>-<내용>
+
+태그
+ ├─ sprint1-done                   Sprint1 Review 직후
+ └─ sprint2-done
+```
+
+| 규칙 | 내용 |
+|---|---|
+| 1 PR = 1 Task | 제목에 Task 번호 — `[T-03] enrollment 상태 전이 추가` |
+| 병합 | **squash merge** — `main` 이력이 Task 단위로 남는다 |
+| 리뷰 | 최소 1명 승인 |
+| 삭제 | 병합 후 브랜치 삭제 |
+
+> ⚠️ **`main` 브랜치 보호를 기술적으로 걸 수 없다.** GitHub Free는 브랜치 보호를
+> **public 리포에서만** 지원하는데 이 리포는 Private다(강사 배포 원본 포함).
+> **그래서 위 규칙이 팀 DoD의 항목이 된다** — 도구가 아니라 사람이 지킨다.
+
+### 충돌을 구조적으로 막는다
+
+담당 디렉터리를 나누면 같은 파일을 동시에 고칠 일이 없다. **예외는 둘뿐이다.**
+
+| 파일 | 고치기 전에 |
+|---|---|
+| `init-db/01_init.sql` | 팀 채널에 알린다 |
+| `docker-compose.yml` | 팀 채널에 알린다 |
+
+---
+
+## Sprint 범위
+
+| | 손대는 것 | 그대로 두는 것 |
 |---|---|---|
-| 현금 보유 허용 / 종목 수 제한 | 허용 / 무제한 | `src/mock/scenario.js`의 `GAME_RULES` |
-| 섹터명 | 임시값 (IT·금융·바이오·소비재·에너지·운송) | `src/mock/stocks.js` |
-| API 경로 | 미확정 (제안값) | `src/api/game.js`의 `PATH` |
-| 행동 이벤트 전송 여부 | **수집만 하고 전송 안 함** | `src/store/game.js`의 `events` |
+| **Sprint1** | `user` · `course` · `enrollment` · `vue-frontend` | `payment` · `kafka` · `recommend` — 원본 그대로 통과시킨다 |
+| **Sprint2** | `payment`(리워드) · Kafka 이벤트 · `recommend`(성향 분석) | Sprint1 서비스는 **한 줄도 고치지 않는다** |
 
-행동 이벤트 4종(`GAME_STARTED`·`SCENARIO_VIEWED`·`ALLOCATION_CHANGED`·`INVESTMENT_SUBMITTED`)을
-수집한다. **"선택을 바꾼 횟수"는 최종 선택만 DB에 저장되므로 프런트에서만 관찰 가능하다.**
+Sprint2에서 리워드와 분석을 붙일 때 Sprint1의 회원·종목 서비스를 건드리지 않아도 되는 것,
+그게 MSA의 "독립된 서비스 단위"와 Agile의 "점진적 확장"이 맞물린 지점이다.
+
+**Kafka 규칙**: 토픽 이름과 Producer/Consumer 구조는 유지하고 **payload 필드만 확장**한다.
+
+---
+
+## 담당
+
+[`docs/team.md`](docs/team.md) — **아직 빈칸이다.** 킥오프에서 채운다.
+
+## 문서
+
+| 문서 | 내용 |
+|---|---|
+| [`docs/team.md`](docs/team.md) | 담당표 · 환경(`uname -m`) |
+| [`vue-frontend/README.md`](vue-frontend/README.md) | 프런트 목 모드 · 구조 · 연동 절차 |
+| [`vue-frontend/STOCK_INVESTMENT_GAME_PROJECT_DRAFT.md`](vue-frontend/STOCK_INVESTMENT_GAME_PROJECT_DRAFT.md) | 기획 초안 (화면·시나리오·데이터 모델) |
+| [`NOTICE.md`](NOTICE.md) | 강사 배포 원본 고지 · 기동 절차 원문 |
+
+---
 
 ## 안내
 
 - 등장하는 종목은 **모두 가상**이며 실존 기업과 무관하다.
 - 모의 투자이며 실제 매매가 이루어지지 않는다.
-- 게임 결과는 참고용 보조 정보이며 공식 투자자 성향 진단을 대체하지 않는다.
-
-## `.env`에 대하여
-
-`.env`를 커밋했다. 값이 전부 **강사 배포 템플릿의 고정 공개값**이고
-(`web-client`/`web-secret`은 auth-server 이미지에 하드코딩돼 있다),
-팀원이 clone 후 바로 `npm run dev`할 수 있어야 하기 때문이다.
-**실제 비밀이 아니며, 실서비스라면 client_secret을 프런트에 두면 안 된다.**
+- 게임 결과는 참고용 보조 정보이며 **공식 투자자 성향 진단을 대체하지 않는다.**

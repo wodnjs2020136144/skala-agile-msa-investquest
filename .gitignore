@@ -1,15 +1,40 @@
-# 의존성
-node_modules/
+# ── 절대 커밋하지 않는 것 ──────────────────────────────
+# 343MB. GitHub 파일 한도(100MB) 초과라 커밋 자체가 불가능하다.
+# 슬랙에서 각자 받아 `docker load -i infra-images.tar` 한다.
+infra-images.tar
+*.tar
 
-# 빌드 산출물
+# 강사 배포 PDF (저작권 자료)
+docs/pdf/
+
+# ── 빌드 산출물 ────────────────────────────────────────
+# bin/ 은 강사 배포본에 커밋돼 있다. 소스를 고쳐도 안 바뀌어 혼란을 준다.
+bin/
+build/
+out/
+.gradle/
 dist/
+target/
 
-# 로컬 환경
+# ── 의존성 ─────────────────────────────────────────────
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ── 로컬 환경 ──────────────────────────────────────────
+# vue-frontend/.env 는 예외로 커밋한다 (아래 부정 규칙).
+# 강사 배포 고정 공개값이고, clone 후 바로 npm run dev 가 되어야 한다.
+.env
+!vue-frontend/.env
+
 .DS_Store
 *.local
 .vite/
 
-# 에디터
+# ── 에디터 ─────────────────────────────────────────────
 .idea/
 .vscode/
+*.iml
 *.swp
