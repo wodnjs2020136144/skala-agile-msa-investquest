@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { gameApi } from '@/api/game.js'
+import { recommendApi } from '@/api/recommend.js'
 import { GAME_RULES } from '@/mock/scenario.js'
 
 /**
@@ -24,6 +25,9 @@ export const useGameStore = defineStore('game', () => {
   const error = ref(null)
   const submitting = ref(false)
   const result = ref(null)
+  const profile = ref(null)
+  const analyzing = ref(false)
+  const analysisError = ref(null)
 
   /**
    * 행동 이벤트 로그.
@@ -81,20 +85,128 @@ export const useGameStore = defineStore('game', () => {
     return (Math.max(cashBalance.value, 0) / initialCash.value) * 100
   })
 
+  // ── 성향 신호 ────────────────────────────────────────────────
+  //
+  // 기획 초안 §7 의 행동 데이터를 화면에서 계산 가능한 형태로 옮긴 것이다.
+  //
+  // ⚠️ 분석 방식(규칙 기반 / LLM)은 Sprint2 에서 정한다. 여기서 확정하는 것은
+  //    "무엇을 재는가"까지이고 유형·점수는 만들지 않는다. 어느 방식으로 가든
+  //    입력은 같기 때문에 수집만 먼저 시작한다 — Sprint1 에 수집을 시작하지
+  //    않으면 Sprint2 에 쓸 데이터 자체가 없다.
+  //
+  // 종목의 sector · risk 는 mock/stocks.js 에 이미 있다(백엔드 스키마 확정안이
+  // courses 에 추가하기로 한 risk_level 을 미리 반영한 값). 새 데이터가 필요 없다.
+  //
+  // ⚠️ 분모는 투자금(investedTotal)이다. 초기자금이 아니다.
+  //    화면에 쓰는 weightOf() · cashWeight 는 초기자금 기준이라 분모가 다르다.
+  //    두 계열을 섞지 않는다 — 배분 화면은 현금이 한 행으로 들어가 합이 100%가
+  //    되어야 하고(초기자금 기준), 성향 지표는 "투자한 돈을 어떻게 나눴나"를
+  //    보는 것이라(투자금 기준) 서로 다른 질문에 답한다.
+  //
+  //    투자금 기준으로 맞춘 이유는 성향 분석 서비스가 그 기준으로 계산하기
+  //    때문이다. 현금 비중은 그쪽 점수 공식의 investmentRatio 항이 따로 반영한다.
+  //    같은 이름의 지표가 화면과 콘솔에서 2배 차이 나면 아무도 못 믿는다.
+
+  /** 한 종목에 몰아넣은 최대 비중(%) — 집중투자 vs 분산 */
+  const concentrationRatio = computed(() => {
+    if (!investedTotal.value) return 0
+    const amounts = Object.values(allocations.value).map((v) => Number(v) || 0)
+    if (!amounts.length) return 0
+    return (Math.max(...amounts) / investedTotal.value) * 100
+  })
+
+  /** 섹터별 투자 비중(%) 맵 — 관심 산업·테마 */
+  const sectorWeights = computed(() => {
+    if (!investedTotal.value) return {}
+    const out = {}
+    for (const s of stocks.value) {
+      const amount = Number(allocations.value[s.id]) || 0
+      if (amount <= 0) continue
+      const sector = s.sector || 'UNKNOWN'
+      out[sector] = (out[sector] || 0) + (amount / investedTotal.value) * 100
+    }
+    return out
+  })
+
+  /** 고변동성(risk HIGH) 종목 비중 합(%) — 위험 감수 경향 */
+  const highRiskRatio = computed(() => {
+    if (!investedTotal.value) return 0
+    return stocks.value
+      .filter((s) => s.risk === 'HIGH')
+      .reduce((sum, s) => sum + (Number(allocations.value[s.id]) || 0), 0)
+      / investedTotal.value * 100
+  })
+
+  /**
+   * 게임을 시작한 순간부터 투자를 확정한 순간까지의 초 — 즉흥형 vs 숙고형.
+   * 아직 확정하지 않았으면 지금까지의 경과를 준다.
+   *
+   * computed 가 아니라 함수인 이유: 값이 현재 시각에 의존하는데 Date.now() 는
+   * 반응형 소스가 아니라 computed 로 두면 한 번 계산된 뒤 갱신되지 않는다.
+   * 확정 시점에 한 번 호출해 쓴다.
+   */
+  function decisionSeconds() {
+    // 새로고침하면 events 가 통째로 날아가 GAME_STARTED 가 없을 수 있다.
+    // 그때는 남아 있는 가장 이른 이벤트(SCENARIO_VIEWED)로 대신한다.
+    // 실제보다 짧게 나오지만 null 보다는 쓸모가 있다.
+    const started = events.value.find((e) => e.type === 'GAME_STARTED')
+      ?? events.value.find((e) => e.type === 'SCENARIO_VIEWED')
+    if (!started) return null
+    const submitted = [...events.value].reverse()
+      .find((e) => e.type === 'INVESTMENT_SUBMITTED')
+    const endAt = submitted ? new Date(submitted.at).getTime() : Date.now()
+    return Math.max(0, Math.round((endAt - new Date(started.at).getTime()) / 1000))
+  }
+
+  /**
+   * 확정 시점의 성향 신호 7종을 한 덩어리로 만든다.
+   *
+   * ⚠️ 서버로 보내지 않는다. 전송 여부는 미결 안건(5-2)이고 받을 백엔드 필드도
+   *    아직 없다. 지금은 events 로그에만 남아 프런트에서 관찰된다.
+   *    "선택을 바꾼 횟수"처럼 최종 상태만 저장하는 DB 로는 절대 복원할 수 없는
+   *    지표가 섞여 있어, 보낼 곳이 생겼을 때 이 함수 하나만 연결하면 된다.
+   */
+  function behaviorMetrics() {
+    return {
+      cashWeight: cashWeight.value,
+      concentrationRatio: concentrationRatio.value,
+      highRiskRatio: highRiskRatio.value,
+      sectorWeights: sectorWeights.value,
+      stockCount: selectedCount.value,
+      changeCount: changeCount.value,
+      decisionSeconds: decisionSeconds()
+    }
+  }
+
   function setAllocation(stockId, amount) {
     const before = Number(allocations.value[stockId]) || 0
+    const stock = stocks.value.find((item) => item.id === stockId)
+    const stockPrice = Math.floor(Number(stock?.price) || 0)
     let next = Math.max(0, Math.floor(Number(amount) || 0))
+
+    // 주문은 항상 정수 주 단위다. 금액 입력이 들어와도 살 수 있는 정수 주만 남긴다.
+    if (stockPrice > 0) next = Math.floor(next / stockPrice) * stockPrice
 
     // 예산을 넘기지 않도록 잘라낸다. 넘긴 값을 그대로 두면
     // 확정 버튼만 막히고 왜 막혔는지 화면에서 알기 어렵다.
     const others = investedTotal.value - before
     const room = initialCash.value - others
-    if (next > room) next = Math.max(0, room)
+    if (next > room) {
+      next = stockPrice > 0
+        ? Math.floor(Math.max(0, room) / stockPrice) * stockPrice
+        : Math.max(0, room)
+    }
 
     if (next === before) return
 
     allocations.value = { ...allocations.value, [stockId]: next }
-    track('ALLOCATION_CHANGED', { stockId, beforeAmount: before, afterAmount: next })
+    track('ALLOCATION_CHANGED', {
+      stockId,
+      beforeAmount: before,
+      afterAmount: next,
+      beforeQuantity: stockPrice > 0 ? Math.floor(before / stockPrice) : 0,
+      afterQuantity: stockPrice > 0 ? Math.floor(next / stockPrice) : 0
+    })
   }
 
   function clearAllocations() {
@@ -172,15 +284,14 @@ export const useGameStore = defineStore('game', () => {
             price: s.price,
             amount,
             // 정수 주 단위. 남는 금액은 현금으로 돌아간다
-            quantity: Math.floor(amount / s.price)
+            quantity: amount / s.price
           }
         })
 
       track('INVESTMENT_SUBMITTED', {
         totalAmount: investedTotal.value,
         cashBalance: cashBalance.value,
-        stockCount: list.length,
-        changeCount: changeCount.value
+        ...behaviorMetrics()
       })
 
       const res = await gameApi.submitInvestment({
@@ -189,6 +300,7 @@ export const useGameStore = defineStore('game', () => {
         cashBalance: cashBalance.value
       })
       result.value = res?.data?.data ?? res?.data
+      await analyzeProfile()
       return result.value
     } catch (e) {
       error.value = '투자 확정에 실패했습니다. 다시 시도해 주세요.'
@@ -198,22 +310,73 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  /**
+   * 최종 배분과 프런트에서 수집한 행동 로그를 AI 서비스 계약으로 변환한다.
+   * 분석 실패는 이미 완료된 투자 확정을 되돌리지 않고 결과 화면에서 재시도할 수 있게 한다.
+   */
+  async function analyzeProfile() {
+    if (!participation.value || selectedCount.value === 0) return null
+
+    analyzing.value = true
+    analysisError.value = null
+    try {
+      const started = events.value.find((event) => event.type === 'GAME_STARTED')
+      const submitted = [...events.value].reverse()
+        .find((event) => event.type === 'INVESTMENT_SUBMITTED')
+      const startedAt = started ? Date.parse(started.at) : Date.now()
+      const submittedAt = submitted ? Date.parse(submitted.at) : Date.now()
+      const decisionSeconds = Math.max(0, Math.round((submittedAt - startedAt) / 1000))
+
+      const profileAllocations = stocks.value
+        .filter((stock) => Number(allocations.value[stock.id]) > 0)
+        .map((stock) => ({
+          stockId: stock.id,
+          name: stock.name,
+          sector: stock.sector,
+          risk: stock.risk,
+          amount: Number(allocations.value[stock.id])
+        }))
+
+      const res = await recommendApi.analyzeInvestment({
+        participationId: participation.value.participationId,
+        initialCash: initialCash.value,
+        cashBalance: cashBalance.value,
+        changeCount: changeCount.value,
+        decisionSeconds,
+        allocations: profileAllocations
+      })
+      profile.value = res?.data?.data ?? res?.data
+      return profile.value
+    } catch (error) {
+      analysisError.value = '투자는 확정됐지만 성향 분석을 불러오지 못했습니다.'
+      return null
+    } finally {
+      analyzing.value = false
+    }
+  }
+
   function reset() {
     participation.value = null
     scenario.value = null
     stocks.value = []
     allocations.value = {}
     result.value = null
+    profile.value = null
+    analyzing.value = false
+    analysisError.value = null
     error.value = null
     events.value = []
   }
 
   return {
     participation, scenario, stocks, allocations, loading, error, submitting, result, events,
+    profile, analyzing, analysisError,
     initialCash, investedTotal, cashBalance, selectedCount, changeCount,
     isOverBudget, canSubmit, cashWeight,
+    concentrationRatio, sectorWeights, highRiskRatio,
     rules: GAME_RULES,
     weightOf, setAllocation, clearAllocations, allocateAllToCash,
-    startGame, loadScenario, loadStocks, submit, reset, track
+    decisionSeconds, behaviorMetrics,
+    startGame, loadScenario, loadStocks, submit, analyzeProfile, reset, track
   }
 })

@@ -21,10 +21,10 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+ // 주식 이름 - 종목 세부사항(ex. 하이닉스)
     @Column(nullable = false)
     private String title;
-
+// 
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -34,10 +34,12 @@ public class Course {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    // 강사 ID (users 테이블 참조 - 직접 JOIN 없이 ID만 보관)
+    //삭제예정 
+    // (users 테이블 참조 - 직접 JOIN 없이 ID만 보관)
     @Column(nullable = false)
     private Long instructorId;
 
+    // 삭제 예정
     // 수강생 수 (추천 서비스 정렬 기준)
     @Column(nullable = false)
     @Builder.Default

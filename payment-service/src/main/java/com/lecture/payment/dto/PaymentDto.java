@@ -73,6 +73,37 @@ public class PaymentDto {
         private String status;
     }
 
+    /** 게임 결과에 따른 리워드 생성 요청. 기존 payments 테이블을 재사용한다. */
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class InternalRewardRequest {
+        @NotNull(message = "사용자 ID는 필수입니다")
+        private Long userId;
+
+        @NotNull(message = "대표 종목 ID는 필수입니다")
+        private Long courseId;
+
+        @NotNull(message = "수익률은 필수입니다")
+        private BigDecimal returnRate;
+    }
+
+    /** PENDING은 3일 재투자 중, COMPLETED는 출금 가능 상태를 뜻한다. */
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class RewardResponse {
+        private Long paymentId;
+        private Long userId;
+        private BigDecimal rewardPoints;
+        private String status;
+        private LocalDateTime reinvestmentStartedAt;
+        private LocalDateTime withdrawalAvailableAt;
+        private boolean withdrawable;
+    }
+
     // 공통 API 응답 래퍼
     @Getter
     @NoArgsConstructor

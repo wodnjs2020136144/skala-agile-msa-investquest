@@ -1,14 +1,9 @@
 import api from './index.js'
+import { USE_MOCK } from '@/config.js'
 import { wrap } from '@/mock/index.js'
-import { MOCK_SCENARIO } from '@/mock/scenario.js'
+import { MOCK_SCENARIO, REWARD_POLICY } from '@/mock/scenario.js'
 import { MOCK_STOCKS } from '@/mock/stocks.js'
 import { createMockParticipation } from '@/mock/participation.js'
-
-/**
- * 목 모드 스위치. .env 의 VITE_USE_MOCK 로 켜고 끈다.
- * 백엔드가 도착하면 false 로 바꾸는 것만으로 실 API 로 넘어간다.
- */
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
 /**
  * ⚠️ 아래 실 경로는 전부 "제안"이다. 아직 확정되지 않았다
@@ -76,7 +71,12 @@ export const gameApi = {
             status: 'PENDING'
           })),
           cashBalance,
-          resultAvailableAt: resultDateAfter(MOCK_SCENARIO.durationDays)
+          resultAvailableAt: resultDateAfter(MOCK_SCENARIO.durationDays),
+          rewardPolicy: {
+            profitRewardPoints: REWARD_POLICY.profitRewardPoints,
+            baseRewardPoints: REWARD_POLICY.baseRewardPoints,
+            reinvestmentDays: REWARD_POLICY.reinvestmentDays
+          }
         },
         '투자 확정 성공'
       )

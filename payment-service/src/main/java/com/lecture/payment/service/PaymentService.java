@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -103,5 +104,53 @@ public class PaymentService {
         return paymentRepository.findByUserId(userId).stream()
                 .map(PaymentDto.PaymentResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 게임 결과 리워드를 기존 payments 테이블에 PENDING으로 기록한다.
+     * transactionId의 REWARD- 접두어로 일반 결제와 구분하고, createdAt을 재투자 시작일로 쓴다.
+     */
+    @Transactional
+    public PaymentDto.RewardResponse createReward(PaymentDto.InternalRewardRequest request) {
+        Payment reward = paymentRepository.saveAndFlush(
+                Payment.builder()
+                        .userId(request.getUserId())
+                        .courseId(request.getCourseId())
+                        .amount(RewardPolicy.pointsFor(request.getReturnRate()))
+                        .transactionId("REWARD-" + UUID.randomUUID())
+                        .build()
+        );
+
+        log.info("[PaymentService] 리워드 재투자 시작 - paymentId: {}, points: {}",
+                reward.getId(), reward.getAmount());
+        return toRewardResponse(reward);
+    }
+
+    /** 리워드의 재투자 종료 시각과 현재 출금 가능 여부를 조회한다. */
+    public PaymentDto.RewardResponse getReward(Long paymentId) {
+        Payment reward = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new IllegalArgumentException("리워드를 찾을 수 없습니다: " + paymentId));
+        if (reward.getTransactionId() == null || !reward.getTransactionId().startsWith("REWARD-")) {
+            throw new IllegalArgumentException("게임 리워드 결제 건이 아닙니다: " + paymentId);
+        }
+        return toRewardResponse(reward);
+    }
+
+    private PaymentDto.RewardResponse toRewardResponse(Payment reward) {
+        LocalDateTime startedAt = reward.getCreatedAt() != null
+                ? reward.getCreatedAt()
+                : LocalDateTime.now();
+        LocalDateTime availableAt = startedAt.plusDays(RewardPolicy.REINVESTMENT_DAYS);
+        boolean withdrawable = !LocalDateTime.now().isBefore(availableAt);
+
+        return PaymentDto.RewardResponse.builder()
+                .paymentId(reward.getId())
+                .userId(reward.getUserId())
+                .rewardPoints(reward.getAmount())
+                .status(withdrawable ? "WITHDRAWABLE" : "REINVESTING")
+                .reinvestmentStartedAt(startedAt)
+                .withdrawalAvailableAt(availableAt)
+                .withdrawable(withdrawable)
+                .build();
     }
 }

@@ -37,7 +37,7 @@
             <span class="hero-badge">증권사 신규 고객 온보딩</span>
             <h1 class="hero-title">게임으로 알아보는<br />나의 투자 성향</h1>
             <p class="hero-desc">
-              가상 투자 게임에 참여하고 일주일 뒤 결과와 리워드를 확인하세요.
+              가상 투자 게임에 참여하고 3일 뒤 결과와 최대 1만원의 리워드를 확인하세요.
             </p>
             <div class="hero-actions">
               <router-link to="/login" class="btn btn-primary btn-lg">
@@ -53,7 +53,7 @@
             <div class="mock-panel">
               <div class="mp-head">
                 <span class="mp-title">가상 포트폴리오</span>
-                <span class="mp-amount">10,000원</span>
+                <span class="mp-amount">10,000,000원</span>
               </div>
               <div v-for="row in previewRows" :key="row.name" class="mp-row">
                 <span class="mp-name">{{ row.name }}</span>
@@ -97,16 +97,17 @@ const auth = useAuthStore()
 
 /** 기획 초안 §10 화면 1 — 게임 방식 3단계 소개 */
 const steps = [
-  { title: '가상 상황 확인', desc: '예상하지 못한 지출 상황과 사용할 수 있는 가상 투자금을 확인합니다.' },
+  { title: '가상 미션 확인', desc: '달 기지행 셔틀 출발 전, 3일간 운용할 가상 투자금을 확인합니다.' },
   { title: '종목 선택과 모의 투자', desc: '제시된 종목과 현금에 투자금을 원하는 대로 나눠 담습니다.' },
-  { title: '결과·성향·리워드 확인', desc: '일주일 뒤 결과와 투자 성향 분석, 참여 리워드를 확인합니다.' }
+  { title: '결과·성향·리워드 확인', desc: '3일 뒤 결과와 투자 성향 분석, 최대 1만원의 참여 리워드를 확인합니다.' }
 ]
 
 /** 기획 초안 §10 화면 2 — 핵심 안내사항 4줄 */
 const noticeItems = [
   '게임은 가상의 투자금으로 진행됩니다.',
-  '투자 결과는 약 일주일 뒤 확인할 수 있습니다.',
-  '결과 확인 시 참여 리워드가 지급됩니다.',
+  '투자 결과는 3일 뒤 확인할 수 있습니다.',
+  '참여 리워드는 결과에 따라 최대 1만원이 지급됩니다.',
+  '지급된 포인트는 3일 동안 재투자한 후 출금할 수 있습니다.',
   '게임 결과는 실제 수익을 보장하지 않습니다.'
 ]
 

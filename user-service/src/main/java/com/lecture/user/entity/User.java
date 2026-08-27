@@ -29,7 +29,7 @@ public class User {
 
     @Column(nullable = false)
     private String name;
-
+//role 현재는 student, instructor있을텐데, 이걸 user, admin 이렇게 변경할 것
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
