@@ -1,5 +1,6 @@
 package com.lecture.enrollment.service;
 
+import com.lecture.enrollment.dto.EnrollmentDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -14,6 +16,44 @@ import java.util.Map;
 public class CourseServiceClient {
 
     private final WebClient.Builder webClientBuilder;
+
+    /**
+     * Enrollment 요청의 종목 목록을 Course Service 결과 처리 API로 전달한다.
+     */
+    public EnrollmentDto.CourseResult submitEnrollmentRequest(
+            Long userId,
+            List<EnrollmentDto.EnrollItem> items
+    ) {
+        try {
+            EnrollmentDto.CourseResult result = webClientBuilder.build()
+                    .post()
+                    .uri("http://course-service/api/courses/internal/result")
+                    .header("X-User-Id", String.valueOf(userId))
+                    .bodyValue(items)
+                    .retrieve()
+                    .bodyToMono(EnrollmentDto.CourseResult.class)
+                    .block();
+
+            if (result == null) {
+                throw new RuntimeException("Course Service 계산 결과가 비어 있습니다.");
+            }
+
+            log.info(
+                    "[CourseServiceClient] 구매 요청 전달 성공 - userId: {}, itemCount: {}",
+                    userId,
+                    items.size()
+            );
+            return result;
+        } catch (Exception e) {
+            log.error(
+                    "[CourseServiceClient] 구매 요청 전달 실패 - userId: {}, error: {}",
+                    userId,
+                    e.getMessage(),
+                    e
+            );
+            throw new RuntimeException("Course Service 구매 요청 전달 실패", e);
+        }
+    }
 
     /**
      * Course Service: 강의 존재 여부 확인 (동기 REST)

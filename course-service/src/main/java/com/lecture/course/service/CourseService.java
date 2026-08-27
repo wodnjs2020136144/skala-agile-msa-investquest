@@ -4,6 +4,7 @@ import com.lecture.course.client.PaymentClient;
 import com.lecture.course.client.dto.PaymentRewardRequest;
 import com.lecture.course.dto.CourseDto;
 import com.lecture.course.dto.Result;
+import com.lecture.course.dto.ResultResponse;
 import com.lecture.course.dto.request.ResultRequest;
 import com.lecture.course.entity.Course;
 import com.lecture.course.repository.CourseRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,19 +107,44 @@ public class CourseService {
                 .orElseThrow(() -> new IllegalArgumentException("강의를 찾을 수 없습니다: " + id));
     }
 
-    public Result getResult(Long userId, List<ResultRequest> resultRequests) {
-        BigDecimal totalDifference = resultRequests.stream()
-                .map(ResultRequest::courseId)
-                .map(Long::valueOf)
-                .map(this::findCourseById)
-                .map(course -> course.getTempPrice().subtract(course.getPrice()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    public ResultResponse getResult(Long userId, List<ResultRequest> resultRequests) {
+        BigDecimal investedTotal = BigDecimal.ZERO;
+        BigDecimal profitAmount = BigDecimal.ZERO;
 
-        Result result = totalDifference.compareTo(BigDecimal.ZERO) > 0
+        for (ResultRequest request : resultRequests) {
+            Course course = findCourseById(Long.valueOf(request.courseId()));
+            BigDecimal quantity = BigDecimal.valueOf(request.quantity());
+
+            investedTotal = investedTotal.add(course.getPrice().multiply(quantity));
+            profitAmount = profitAmount.add(
+                    course.getTempPrice()
+                            .subtract(course.getPrice())
+                            .multiply(quantity)
+            );
+        }
+
+        Result result = profitAmount.compareTo(BigDecimal.ZERO) > 0
                 ? Result.SUCCESS
                 : Result.FAILED;
 
-        paymentClient.sendResult(new PaymentRewardRequest(userId,999,result));
-        return result;
+        BigDecimal returnRate = investedTotal.signum() == 0
+                ? BigDecimal.ZERO.setScale(2)
+                : profitAmount
+                        .divide(investedTotal, 6, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100))
+                        .setScale(2, RoundingMode.HALF_UP);
+
+        BigDecimal evaluatedTotal = investedTotal.add(profitAmount);
+
+        String paymentResult = result == Result.SUCCESS ? "SUCCESS" : "FAILURE";
+        paymentClient.sendResult(new PaymentRewardRequest(userId, 1L, paymentResult));
+
+        return new ResultResponse(
+                result,
+                returnRate,
+                profitAmount,
+                investedTotal,
+                evaluatedTotal
+        );
     }
 }

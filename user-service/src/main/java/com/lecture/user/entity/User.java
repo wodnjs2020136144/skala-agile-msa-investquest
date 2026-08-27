@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,6 +35,10 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false, precision = 15, scale = 2)
+    @Builder.Default
+    private BigDecimal money = BigDecimal.ZERO;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -43,5 +48,9 @@ public class User {
 
     public enum Role {
         STUDENT, INSTRUCTOR
+    }
+
+    public void addMoney(BigDecimal amount) {
+        this.money = this.money.add(amount);
     }
 }

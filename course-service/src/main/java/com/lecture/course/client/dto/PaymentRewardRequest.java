@@ -1,10 +1,8 @@
 package com.lecture.course.client.dto;
 
-import com.lecture.course.dto.Result;
-
 public record PaymentRewardRequest(
         Long userId,
-        Long CourseId,
-        Result result
+        Long courseId,
+        String result
 ) {
 }

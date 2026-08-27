@@ -8,10 +8,14 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import com.lecture.user.service.UserService;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserKafkaConsumer {
+
+    private final UserService userService;
 
     /**
      * reward.granted 이벤트 수신
@@ -45,7 +49,10 @@ public class UserKafkaConsumer {
             log.info("[Kafka Consumer] 파싱 완료 - paymentId: {}, userId: {}, result: {}, amount: {}",
                     paymentId, userId, result, amount);
 
-            // TODO: users.money 갱신 (다음 단계에서 UserService 호출)
+            userService.addReward(userId, amount);
+
+            log.info("[Kafka Consumer] 보상금 반영 완료 - userId: {}, amount: {}",
+                    userId, amount);
 
         } catch (Exception e) {
             log.error("[Kafka Consumer] 보상금 처리 실패 - event: {}, error: {}",

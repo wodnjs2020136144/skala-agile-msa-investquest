@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface PaymentClient {
 
-    @PostMapping("/api/payments/internal/rewards")
+    @PostMapping("/api/payments/internal/result")
     void sendResult(@RequestBody PaymentRewardRequest request);
 }

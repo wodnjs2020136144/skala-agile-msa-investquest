@@ -29,7 +29,7 @@ public class EnrollmentService {
      * 여러 주식을 한 번에 구매
      */
     @Transactional
-    public List<EnrollmentDto.EnrollmentResponse> enrollAll(
+    public EnrollmentDto.EnrollResultResponse enrollAll(
             Long userId,
             List<EnrollmentDto.EnrollItem> items
     ) {
@@ -39,13 +39,21 @@ public class EnrollmentService {
             );
         }
 
-        return items.stream()
+        List<EnrollmentDto.EnrollmentResponse> responses = items.stream()
                 .map(item -> enroll(
                         userId,
                         item.getCourseId(),
                         item.getQuantity()
                 ))
                 .collect(Collectors.toList());
+
+        EnrollmentDto.CourseResult result =
+                courseServiceClient.submitEnrollmentRequest(userId, items);
+
+        return EnrollmentDto.EnrollResultResponse.builder()
+                .enrollments(responses)
+                .result(result)
+                .build();
     }
 
     /**

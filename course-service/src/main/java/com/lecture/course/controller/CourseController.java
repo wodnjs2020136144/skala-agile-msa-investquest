@@ -2,6 +2,7 @@ package com.lecture.course.controller;
 
 import com.lecture.course.dto.CourseDto;
 import com.lecture.course.dto.Result;
+import com.lecture.course.dto.ResultResponse;
 import com.lecture.course.dto.request.ResultRequest;
 import com.lecture.course.entity.Course;
 import com.lecture.course.service.CourseService;
@@ -105,7 +106,7 @@ public class CourseController {
 //    }
 
     @PostMapping("/internal/result")
-    public ResponseEntity<Result> getResult(
+    public ResponseEntity<ResultResponse> getResult(
             @RequestHeader("X-User-Id") Long userId,
             @RequestBody List<ResultRequest> resultRequests
             ){

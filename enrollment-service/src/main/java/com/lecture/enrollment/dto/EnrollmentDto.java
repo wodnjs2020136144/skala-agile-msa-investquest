@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,6 +45,27 @@ public class EnrollmentDto {
         @NotEmpty(message = "구매할 주식을 하나 이상 선택해야 합니다")
         @Valid
         private List<EnrollItem> items;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CourseResult {
+        private String result;
+        private BigDecimal returnRate;
+        private BigDecimal profitAmount;
+        private BigDecimal investedTotal;
+        private BigDecimal evaluatedTotal;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class EnrollResultResponse {
+        private List<EnrollmentResponse> enrollments;
+        private CourseResult result;
     }
 
     /**

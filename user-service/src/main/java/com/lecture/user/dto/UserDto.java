@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class UserDto {
@@ -43,6 +44,7 @@ public class UserDto {
         private String email;
         private String name;
         private User.Role role;
+        private BigDecimal money;
         private LocalDateTime createdAt;
 
         public static UserResponse from(User user) {
@@ -51,6 +53,7 @@ public class UserDto {
                     .email(user.getEmail())
                     .name(user.getName())
                     .role(user.getRole())
+                    .money(user.getMoney())
                     .createdAt(user.getCreatedAt())
                     .build();
         }

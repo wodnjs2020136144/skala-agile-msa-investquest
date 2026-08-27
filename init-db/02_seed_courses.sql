@@ -28,17 +28,17 @@ SELECT
     NOW(6),
     NOW(6)
 FROM (
-    SELECT '제주반도체(080220)' AS title, '반도체' AS category, 76500.00 AS price, 81000.00 AS temp_price, 'HIGH' AS status
+    SELECT '제주반도체(080220)' AS title, '반도체' AS category, 76500.00 AS price, 82400.00 AS temp_price, 'HIGH' AS status
     UNION ALL
-    SELECT '삼성전자(005930)', '반도체', 267000.00, 269000.00, 'LOW'
+    SELECT '삼성전자(005930)', '반도체', 267000.00, 251500.00, 'LOW'
     UNION ALL
-    SELECT 'HLB(028300)', '바이오', 35900.00, 32000.00, 'HIGH'
+    SELECT 'HLB(028300)', '바이오', 35900.00, 38700.00, 'HIGH'
     UNION ALL
-    SELECT '삼성바이오로직스(207940)', '바이오', 1587000.00, 1600000.00, 'LOW'
+    SELECT '삼성바이오로직스(207940)', '바이오', 1587000.00, 1492000.00, 'LOW'
     UNION ALL
-    SELECT '스페코(013810)', '방산', 1559.00, 1720.00, 'HIGH'
+    SELECT '스페코(013810)', '방산', 1559.00, 1688.00, 'HIGH'
     UNION ALL
-    SELECT '한국항공우주(047810)', '방산', 135600.00, 137500.00, 'LOW'
+    SELECT '한국항공우주(047810)', '방산', 135600.00, 127900.00, 'LOW'
 ) AS seed
 JOIN users ON users.email = 'stock-seed@local'
 WHERE NOT EXISTS (

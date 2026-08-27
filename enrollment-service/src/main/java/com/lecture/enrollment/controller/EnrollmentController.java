@@ -22,20 +22,20 @@ public class EnrollmentController {
     @PostMapping
     public ResponseEntity<
             EnrollmentDto.ApiResponse<
-                    List<EnrollmentDto.EnrollmentResponse>
+                    EnrollmentDto.EnrollResultResponse
             >
     > enroll(
             @RequestHeader("X-User-Id") Long userId,
             @Valid @RequestBody EnrollmentDto.EnrollRequest request
     ) {
-        List<EnrollmentDto.EnrollmentResponse> responses =
+        EnrollmentDto.EnrollResultResponse response =
                 enrollmentService.enrollAll(
                         userId,
                         request.getItems()
                 );
 
         return ResponseEntity.ok(
-                EnrollmentDto.ApiResponse.success(responses)
+                EnrollmentDto.ApiResponse.success(response)
         );
     }
 
