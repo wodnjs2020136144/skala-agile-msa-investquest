@@ -34,6 +34,9 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    private int money;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

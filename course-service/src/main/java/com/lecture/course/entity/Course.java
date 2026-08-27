@@ -27,11 +27,10 @@ public class Course {
 // 
     @Column(columnDefinition = "TEXT")
     private String description;
-//주식 종목(ex. 반도체)
-    @Enumerated(EnumType.STRING)
+
     @Column(nullable = false)
-    private Category category;
-// 주식 가격
+    private String category;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
@@ -46,12 +45,14 @@ public class Course {
     @Builder.Default
     private Integer enrollmentCount = 0;
 
-    // 고위험군 저위험군 구분 HIGH, LOW
+    @Column(name = "temp_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal tempPrice;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private Status status = Status.ACTIVE;
-    
+    private Status status = Status.LOW;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -59,12 +60,8 @@ public class Course {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public enum Category {
-        BACKEND, FRONTEND, DEVOPS, DATA_SCIENCE, MOBILE, SECURITY, DATABASE, OTHER
-    }
-
     public enum Status {
-        ACTIVE, INACTIVE
+        LOW,HIGH
     }
 
     public void increaseEnrollmentCount() {

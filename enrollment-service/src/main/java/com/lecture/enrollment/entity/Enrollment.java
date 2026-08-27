@@ -29,8 +29,9 @@ public class Enrollment {
     @Column(name = "course_id", nullable = false)
     private Long courseId;
 
-    // 종목을 선택했을 경우, pending
-    // 선택 후, 일주일 뒤 결과 확인 시, active
+    @Column(name = "price", nullable = false)
+    private int price;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
