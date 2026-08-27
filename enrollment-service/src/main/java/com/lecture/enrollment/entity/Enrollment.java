@@ -25,9 +25,12 @@ public class Enrollment {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    // 주식 아이디
     @Column(name = "course_id", nullable = false)
     private Long courseId;
 
+    // 종목을 선택했을 경우, pending
+    // 선택 후, 일주일 뒤 결과 확인 시, active
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -41,8 +44,8 @@ public class Enrollment {
     private LocalDateTime updatedAt;
 
     public enum Status {
-        PENDING,   // 수강신청 완료, 결제 대기
-        ACTIVE,    // 결제 완료, 수강 활성화
+        PENDING,   // 주식 구매 완료, 결과 확인 대기
+        ACTIVE,    // 결과 확인
         CANCELLED  // 취소
     }
 
