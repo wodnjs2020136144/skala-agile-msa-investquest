@@ -81,6 +81,81 @@ export const useGameStore = defineStore('game', () => {
     return (Math.max(cashBalance.value, 0) / initialCash.value) * 100
   })
 
+  // ── 성향 신호 ────────────────────────────────────────────────
+  //
+  // 기획 초안 §7 의 행동 데이터를 화면에서 계산 가능한 형태로 옮긴 것이다.
+  //
+  // ⚠️ 분석 방식(규칙 기반 / LLM)은 Sprint2 에서 정한다. 여기서 확정하는 것은
+  //    "무엇을 재는가"까지이고 유형·점수는 만들지 않는다. 어느 방식으로 가든
+  //    입력은 같기 때문에 수집만 먼저 시작한다 — Sprint1 에 수집을 시작하지
+  //    않으면 Sprint2 에 쓸 데이터 자체가 없다.
+  //
+  // 종목의 sector · risk 는 mock/stocks.js 에 이미 있다(백엔드 스키마 확정안이
+  // courses 에 추가하기로 한 risk_level 을 미리 반영한 값). 새 데이터가 필요 없다.
+
+  /** 한 종목에 몰아넣은 최대 비중(%) — 집중투자 vs 분산 */
+  const maxConcentration = computed(() => {
+    if (!initialCash.value) return 0
+    const amounts = Object.values(allocations.value).map((v) => Number(v) || 0)
+    if (!amounts.length) return 0
+    return (Math.max(...amounts) / initialCash.value) * 100
+  })
+
+  /** 섹터별 투자 비중(%) 맵 — 관심 산업·테마 */
+  const sectorWeights = computed(() => {
+    if (!initialCash.value) return {}
+    const out = {}
+    for (const s of stocks.value) {
+      const amount = Number(allocations.value[s.id]) || 0
+      if (amount <= 0) continue
+      const sector = s.sector || 'UNKNOWN'
+      out[sector] = (out[sector] || 0) + (amount / initialCash.value) * 100
+    }
+    return out
+  })
+
+  /** 고변동성(risk HIGH) 종목 비중 합(%) — 위험 감수 경향 */
+  const highRiskWeight = computed(() => {
+    if (!initialCash.value) return 0
+    return stocks.value
+      .filter((s) => s.risk === 'HIGH')
+      .reduce((sum, s) => sum + (Number(allocations.value[s.id]) || 0), 0)
+      / initialCash.value * 100
+  })
+
+  /**
+   * 시나리오를 처음 본 순간부터 지금까지의 초 — 즉흥형 vs 숙고형.
+   *
+   * computed 가 아니라 함수인 이유: 값이 현재 시각에 의존하는데 Date.now() 는
+   * 반응형 소스가 아니라 computed 로 두면 한 번 계산된 뒤 갱신되지 않는다.
+   * 확정 시점에 한 번 호출해 쓴다.
+   */
+  function decisionSeconds() {
+    const viewed = events.value.find((e) => e.type === 'SCENARIO_VIEWED')
+    if (!viewed) return null
+    return Math.round((Date.now() - new Date(viewed.at).getTime()) / 1000)
+  }
+
+  /**
+   * 확정 시점의 성향 신호 7종을 한 덩어리로 만든다.
+   *
+   * ⚠️ 서버로 보내지 않는다. 전송 여부는 미결 안건(5-2)이고 받을 백엔드 필드도
+   *    아직 없다. 지금은 events 로그에만 남아 프런트에서 관찰된다.
+   *    "선택을 바꾼 횟수"처럼 최종 상태만 저장하는 DB 로는 절대 복원할 수 없는
+   *    지표가 섞여 있어, 보낼 곳이 생겼을 때 이 함수 하나만 연결하면 된다.
+   */
+  function behaviorMetrics() {
+    return {
+      cashWeight: cashWeight.value,
+      maxConcentration: maxConcentration.value,
+      highRiskWeight: highRiskWeight.value,
+      sectorWeights: sectorWeights.value,
+      stockCount: selectedCount.value,
+      changeCount: changeCount.value,
+      decisionSeconds: decisionSeconds()
+    }
+  }
+
   function setAllocation(stockId, amount) {
     const before = Number(allocations.value[stockId]) || 0
     let next = Math.max(0, Math.floor(Number(amount) || 0))
@@ -179,8 +254,7 @@ export const useGameStore = defineStore('game', () => {
       track('INVESTMENT_SUBMITTED', {
         totalAmount: investedTotal.value,
         cashBalance: cashBalance.value,
-        stockCount: list.length,
-        changeCount: changeCount.value
+        ...behaviorMetrics()
       })
 
       const res = await gameApi.submitInvestment({
@@ -212,8 +286,10 @@ export const useGameStore = defineStore('game', () => {
     participation, scenario, stocks, allocations, loading, error, submitting, result, events,
     initialCash, investedTotal, cashBalance, selectedCount, changeCount,
     isOverBudget, canSubmit, cashWeight,
+    maxConcentration, sectorWeights, highRiskWeight,
     rules: GAME_RULES,
     weightOf, setAllocation, clearAllocations, allocateAllToCash,
+    decisionSeconds, behaviorMetrics,
     startGame, loadScenario, loadStocks, submit, reset, track
   }
 })
