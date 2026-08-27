@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { gameApi } from '@/api/game.js'
+import { recommendApi } from '@/api/recommend.js'
 import { GAME_RULES } from '@/mock/scenario.js'
 
 /**
@@ -24,6 +25,9 @@ export const useGameStore = defineStore('game', () => {
   const error = ref(null)
   const submitting = ref(false)
   const result = ref(null)
+  const profile = ref(null)
+  const analyzing = ref(false)
+  const analysisError = ref(null)
 
   /**
    * 행동 이벤트 로그.
@@ -189,6 +193,7 @@ export const useGameStore = defineStore('game', () => {
         cashBalance: cashBalance.value
       })
       result.value = res?.data?.data ?? res?.data
+      await analyzeProfile()
       return result.value
     } catch (e) {
       error.value = '투자 확정에 실패했습니다. 다시 시도해 주세요.'
@@ -198,22 +203,72 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  /**
+   * 최종 배분과 프런트에서 수집한 행동 로그를 AI 서비스 계약으로 변환한다.
+   * 분석 실패는 이미 완료된 투자 확정을 되돌리지 않고 결과 화면에서 재시도할 수 있게 한다.
+   */
+  async function analyzeProfile() {
+    if (!participation.value || selectedCount.value === 0) return null
+
+    analyzing.value = true
+    analysisError.value = null
+    try {
+      const started = events.value.find((event) => event.type === 'GAME_STARTED')
+      const submitted = [...events.value].reverse()
+        .find((event) => event.type === 'INVESTMENT_SUBMITTED')
+      const startedAt = started ? Date.parse(started.at) : Date.now()
+      const submittedAt = submitted ? Date.parse(submitted.at) : Date.now()
+      const decisionSeconds = Math.max(0, Math.round((submittedAt - startedAt) / 1000))
+
+      const profileAllocations = stocks.value
+        .filter((stock) => Number(allocations.value[stock.id]) > 0)
+        .map((stock) => ({
+          stockId: stock.id,
+          name: stock.name,
+          symbol: stock.symbol,
+          sector: stock.sector,
+          risk: stock.risk,
+          amount: Number(allocations.value[stock.id])
+        }))
+
+      const res = await recommendApi.analyzeInvestment({
+        participationId: participation.value.participationId,
+        initialCash: initialCash.value,
+        cashBalance: cashBalance.value,
+        changeCount: changeCount.value,
+        decisionSeconds,
+        allocations: profileAllocations
+      })
+      profile.value = res?.data?.data ?? res?.data
+      return profile.value
+    } catch (error) {
+      analysisError.value = '투자는 확정됐지만 성향 분석을 불러오지 못했습니다.'
+      return null
+    } finally {
+      analyzing.value = false
+    }
+  }
+
   function reset() {
     participation.value = null
     scenario.value = null
     stocks.value = []
     allocations.value = {}
     result.value = null
+    profile.value = null
+    analyzing.value = false
+    analysisError.value = null
     error.value = null
     events.value = []
   }
 
   return {
     participation, scenario, stocks, allocations, loading, error, submitting, result, events,
+    profile, analyzing, analysisError,
     initialCash, investedTotal, cashBalance, selectedCount, changeCount,
     isOverBudget, canSubmit, cashWeight,
     rules: GAME_RULES,
     weightOf, setAllocation, clearAllocations, allocateAllToCash,
-    startGame, loadScenario, loadStocks, submit, reset, track
+    startGame, loadScenario, loadStocks, submit, analyzeProfile, reset, track
   }
 })
