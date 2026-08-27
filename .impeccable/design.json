@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-27T00:00:00+09:00",
+  "title": "Design System: InvestQuest",
+  "extensions": {
+    "colorMeta": {
+      "ground": { "role": "neutral", "displayName": "바닥", "canonical": "#F2F4F6", "dark": "#17171C", "tonalRamp": ["#17171C", "#202027", "#2E2E36", "#4E5968", "#8B95A1", "#DDE1E6", "#E8EBED", "#F2F4F6"] },
+      "surface": { "role": "neutral", "displayName": "면", "canonical": "#FFFFFF", "dark": "#202027", "tonalRamp": ["#17171C", "#202027", "#26262E", "#3A3A45", "#8B95A1", "#DDE1E6", "#F2F4F6", "#FFFFFF"] },
+      "fill-weak": { "role": "neutral", "displayName": "한 단 낮은 면", "canonical": "#F2F4F6", "dark": "#26262E", "tonalRamp": ["#17171C", "#26262E", "#2E2E36", "#3A3A45", "#8B95A1", "#DDE1E6", "#E8EBED", "#F2F4F6"] },
+      "fill": { "role": "neutral", "displayName": "채움", "canonical": "#E8EBED", "dark": "#2E2E36", "tonalRamp": ["#17171C", "#2E2E36", "#3A3A45", "#4E5968", "#8B95A1", "#B0B8C1", "#DDE1E6", "#E8EBED"] },
+      "fill-strong": { "role": "neutral", "displayName": "짙은 채움", "canonical": "#DDE1E6", "dark": "#3A3A45", "tonalRamp": ["#17171C", "#2E2E36", "#3A3A45", "#4E5968", "#8B95A1", "#B0B8C1", "#D1D6DB", "#DDE1E6"] },
+      "text-strong": { "role": "neutral", "displayName": "강한 글자", "canonical": "#191F28", "dark": "#E4E4E5", "tonalRamp": ["#191F28", "#2A3140", "#4E5968", "#6B7684", "#8B95A1", "#B0B8C1", "#D1D6DB", "#E4E4E5"] },
+      "text": { "role": "neutral", "displayName": "본문 글자", "canonical": "#4E5968", "dark": "#A5ACB4", "tonalRamp": ["#191F28", "#2A3140", "#4E5968", "#6B7684", "#8B95A1", "#A5ACB4", "#B0B8C1", "#D1D6DB"] },
+      "text-weak": { "role": "neutral", "displayName": "약한 글자 (13px 에서 4.5:1)", "canonical": "#6B7684", "dark": "#8B95A1", "tonalRamp": ["#191F28", "#4E5968", "#5C6675", "#6B7684", "#8B95A1", "#B0B8C1", "#D1D6DB", "#E5E8EB"] },
+      "text-disabled": { "role": "neutral", "displayName": "비활성 글자", "canonical": "#B0B8C1", "dark": "#5F666E", "tonalRamp": ["#191F28", "#4E5968", "#5F666E", "#8B95A1", "#B0B8C1", "#D1D6DB", "#E5E8EB", "#F2F4F6"] },
+      "line": { "role": "neutral", "displayName": "hairline", "canonical": "#E5E8EB", "dark": "#2E2E36", "tonalRamp": ["#17171C", "#2E2E36", "#3C3C46", "#4E5968", "#8B95A1", "#D1D6DB", "#E5E8EB", "#F2F4F6"] },
+      "line-strong": { "role": "neutral", "displayName": "굵은 hairline", "canonical": "#D1D6DB", "dark": "#3C3C46", "tonalRamp": ["#17171C", "#2E2E36", "#3C3C46", "#4E5968", "#8B95A1", "#B0B8C1", "#D1D6DB", "#E5E8EB"] },
+      "brand": { "role": "primary", "displayName": "토스 블루", "canonical": "#3182F6", "dark": "#4593FC", "tonalRamp": ["#151B26", "#16233A", "#1B2436", "#1B64DA", "#3182F6", "#4593FC", "#6AA9FF", "#E8F3FF"] },
+      "brand-strong": { "role": "primary", "displayName": "토스 블루 (진하게)", "canonical": "#1B64DA", "dark": "#6AA9FF", "tonalRamp": ["#151B26", "#16233A", "#1E3A6B", "#1B64DA", "#3182F6", "#4593FC", "#6AA9FF", "#E8F3FF"] },
+      "brand-weak": { "role": "primary", "displayName": "연파랑 면", "canonical": "#E8F3FF", "dark": "#1B2436", "tonalRamp": ["#151B26", "#16233A", "#1B2436", "#1E3A6B", "#3182F6", "#6AA9FF", "#E8F3FF", "#F4F9FF"] },
+      "brand-weaker": { "role": "primary", "displayName": "더 연한 파랑 (히어로 그라디언트)", "canonical": "#F4F9FF", "dark": "#151B26", "tonalRamp": ["#151B26", "#16233A", "#1B2436", "#1E3A6B", "#3182F6", "#6AA9FF", "#E8F3FF", "#F4F9FF"] },
+      "on-brand": { "role": "primary", "displayName": "브랜드 위 글자", "canonical": "#FFFFFF", "dark": "#FFFFFF", "tonalRamp": ["#191F28", "#4E5968", "#8B95A1", "#B0B8C1", "#D1D6DB", "#E5E8EB", "#F2F4F6", "#FFFFFF"] },
+      "up": { "role": "tertiary", "displayName": "상승 (한국 관례 빨강)", "canonical": "#F04452", "dark": "#F86D75", "tonalRamp": ["#2C1D21", "#5A1F26", "#A3303B", "#F04452", "#F86D75", "#FBA0A6", "#FDECEE", "#FFF5F6"] },
+      "up-weak": { "role": "tertiary", "displayName": "상승 면", "canonical": "#FDECEE", "dark": "#2C1D21", "tonalRamp": ["#2C1D21", "#5A1F26", "#A3303B", "#F04452", "#F86D75", "#FBA0A6", "#FDECEE", "#FFF5F6"] },
+      "down": { "role": "tertiary", "displayName": "하락 (브랜드와 같은 파랑 — 의도된 수렴)", "canonical": "#3182F6", "dark": "#4593FC", "tonalRamp": ["#151B26", "#16233A", "#1B2436", "#1B64DA", "#3182F6", "#4593FC", "#6AA9FF", "#E8F3FF"] },
+      "down-weak": { "role": "tertiary", "displayName": "하락 면", "canonical": "#E8F3FF", "dark": "#16233A", "tonalRamp": ["#151B26", "#16233A", "#1B2436", "#1E3A6B", "#3182F6", "#6AA9FF", "#E8F3FF", "#F4F9FF"] },
+      "flat": { "role": "tertiary", "displayName": "보합", "canonical": "#8B95A1", "dark": "#8B95A1", "tonalRamp": ["#191F28", "#4E5968", "#6B7684", "#8B95A1", "#B0B8C1", "#D1D6DB", "#E5E8EB", "#F2F4F6"] },
+      "positive": { "role": "tertiary", "displayName": "긍정 (성공)", "canonical": "#0B8F63", "dark": "#2FD08C", "tonalRamp": ["#152A23", "#0A4A35", "#0B6B4A", "#0B8F63", "#2FD08C", "#7FE3B9", "#E4F7F0", "#F1FBF6"] },
+      "positive-weak": { "role": "tertiary", "displayName": "긍정 면", "canonical": "#E4F7F0", "dark": "#152A23", "tonalRamp": ["#152A23", "#0A4A35", "#0B6B4A", "#0B8F63", "#2FD08C", "#7FE3B9", "#E4F7F0", "#F1FBF6"] },
+      "negative": { "role": "tertiary", "displayName": "부정 (에러) — 상승 빨강과 같은 값", "canonical": "#F04452", "dark": "#F86D75", "tonalRamp": ["#2C1D21", "#5A1F26", "#A3303B", "#F04452", "#F86D75", "#FBA0A6", "#FDECEE", "#FFF5F6"] },
+      "negative-weak": { "role": "tertiary", "displayName": "부정 면", "canonical": "#FDECEE", "dark": "#2C1D21", "tonalRamp": ["#2C1D21", "#5A1F26", "#A3303B", "#F04452", "#F86D75", "#FBA0A6", "#FDECEE", "#FFF5F6"] },
+      "caution": { "role": "tertiary", "displayName": "주의 (불릿·아이콘 전용, 글자 금지)", "canonical": "#FF9500", "dark": "#FFB84D", "tonalRamp": ["#2A2318", "#5C3A00", "#8A5200", "#B26A00", "#FF9500", "#FFB84D", "#FFC46B", "#FFF6E5"] },
+      "caution-text": { "role": "tertiary", "displayName": "주의 글자", "canonical": "#B26A00", "dark": "#FFC46B", "tonalRamp": ["#2A2318", "#5C3A00", "#8A5200", "#B26A00", "#FF9500", "#FFB84D", "#FFC46B", "#FFF6E5"] },
+      "caution-weak": { "role": "tertiary", "displayName": "주의 면 (준법 고지 카드)", "canonical": "#FFF6E5", "dark": "#2A2318", "tonalRamp": ["#2A2318", "#5C3A00", "#8A5200", "#B26A00", "#FF9500", "#FFB84D", "#FFC46B", "#FFF6E5"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "비로그인 홈 히어로 제목. 모바일 32px, ≥768px 에서 44px(스케일 밖 단 한 곳)." },
+      "headline": { "displayName": "Headline", "purpose": "게임 화면 page-title(24→28px), 홈 섹션 제목, 성향 이름. text-wrap: balance." },
+      "title": { "displayName": "Title", "purpose": "sec-title, 종목명, 단계 제목, 로고 워드마크. 카드 안 소제목은 15px/700." },
+      "body": { "displayName": "Body", "purpose": "본문·행 라벨·설명. 설명문은 line-height 1.7. 행 값은 15px/700 text-strong." },
+      "label": { "displayName": "Label", "purpose": "캡션·단위·라벨(text-weak 500), 칩 글자(600), 진행 단계 이름. 배지는 12px/600." },
+      "number": { "displayName": "Number", "purpose": ".num 계열. num-md 20 / num-lg 24 / num-xl 32, 700, tabular-nums, 큰 단계는 -0.02em. 한 화면에 num-xl 하나." }
+    },
+    "shadows": [
+      { "name": "elev-card", "value": "0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04)", "dark": "none", "purpose": "카드 안개. 상태에 따라 변하지 않는다. 카드는 그림자가 아니라 바닥과의 명도차로 선다." },
+      { "name": "elev-sticky", "value": "0 2px 12px rgba(0,0,0,.06)", "dark": "0 4px 16px rgba(0,0,0,.45)", "purpose": "콘텐츠 위에 떠서 스크롤하는 sticky 요약 카드." },
+      { "name": "elev-cta", "value": "0 -2px 12px rgba(0,0,0,.05)", "dark": "0 -2px 16px rgba(0,0,0,.5)", "purpose": "모바일 하단 고정 CTA 바. 위쪽으로 떨어진다." },
+      { "name": "ring", "value": "0 0 0 3px rgba(49,130,246,.32)", "dark": "0 0 0 3px rgba(69,147,252,.45)", "purpose": ":focus-visible 전용 포커스 링. 마우스 클릭에는 뜨지 않는다." },
+      { "name": "ring-select", "value": "inset 0 0 0 1.5px var(--brand)", "purpose": "선택된 종목 카드, 포커스된 인풋. 안쪽 링이라 레이아웃이 밀리지 않는다." },
+      { "name": "ring-outline", "value": "inset 0 0 0 1.5px var(--line-strong)", "purpose": "outline 버튼의 테두리 대용." }
+    ],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(.25, .8, .5, 1)", "purpose": "모든 전환의 기본 이징." },
+      { "name": "dur", "value": "180ms", "purpose": "background-color · color · transform 상태 전환." },
+      { "name": "press", "value": "transform: scale(.97)", "purpose": "버튼 :active. 칩은 .96, 테마 토글은 .94. 들어 올리는 hover 는 없다." },
+      { "name": "track-fill", "value": "transform .35s var(--ease); transform-origin: left center", "purpose": "트랙 채움. width 대신 scaleX." },
+      { "name": "fade-in-up", "value": "fadeInUp .36s var(--ease) backwards", "purpose": "페이지 컬럼 진입. fill-mode 는 backwards 고정 — both 면 transform 이 남아 fixed CTA 기준이 깨진다." },
+      { "name": "fade-in", "value": "fadeIn .3s var(--ease) backwards", "purpose": "홈 히어로 목업 진입." },
+      { "name": "pop", "value": "pop .3s var(--ease) both (scale .8→1, opacity 0→1)", "purpose": "확정 화면 체크 원." },
+      { "name": "shimmer", "value": "iq-shimmer 1.4s linear infinite", "purpose": "스켈레톤." },
+      { "name": "spin", "value": "iq-spin .8s linear infinite", "purpose": "스피너." },
+      { "name": "reduced-motion", "value": "animation-duration: .01ms; transition-duration: .01ms", "purpose": "prefers-reduced-motion 에서 전역 적용." }
+    ],
+    "breakpoints": [
+      { "name": "desktop", "value": "768px", "purpose": "주 경계. BottomCta 텔레포트 여부, page-title 24→28px, 헤더 보조 링크, fact-grid 2×2→1×4." },
+      { "name": "row-controls", "value": "560px", "purpose": "종목 카드의 인풋·칩이 세로→가로." },
+      { "name": "compact-header", "value": "480px", "purpose": "헤더 워드마크 숨김." }
+    ],
+    "layout": {
+      "content-max": "640px",
+      "content-max-invest": "720px",
+      "content-max-wide": "1120px",
+      "content-max-login": "400px",
+      "header-h": "56px",
+      "cta-h": "56px",
+      "cta-h-desktop": "52px",
+      "z": { "sticky": 50, "cta": 90, "header": 100, "overlay": 200 }
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "화면당 하나뿐인 주 액션. hover 는 짙어지고 눌리면 살짝 줄어든다. 비활성은 회색 면 + 비활성 글자.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">동의하고 게임 시작</button> <button class=\"ds-btn ds-btn-primary\" disabled>투자 확정하기</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: none; border-radius: var(--r-12, 12px); font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); font-size: 15px; font-weight: 600; line-height: 1; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 180ms cubic-bezier(.25,.8,.5,1), color 180ms cubic-bezier(.25,.8,.5,1), transform 180ms cubic-bezier(.25,.8,.5,1); } .ds-btn:active { transform: scale(.97); } .ds-btn:focus-visible { outline: none; box-shadow: var(--ring, 0 0 0 3px rgba(49,130,246,.32)); } .ds-btn:disabled { background: var(--fill, #E8EBED); color: var(--text-disabled, #B0B8C1); cursor: default; pointer-events: none; transform: none; } .ds-btn-primary { background: var(--brand, #3182F6); color: var(--text-on-brand, #FFFFFF); } .ds-btn-primary:hover { background: var(--brand-strong, #1B64DA); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "하단 CTA 의 보조 액션(홈으로·이전), 헤더의 로그인·로그아웃. 한 단 낮은 회색 면.",
+      "html": "<button class=\"ds-btn ds-btn-ghost\">이전</button> <button class=\"ds-btn ds-btn-outline\">둘러보기</button> <button class=\"ds-btn ds-btn-secondary\">보조 액션</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: none; border-radius: var(--r-12, 12px); font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); font-size: 15px; font-weight: 600; line-height: 1; white-space: nowrap; cursor: pointer; transition: background-color 180ms cubic-bezier(.25,.8,.5,1), color 180ms cubic-bezier(.25,.8,.5,1), transform 180ms cubic-bezier(.25,.8,.5,1); } .ds-btn:active { transform: scale(.97); } .ds-btn:focus-visible { outline: none; box-shadow: var(--ring, 0 0 0 3px rgba(49,130,246,.32)); } .ds-btn-ghost { background: var(--fill-weak, #F2F4F6); color: var(--text, #4E5968); } .ds-btn-ghost:hover { background: var(--fill, #E8EBED); } .ds-btn-outline { background: transparent; color: var(--text-strong, #191F28); box-shadow: inset 0 0 0 1.5px var(--line-strong, #D1D6DB); } .ds-btn-outline:hover { background: var(--fill-weak, #F2F4F6); } .ds-btn-secondary { background: var(--brand-weak, #E8F3FF); color: var(--brand, #3182F6); } .ds-btn-secondary:hover { background: color-mix(in srgb, var(--brand-weak, #E8F3FF) 80%, var(--brand, #3182F6)); }"
+    },
+    {
+      "name": "Bottom CTA",
+      "kind": "nav",
+      "refersTo": "bottom-cta-bar",
+      "description": "모바일 하단 고정 바. 흰 면 + 위쪽 그림자, 56px 버튼, 주 액션은 flex:1, 보조 ghost 는 고정폭.",
+      "html": "<div class=\"ds-cta-bar\"><div class=\"ds-cta-inner\"><button class=\"ds-cta-btn ds-cta-ghost\">이전</button><button class=\"ds-cta-btn ds-cta-primary\">투자 확정하기</button></div></div>",
+      "css": ".ds-cta-bar { padding: 12px 20px; background: var(--surface, #FFFFFF); box-shadow: var(--elev-cta, 0 -2px 12px rgba(0,0,0,.05)); } .ds-cta-inner { max-width: 640px; margin: 0 auto; display: flex; gap: 8px; } .ds-cta-btn { display: inline-flex; align-items: center; justify-content: center; height: 56px; border: none; border-radius: var(--r-16, 16px); font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); font-size: 17px; font-weight: 700; line-height: 1; cursor: pointer; transition: background-color 180ms cubic-bezier(.25,.8,.5,1), transform 180ms cubic-bezier(.25,.8,.5,1); } .ds-cta-btn:active { transform: scale(.97); } .ds-cta-btn:focus-visible { outline: none; box-shadow: var(--ring, 0 0 0 3px rgba(49,130,246,.32)); } .ds-cta-primary { flex: 1; background: var(--brand, #3182F6); color: var(--text-on-brand, #FFFFFF); } .ds-cta-primary:hover { background: var(--brand-strong, #1B64DA); } .ds-cta-ghost { padding: 0 24px; background: var(--fill-weak, #F2F4F6); color: var(--text, #4E5968); } .ds-cta-ghost:hover { background: var(--fill, #E8EBED); }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "pill 형태의 작은 액션. 25%·50%·최대·비우기 같은 빠른 선택. 회색 바닥 위에서는 흰 면 변형.",
+      "html": "<button class=\"ds-chip\">25%</button> <button class=\"ds-chip\">50%</button> <button class=\"ds-chip ds-chip-brand\">최대</button> <button class=\"ds-chip\" disabled>비우기</button> <button class=\"ds-chip ds-chip-on-ground\">전부 현금으로</button>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border: none; border-radius: 999px; background: var(--fill-weak, #F2F4F6); color: var(--text, #4E5968); font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); font-size: 13px; font-weight: 600; line-height: 1; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 180ms cubic-bezier(.25,.8,.5,1), transform 180ms cubic-bezier(.25,.8,.5,1); } .ds-chip:hover { background: var(--fill, #E8EBED); } .ds-chip:active { transform: scale(.96); } .ds-chip:focus-visible { outline: none; box-shadow: var(--ring, 0 0 0 3px rgba(49,130,246,.32)); } .ds-chip:disabled { color: var(--text-disabled, #B0B8C1); background: var(--fill-weak, #F2F4F6); cursor: default; transform: none; } .ds-chip-brand { background: var(--brand-weak, #E8F3FF); color: var(--brand, #3182F6); } .ds-chip-brand:hover { background: color-mix(in srgb, var(--brand-weak, #E8F3FF) 80%, var(--brand, #3182F6)); } .ds-chip-on-ground { background: var(--surface, #FFFFFF); box-shadow: var(--elev-card, 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04)); } .ds-chip-on-ground:hover { background: var(--surface, #FFFFFF); }"
+    },
+    {
+      "name": "Badge & Tag",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "정보 라벨. 배지 24px(종목명 옆 섹터), 태그 28px(제목 아래 상태·시나리오 번호). 제목 위에 두지 않는다.",
+      "html": "<span class=\"ds-badge\">IT</span> <span class=\"ds-badge ds-badge-blue\">신규</span> <span class=\"ds-tag\">가상 시나리오 01</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 12px; border-radius: 999px; background: var(--fill-weak, #F2F4F6); color: var(--text, #4E5968); font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); font-size: 12px; font-weight: 600; line-height: 1; white-space: nowrap; } .ds-badge-blue { background: var(--brand-weak, #E8F3FF); color: var(--brand, #3182F6); } .ds-tag { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--brand-weak, #E8F3FF); color: var(--brand, #3182F6); font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); font-size: 13px; font-weight: 700; line-height: 1; white-space: nowrap; }"
+    },
+    {
+      "name": "Card with Row List",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "회색 바닥 위 흰 카드. 테두리 없음, 안개 그림자. 안은 hairline 행 — 좌 라벨, 우 굵은 값. 합계는 굵은 선 위의 행.",
+      "html": "<div class=\"ds-card\"><ul class=\"ds-list\"><li class=\"ds-row\"><span class=\"ds-row-label\">보유 투자금</span><span class=\"ds-row-value ds-num\">10,000,000원</span></li><li class=\"ds-row\"><span class=\"ds-row-label\">게임 기간</span><span class=\"ds-row-value\">3일</span></li><li class=\"ds-row\"><span class=\"ds-row-label\">가온반도체<span class=\"ds-row-sub\">1041주</span></span><span class=\"ds-row-value ds-num\">2,498,400원</span></li></ul><div class=\"ds-total\"><span>합계</span><strong class=\"ds-num ds-num-md\">10,000,000원</strong></div></div>",
+      "css": ".ds-card { background: var(--surface, #FFFFFF); border-radius: var(--r-16, 16px); box-shadow: var(--elev-card, 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04)); padding: 8px 20px; font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); font-variant-numeric: tabular-nums; } .ds-list { list-style: none; margin: 0; padding: 0; } .ds-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; padding: 12px 0; } .ds-row + .ds-row { border-top: 1px solid var(--line, #E5E8EB); } .ds-row-label { font-size: 15px; color: var(--text, #4E5968); } .ds-row-sub { display: block; margin-top: 2px; font-size: 13px; color: var(--text-weak, #6B7684); } .ds-row-value { font-size: 15px; font-weight: 700; color: var(--text-strong, #191F28); text-align: right; } .ds-num { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; font-weight: 700; color: var(--text-strong, #191F28); } .ds-num-md { font-size: 20px; line-height: 1.32; } .ds-total { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-top: 1.5px solid var(--line-strong, #D1D6DB); font-size: 15px; color: var(--text, #4E5968); }"
+    },
+    {
+      "name": "Order Summary",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "배분 화면의 sticky 주문 헤더. 잔여 현금이 유일한 큰 숫자, 그 아래 현금 비중 트랙(scaleX), 마지막 줄에 작은 행 둘.",
+      "html": "<div class=\"ds-summary\"><div class=\"ds-sum-hero\"><span class=\"ds-sum-label\">잔여 현금</span><strong class=\"ds-num ds-num-xl\">5,003,200원</strong></div><div class=\"ds-meter\"><div class=\"ds-track\"><div class=\"ds-track-fill\" style=\"transform: scaleX(.5)\"></div></div><span class=\"ds-cm-label\">현금 보유 비중 <span class=\"ds-cm-weight\">50%</span></span></div><div class=\"ds-sum-row\"><span class=\"ds-sum-label\">보유 투자금</span><strong class=\"ds-sum-small\">10,000,000원</strong></div><div class=\"ds-sum-row ds-sum-row-end\"><span class=\"ds-sum-label\">투자 합계</span><strong class=\"ds-sum-small\">4,996,800원</strong></div></div>",
+      "css": ".ds-summary { background: var(--surface, #FFFFFF); border-radius: var(--r-16, 16px); box-shadow: var(--elev-sticky, 0 2px 12px rgba(0,0,0,.06)); padding: 16px 20px; display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'hero hero' 'meter meter' 'row1 row2'; row-gap: 12px; column-gap: 16px; font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); font-variant-numeric: tabular-nums; } .ds-sum-hero { grid-area: hero; display: flex; flex-direction: column; gap: 2px; } .ds-sum-label { font-size: 13px; font-weight: 500; color: var(--text-weak, #6B7684); white-space: nowrap; } .ds-num { font-weight: 700; color: var(--text-strong, #191F28); letter-spacing: -0.01em; } .ds-num-xl { font-size: 32px; line-height: 1.32; letter-spacing: -0.02em; } .ds-meter { grid-area: meter; display: flex; flex-direction: column; gap: 8px; } .ds-track { position: relative; height: 6px; border-radius: 999px; background: var(--fill, #E8EBED); overflow: hidden; } .ds-track-fill { width: 100%; height: 100%; border-radius: inherit; background: var(--brand, #3182F6); transform-origin: left center; transition: transform .35s cubic-bezier(.25,.8,.5,1); } .ds-cm-label { font-size: 13px; color: var(--text-weak, #6B7684); display: flex; justify-content: space-between; } .ds-cm-weight { color: var(--text, #4E5968); font-weight: 700; } .ds-sum-row { display: flex; align-items: baseline; gap: 8px; } .ds-sum-row:nth-of-type(3) { grid-area: row1; } .ds-sum-row-end { grid-area: row2; justify-content: flex-end; } .ds-sum-row .ds-sum-label { font-size: 12px; } .ds-sum-small { font-size: 14px; font-weight: 600; color: var(--text-strong, #191F28); }"
+    },
+    {
+      "name": "Quantity Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "테두리 없는 한 단 낮은 면. hover 에 짙어지고, 포커스에 흰 면 + 1.5px 파란 안쪽 링. 스피너 화살표는 지운다.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-label\" for=\"ds-qty\">주문 수량</label><div class=\"ds-input-group\"><input id=\"ds-qty\" class=\"ds-input ds-input-qty\" type=\"number\" inputmode=\"numeric\" value=\"1041\" /><span class=\"ds-unit\">주</span></div></div><div class=\"ds-field\"><label class=\"ds-label\" for=\"ds-email\">이메일</label><input id=\"ds-email\" class=\"ds-input\" type=\"email\" placeholder=\"user@example.com\" /></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); } .ds-label { font-size: 13px; font-weight: 600; color: var(--text, #4E5968); } .ds-input-group { position: relative; display: flex; align-items: center; } .ds-input { width: 100%; height: 52px; padding: 0 16px; border: none; border-radius: var(--r-12, 12px); background: var(--fill-weak, #F2F4F6); color: var(--text-strong, #191F28); font-family: inherit; font-size: 16px; transition: box-shadow 180ms cubic-bezier(.25,.8,.5,1), background-color 180ms cubic-bezier(.25,.8,.5,1); } .ds-input::placeholder { color: var(--text-weak, #6B7684); } .ds-input:hover { background: var(--fill, #E8EBED); } .ds-input:focus { outline: none; background: var(--surface, #FFFFFF); box-shadow: inset 0 0 0 1.5px var(--brand, #3182F6); } .ds-input-qty { height: 48px; padding-right: 40px; font-size: 20px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; -moz-appearance: textfield; appearance: textfield; } .ds-input-qty::-webkit-outer-spin-button, .ds-input-qty::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; } .ds-unit { position: absolute; right: 16px; font-size: 15px; color: var(--text-weak, #6B7684); pointer-events: none; }"
+    },
+    {
+      "name": "Header Nav",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "56px 불투명 흰 헤더. 선·그림자 없음. 내비 링크는 8px 라운드, 활성이면 연파랑 면 + 파랑 글자. 우측에 SVG 테마 토글과 이니셜 아바타.",
+      "html": "<header class=\"ds-header\"><div class=\"ds-header-inner\"><a class=\"ds-logo\" href=\"#\"><span class=\"ds-logo-mark\"></span><span class=\"ds-logo-text\">InvestQuest</span></a><nav class=\"ds-nav\"><a class=\"ds-nav-link ds-nav-active\" href=\"#\">투자 게임</a><a class=\"ds-nav-link\" href=\"#\">강의</a></nav><div class=\"ds-header-actions\"><button class=\"ds-theme-toggle\" aria-label=\"다크 모드로 전환\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z\" /></svg></button><span class=\"ds-avatar\">김</span><button class=\"ds-btn-sm\">로그아웃</button></div></div></header>",
+      "css": ".ds-header { background: var(--surface, #FFFFFF); font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); } .ds-header-inner { max-width: 1120px; margin: 0 auto; padding: 0 20px; height: 56px; display: flex; align-items: center; gap: 24px; } .ds-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; } .ds-logo-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--brand-weak, #E8F3FF); } .ds-logo-text { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: var(--text-strong, #191F28); } .ds-nav { display: flex; gap: 4px; flex: 1; } .ds-nav-link { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 8px; font-size: 15px; font-weight: 600; color: var(--text, #4E5968); text-decoration: none; white-space: nowrap; transition: background-color 180ms cubic-bezier(.25,.8,.5,1), color 180ms cubic-bezier(.25,.8,.5,1); } .ds-nav-link:hover { background: var(--fill-weak, #F2F4F6); color: var(--text-strong, #191F28); } .ds-nav-active, .ds-nav-active:hover { background: var(--brand-weak, #E8F3FF); color: var(--brand, #3182F6); } .ds-header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; } .ds-theme-toggle { width: 36px; height: 36px; border: none; border-radius: 999px; background: none; display: inline-flex; align-items: center; justify-content: center; color: var(--text, #4E5968); cursor: pointer; transition: background-color 180ms cubic-bezier(.25,.8,.5,1), transform 180ms cubic-bezier(.25,.8,.5,1); } .ds-theme-toggle:hover { background: var(--fill-weak, #F2F4F6); color: var(--text-strong, #191F28); } .ds-theme-toggle:active { transform: scale(.94); } .ds-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--fill-weak, #F2F4F6); color: var(--text-strong, #191F28); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; } .ds-btn-sm { height: 34px; padding: 0 16px; border: none; border-radius: 8px; background: var(--fill-weak, #F2F4F6); color: var(--text, #4E5968); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 180ms cubic-bezier(.25,.8,.5,1), transform 180ms cubic-bezier(.25,.8,.5,1); } .ds-btn-sm:hover { background: var(--fill, #E8EBED); } .ds-btn-sm:active { transform: scale(.97); }"
+    },
+    {
+      "name": "Game Progress",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "번호 원 대신 3분할 4px pill 트랙. 지난·현재 단계 파랑, 남은 단계 회색. 현재 라벨만 검정 700.",
+      "html": "<ol class=\"ds-progress\" aria-label=\"게임 진행 단계\"><li class=\"ds-step ds-step-done\"><span class=\"ds-step-bar\"></span><span class=\"ds-step-label\">상황 확인</span></li><li class=\"ds-step ds-step-active\" aria-current=\"step\"><span class=\"ds-step-bar\"></span><span class=\"ds-step-label\">종목 선택</span></li><li class=\"ds-step\"><span class=\"ds-step-bar\"></span><span class=\"ds-step-label\">투자 확정</span></li></ol>",
+      "css": ".ds-progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; list-style: none; margin: 0; padding: 0; font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); } .ds-step { display: flex; flex-direction: column; gap: 8px; } .ds-step-bar { display: block; height: 4px; border-radius: 999px; background: var(--fill, #E8EBED); transition: background-color 180ms cubic-bezier(.25,.8,.5,1); } .ds-step-done .ds-step-bar, .ds-step-active .ds-step-bar { background: var(--brand, #3182F6); } .ds-step-label { font-size: 13px; font-weight: 500; color: var(--text-weak, #6B7684); } .ds-step-done .ds-step-label { color: var(--text, #4E5968); } .ds-step-active .ds-step-label { color: var(--text-strong, #191F28); font-weight: 700; }"
+    },
+    {
+      "name": "Notice Card",
+      "kind": "card",
+      "refersTo": "notice-warn",
+      "description": "준법 고지 카드. info 는 흰 카드 + 회색 불릿, warn 은 주황 면 + 진한 주황 제목·아이콘. 아이콘은 톤이 정하는 SVG.",
+      "html": "<aside class=\"ds-notice ds-notice-warn\"><h3 class=\"ds-notice-title\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z\" /><path d=\"M12 9v4M12 17h.01\" /></svg>주의사항</h3><ul class=\"ds-notice-list\"><li>이 게임은 모의 투자이며 실제 매매가 이루어지지 않습니다.</li><li>등장하는 종목은 모두 가상이며 실존 기업과 무관합니다.</li><li>결과는 참고용 보조 정보이며 공식 투자자 성향 진단을 대체하지 않습니다.</li></ul></aside>",
+      "css": ".ds-notice { background: var(--surface, #FFFFFF); box-shadow: var(--elev-card, 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04)); border-radius: var(--r-16, 16px); padding: 20px; font-family: var(--font-sans, 'Pretendard Variable', Pretendard, sans-serif); } .ds-notice-warn { background: var(--caution-weak, #FFF6E5); } .ds-notice-title { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 15px; font-weight: 700; color: var(--text-strong, #191F28); } .ds-notice-title svg { flex-shrink: 0; color: var(--text-weak, #6B7684); } .ds-notice-warn .ds-notice-title, .ds-notice-warn .ds-notice-title svg { color: var(--caution-text, #B26A00); } .ds-notice-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; } .ds-notice-list li { position: relative; padding-left: 14px; font-size: 14px; line-height: 1.7; color: var(--text, #4E5968); } .ds-notice-list li::before { content: ''; position: absolute; left: 2px; top: 10px; width: 4px; height: 4px; border-radius: 50%; background: var(--text-weak, #6B7684); } .ds-notice-warn .ds-notice-list li::before { background: var(--caution, #FF9500); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "이미 아는 증권 앱",
+    "overview": "InvestQuest 는 증권사에 막 가입한 초보 투자자가 모바일에서 여는 게임형 온보딩이다. 그래서 화면은 새로운 정체성을 실험하지 않고 사용자가 이미 손에 익힌 토스증권 웹·토스 앱의 문법을 그대로 따른다(PRODUCT.md 기준선, 2026-08-27 확정). 회색 바닥 위에 테두리 없는 흰 카드가 놓이고, 경계는 선이나 그림자가 아니라 면의 명도 차이로 선다. 숫자는 검정으로 크게, 파랑은 오직 누를 수 있는 것에만 쓴다. 사용자가 이 화면에서 새로 배워야 할 것은 게임 규칙뿐이어야 하고, UI 는 배울 것이 없어야 한다.\n\n밀도는 모바일 기준의 여유 있는 리스트다. 한 화면에 큰 숫자 하나(잔여 현금·투자금·점수), 그 아래 라벨·값 행이 hairline 으로 나뉘어 이어진다. 카드 안에 카드를 넣지 않고, 상자 대신 선 하나로 행을 나눈다. 주 액션은 화면 하단에 고정된 56px 파란 버튼 하나이고, 나머지 액션은 회색 pill 칩이다.\n\n이 세계가 거부한 것은 원본 강사 템플릿(LMS)의 문법이다: 남색 그라디언트, 1px 테두리 카드, 들어 올리는 hover 그림자, 카드 안의 타일, 이모지 아이콘. 그 화면들(강의·내 학습·마이페이지)은 코드에 남아 있지만 목 모드에서 숨겨져 있고, 이 문서의 대상이 아니다.",
+    "keyCharacteristics": [
+      "회색 바닥(--bg) + 흰 카드(--surface) 두 면의 대비가 구조의 전부. 테두리·hover 그림자 없음.",
+      "큰 숫자는 검정(--text-strong) 700, tabular-nums. 파랑(--brand)은 액션·선택 상태에만.",
+      "모든 작은 액션은 pill 칩, 주 액션은 하단 고정 56px CTA(모바일) 하나.",
+      "카드 안은 hairline 행(--line 1px)으로만 나눈다. 중첩 타일 없음.",
+      "눌림은 scale(.97), hover 는 배경이 한 단 짙어지는 것뿐.",
+      "트랙은 width 가 아니라 scaleX 로 움직인다.",
+      "아이콘은 인라인 SVG stroke 만. 이모지 없음. 최대 굵기 700.",
+      "라이트·다크 두 팔레트를 시맨틱 토큰 한 벌이 덮는다. 컴포넌트는 --l-*/--d-* 를 직접 쓰지 않는다.",
+      "등락은 한국 관례: 빨강 상승 · 파랑 하락. 하락 파랑 == 브랜드 파랑은 의도된 수렴."
+    ],
+    "rules": [
+      { "name": "The Blue-Is-Action Rule", "body": "파랑(--brand)은 누를 수 있는 것, 선택된 것, 진행 중인 것에만 쓴다. 금액·비중·수량 같은 정보 숫자는 검정(--text-strong)이다. 화면에서 파랑을 봤다면 그것은 버튼·링크·선택 링·진행 트랙 중 하나여야 한다.", "section": "colors" },
+      { "name": "The Two-Surfaces Rule", "body": "라이트에서 --fill-weak 와 --bg 는 같은 값(#F2F4F6)이다. 흰 카드 위에는 --fill-weak(인풋·칩), 회색 바닥 위에는 --surface(카드·.chip-on-ground)를 놓는다. 회색 위에 회색을 놓으면 사라진다.", "section": "colors" },
+      { "name": "The Red-Up Rule", "body": "등락색은 한국 관례를 따른다: 상승 빨강(--up), 하락 파랑(--down). 하락 파랑이 브랜드 파랑과 같은 값인 것은 토스 팔레트의 의도된 수렴이며 고칠 것이 아니다. 등락에는 반드시 --up/--down 토큰을 쓰고 --brand/--negative 를 직접 쓰지 않는다.", "section": "colors" },
+      { "name": "The Disabled-Is-Fill Rule", "body": "비활성은 opacity 가 아니라 --fill 배경 + --text-disabled 글자다. 반투명 버튼은 이 세계에 없다.", "section": "colors" },
+      { "name": "The One-Big-Number Rule", "body": "한 화면(또는 한 카드)에 num-xl 은 하나다. 배분 화면은 잔여 현금, 시나리오는 보유 투자금, 확정 화면은 성향 점수. 나머지 숫자는 그보다 두 단 이상 작다.", "section": "typography" },
+      { "name": "The No-Eyebrow Rule", "body": "제목 위에 작은 라벨(kicker·eyebrow)을 올리지 않는다. 배지·태그는 제목 아래(hero-badge, scenario-tag) 또는 옆(profile-kicker, 종목명 옆 섹터 배지)에 놓는다.", "section": "typography" },
+      { "name": "The Tabular Rule", "body": "금액·비중·수량은 font-variant-numeric: tabular-nums 로 세로 정렬된다. 전역이라 따로 켤 필요 없지만 끄지도 않는다. 금액은 toLocaleString('ko-KR') + 원, 비중은 정수 %, 수량은 정수 주.", "section": "typography" },
+      { "name": "The No-Lift Rule", "body": "hover 에 translateY 나 그림자 확대를 쓰지 않는다. hover 는 배경이 한 단 짙어지는 것(--fill-weak → --fill, --brand → --brand-strong), 눌림은 transform: scale(.97)(칩은 .96, 토글은 .94)이다.", "section": "elevation" },
+      { "name": "The Hairline-Not-Tile Rule", "body": "카드 안에서 정보를 나눌 때 작은 상자(타일)를 만들지 않는다. 행 사이 1px solid var(--line) 하나로 나눈다. 합계처럼 강조할 행은 1.5px solid var(--line-strong) 위에 놓는다.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do 새 코드에서는 Layer 1 시맨틱 토큰(--bg --surface --text-* --brand --fill* --line*)과 Layer 2 스케일만 쓴다. --l-*/--d-* 원시값과 --color-* alias 는 쓰지 않는다.",
+      "Do 다크 블록 두 개(prefers-color-scheme + [data-theme='dark'])를 항상 같이 고친다.",
+      "Do 회색 바닥 위 흰 카드(16px), 카드 안은 1px --line hairline 행. 카드 안에 카드·타일을 넣지 않는다.",
+      "Do 큰 숫자는 .num .num-xl|lg|md(검정 700 tabular-nums). 한 화면에 num-xl 하나.",
+      "Do 작은 액션은 pill .chip(36px), 주 액션은 BottomCta 안 .btn-primary(56px, 16px 라운드). 회색 바닥 위 칩은 .chip-on-ground.",
+      "Do 비활성은 --fill + --text-disabled. 눌림은 scale(.97). hover 는 배경 한 단 짙게.",
+      "Do 트랙 채움은 transform: scaleX() 로, 선택·포커스 강조는 inset 0 0 0 1.5px var(--brand) 로.",
+      "Do 아이콘은 인라인 SVG(stroke=\"currentColor\", stroke-width 1.8–2, 18–20px). 이모지·아이콘 폰트 금지.",
+      "Do 13px 이하 캡션에는 --text-weak(#6B7684) 이하로 연해지지 않는다. 배지·태그는 제목 아래나 옆에.",
+      "Do 등락은 --up(빨강)/--down(파랑) 토큰으로. 에러는 --negative, 성공은 --positive.",
+      "Do 입력은 테두리 없는 --fill-weak 면, 포커스에 흰 면 + 1.5px 파란 inset 링. iOS 자동 줌을 막으려면 폼 인풋은 16px."
+    ],
+    "donts": [
+      "Don't 카드에 border 를 긋거나 hover 에 그림자·translateY 를 주지 않는다(강사 템플릿 문법).",
+      "Don't 정보 숫자(금액·비중·수량)를 파랑으로 칠하지 않는다. 파랑은 액션·선택·진행에만.",
+      "Don't 제목 위에 eyebrow·kicker 를 놓지 않는다.",
+      "Don't 700 을 넘는 굵기, 11px 이하 글자, opacity 로 만든 비활성을 쓰지 않는다.",
+      "Don't 진행 트랙의 width 를 애니메이션하지 않는다. fade-in-up 을 fill-mode: both 로 바꾸지 않는다(fixed CTA 가 깨진다).",
+      "Don't 라이트에서 --fill-weak 요소를 회색 바닥에 직접 놓지 않는다(같은 값이라 사라진다).",
+      "Don't 한 화면에 .btn-primary 를 둘 이상, 하단 CTA 밖에 주 액션을 두지 않는다(데스크톱 히어로의 mobile-only 예외뿐).",
+      "Don't 주황 --caution(#FF9500)을 글자색으로 쓰지 않는다. 글자는 --caution-text.",
+      "Don't 강사 템플릿 화면(강의·내 학습·마이페이지)의 스타일을 게임 화면으로 가져오거나, 그 화면을 이 문서 기준으로 고치지 않는다 — Sprint1 범위 밖이다."
+    ]
+  }
+}
