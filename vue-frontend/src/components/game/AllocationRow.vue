@@ -1,22 +1,30 @@
 <template>
-  <div class="alloc-row" :class="{ selected: amount > 0 }">
+  <div class="alloc-row card" :class="{ selected: amount > 0 }">
     <div class="ar-head">
       <div class="ar-ident">
         <span class="ar-name">{{ stock.name }}</span>
-      </div>
-      <div class="ar-tags">
         <span class="badge badge-gray">{{ stock.sector }}</span>
+      </div>
+      <div class="ar-price">
+        <span class="ar-price-label">기준가</span>
+        <strong class="num">{{ format(stock.price) }}원</strong>
       </div>
     </div>
 
     <p class="ar-desc">{{ stock.description }}</p>
 
-    <div class="ar-controls">
-      <div class="ar-price">
-        <span class="ar-price-label">기준가</span>
-        <strong>{{ format(stock.price) }}원</strong>
+    <!-- 비중이 이 카드의 큰 숫자다. 0이면 흐리게. -->
+    <div class="ar-meter">
+      <div class="ar-figure">
+        <span class="ar-weight num num-lg" :class="{ empty: amount === 0 }">{{ weight.toFixed(0) }}%</span>
+        <span class="ar-qty">{{ quantity }}주</span>
       </div>
+      <div class="track" role="presentation">
+        <div class="track-fill" :style="{ width: weight + '%' }"></div>
+      </div>
+    </div>
 
+    <div class="ar-controls">
       <div class="ar-input-group">
         <label class="sr-only" :for="inputId">{{ stock.name }} 주문 수량</label>
         <input
@@ -34,27 +42,17 @@
       </div>
 
       <div class="ar-quick">
-        <button type="button" class="ar-chip" @click="setPortion(0.25)">25%</button>
-        <button type="button" class="ar-chip" @click="setPortion(0.5)">50%</button>
-        <button type="button" class="ar-chip" @click="setMax">최대</button>
+        <button type="button" class="chip" @click="setPortion(0.25)">25%</button>
+        <button type="button" class="chip" @click="setPortion(0.5)">50%</button>
+        <button type="button" class="chip" @click="setMax">최대</button>
         <button
           type="button"
-          class="ar-chip ar-chip-clear"
+          class="chip ar-chip-clear"
           :disabled="amount === 0"
           @click="emit('update', 0)"
         >
           비우기
         </button>
-      </div>
-    </div>
-
-    <div class="ar-meter">
-      <div class="ar-bar" role="presentation">
-        <div class="ar-fill" :style="{ width: weight + '%' }"></div>
-      </div>
-      <div class="ar-meta">
-        <span class="ar-weight">{{ weight.toFixed(0) }}%</span>
-        <span class="ar-qty">{{ quantity }}주</span>
       </div>
     </div>
   </div>
@@ -106,144 +104,141 @@ function setMax() {
 
 <style scoped>
 .alloc-row {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  background: var(--color-bg-primary);
-  transition: var(--transition);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: box-shadow var(--dur) var(--ease);
 }
-
 .alloc-row.selected {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary-light);
+  box-shadow: var(--elev-card), inset 0 0 0 1.5px var(--brand);
 }
 
 .ar-head {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
 }
-
-.ar-ident { display: flex; align-items: baseline; gap: 8px; }
-.ar-name { font-weight: 700; color: var(--color-text-primary); }
-.ar-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.ar-ident {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.ar-name {
+  font-size: var(--fs-17);
+  font-weight: var(--fw-bold);
+  color: var(--text-strong);
+}
+.ar-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.ar-price-label {
+  font-size: var(--fs-12);
+  color: var(--text-weak);
+}
+.ar-price strong { font-size: var(--fs-15); font-weight: var(--fw-semibold); }
 
 .ar-desc {
-  margin: 8px 0 14px;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
-  line-height: 1.5;
+  margin: 0;
+  font-size: var(--fs-13);
+  line-height: var(--lh);
+  color: var(--text-weak);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ar-meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.ar-figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.ar-weight { transition: color var(--dur) var(--ease); }
+.ar-weight.empty { color: var(--text-disabled); }
+.ar-qty {
+  font-size: var(--fs-13);
+  color: var(--text-weak);
 }
 
 .ar-controls {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.ar-price { font-size: 0.85rem; color: var(--color-text-secondary); }
-.ar-price-label { margin-right: 6px; }
-.ar-price strong { color: var(--color-text-primary); font-variant-numeric: tabular-nums; }
-
+/* 수량 입력 — 테두리 없이 한 단 낮은 면. 브라우저 스피너 화살표는 지운다. */
 .ar-input-group {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-left: auto;
 }
-
 .ar-input {
-  width: 120px;
-  padding: 8px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font: inherit;
-  font-variant-numeric: tabular-nums;
+  width: 100%;
+  height: 48px;
+  padding: 0 40px 0 var(--space-4);
+  border: none;
+  border-radius: var(--r-12);
+  background: var(--fill-weak);
+  color: var(--text-strong);
+  font-size: var(--fs-20);
+  font-weight: var(--fw-bold);
   text-align: right;
-  color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-}
-
-.ar-input:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-.ar-unit { font-size: 0.85rem; color: var(--color-text-secondary); }
-
-.ar-quick { display: flex; gap: 4px; flex-wrap: wrap; }
-
-.ar-chip {
-  padding: 5px 9px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-primary);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.ar-chip:hover:not(:disabled) {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.ar-chip:disabled { opacity: 0.4; cursor: not-allowed; }
-.ar-chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-
-.ar-meter {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.ar-bar {
-  flex: 1;
-  height: 8px;
-  background: var(--color-bg-tertiary);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.ar-fill {
-  height: 100%;
-  background: var(--color-primary);
-  border-radius: 999px;
-  transition: width 0.2s ease;
-}
-
-.ar-meta {
-  display: flex;
-  gap: 10px;
-  font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-secondary);
-  min-width: 92px;
-  justify-content: flex-end;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  transition: box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
-
-.ar-weight { font-weight: 700; color: var(--color-text-primary); }
-
-.sr-only {
+.ar-input::-webkit-outer-spin-button,
+.ar-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.ar-input:hover { background: var(--fill); }
+.ar-input:focus {
+  outline: none;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1.5px var(--brand);
+}
+.ar-unit {
   position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
+  right: var(--space-4);
+  font-size: var(--fs-15);
+  color: var(--text-weak);
+  pointer-events: none;
 }
 
-@media (max-width: 560px) {
-  .ar-input-group { margin-left: 0; width: 100%; }
-  .ar-input { flex: 1; width: auto; }
-  .ar-quick { width: 100%; }
-  .ar-chip { flex: 1; text-align: center; }
+.ar-quick {
+  display: flex;
+  gap: var(--space-2);
+}
+.ar-quick .chip { flex: 1; padding: 0; }
+
+@media (min-width: 560px) {
+  .ar-controls {
+    flex-direction: row;
+    align-items: center;
+  }
+  .ar-input-group { flex: 1; }
+  .ar-quick { flex-shrink: 0; }
+  .ar-quick .chip { flex: none; padding: 0 var(--space-4); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ar-fill { transition: none; }
+  .alloc-row,
+  .ar-weight,
+  .ar-input { transition: none; }
 }
 </style>
