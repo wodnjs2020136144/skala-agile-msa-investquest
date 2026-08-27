@@ -1,12 +1,17 @@
 package com.lecture.course.service;
 
+import com.lecture.course.client.PaymentClient;
+import com.lecture.course.client.dto.PaymentRewardRequest;
 import com.lecture.course.dto.CourseDto;
+import com.lecture.course.dto.Result;
+import com.lecture.course.dto.request.ResultRequest;
 import com.lecture.course.entity.Course;
 import com.lecture.course.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +21,7 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final PaymentClient paymentClient;
 
     /**
      * 강의 등록 (강사만 가능 - SecurityConfig에서 role 검증)
@@ -45,7 +51,7 @@ public class CourseService {
      * 전체 활성 강의 목록 조회
      */
     public List<CourseDto.CourseResponse> getAllCourses() {
-        return courseRepository.findByStatus(Course.Status.ACTIVE).stream()
+        return courseRepository.findAll().stream()
                 .map(CourseDto.CourseResponse::from)
                 .collect(Collectors.toList());
     }
@@ -53,11 +59,11 @@ public class CourseService {
     /**
      * 카테고리별 강의 조회
      */
-    public List<CourseDto.CourseResponse> getCoursesByCategory(Course.Category category) {
-        return courseRepository.findByCategoryAndStatus(category, Course.Status.ACTIVE).stream()
+/*    public List<CourseDto.CourseResponse> getCoursesByCategory(String category) {
+        return courseRepository.findByCategory(category).stream()
                 .map(CourseDto.CourseResponse::from)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     /**
      * 강의 존재 여부 확인 (Enrollment Service → Course Service REST 호출용)
@@ -79,8 +85,8 @@ public class CourseService {
      * 추천 서비스용: 카테고리별 미수강 강의 조회
      * - excludeCourseIds: 이미 수강한 강의 ID 목록
      */
-    public List<CourseDto.CourseResponse> getRecommendCourses(
-            Course.Category category, List<Long> excludeCourseIds) {
+/*    public List<CourseDto.CourseResponse> getRecommendCourses(
+            String category, List<Long> excludeCourseIds) {
 
         List<Course> courses = excludeCourseIds.isEmpty()
                 ? courseRepository.findByCategoryAndStatus(category, Course.Status.ACTIVE)
@@ -93,9 +99,25 @@ public class CourseService {
                 .map(CourseDto.CourseResponse::from)
                 .collect(Collectors.toList());
     }
-
+*/
     private Course findCourseById(Long id) {
         return courseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("강의를 찾을 수 없습니다: " + id));
+    }
+
+    public Result getResult(Long userId, List<ResultRequest> resultRequests) {
+        BigDecimal totalDifference = resultRequests.stream()
+                .map(ResultRequest::courseId)
+                .map(Long::valueOf)
+                .map(this::findCourseById)
+                .map(course -> course.getTempPrice().subtract(course.getPrice()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Result result = totalDifference.compareTo(BigDecimal.ZERO) > 0
+                ? Result.SUCCESS
+                : Result.FAILED;
+
+        paymentClient.sendResult(new PaymentRewardRequest(userId, result));
+        return result;
     }
 }
