@@ -9,12 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "enrollments",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"user_id", "course_id"}
-        )
-)
+@Table(name = "enrollments",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "course_id"}))
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,21 +25,9 @@ public class Enrollment {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    // 주식 종목 ID
+    // 주식 아이디
     @Column(name = "course_id", nullable = false)
     private Long courseId;
-
-    // 구매 당시 주당 가격
-    @Column(name = "purchase_price", nullable = false)
-    private Long purchasePrice;
-
-    // 구매 주수
-    @Column(name = "quantity", nullable = false)
-    private Long quantity;
-
-    // 주당 가격 × 구매 주수
-    @Column(name = "invested_amount", nullable = false)
-    private Long investedAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -56,11 +40,21 @@ public class Enrollment {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+    
+
+@Column(name = "purchase_price", nullable = false)
+private Long purchasePrice;
+
+@Column(name = "quantity", nullable = false)
+private Long quantity;
+
+@Column(name = "invested_amount", nullable = false)
+private Long investedAmount;
 
     public enum Status {
-        PENDING,   // 구매 완료, 결과 대기
-        ACTIVE,    // 결과 및 포인트 지급 완료
-        CANCELLED
+        PENDING,   // 주식 구매 완료, 결과 확인 대기
+        ACTIVE,    // 결과 확인
+        CANCELLED  // 취소
     }
 
     public void activate() {

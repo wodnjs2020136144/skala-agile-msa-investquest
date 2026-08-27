@@ -18,7 +18,7 @@ public class EnrollmentController {
     private final EnrollmentService enrollmentService;
 
     /**
-     * POST /enrollments - 수강신청
+     * POST /enrollments - 
      * Gateway에서 X-User-Id 헤더로 사용자 ID 전달
      */
     @PostMapping
@@ -27,7 +27,7 @@ public class EnrollmentController {
             @RequestHeader("X-User-Id") Long userId) {
 
         EnrollmentDto.EnrollmentResponse response =
-                enrollmentService.enroll(userId, request.getCourseId());
+                enrollmentService.enroll(userId, request.getCourseId(), request.getQuantity());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(EnrollmentDto.ApiResponse.success(response));
     }
