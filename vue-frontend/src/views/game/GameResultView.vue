@@ -73,7 +73,38 @@
 
       <!-- ② 결과 공개 -->
       <template v-else-if="r">
-        <p v-if="r.revealed" class="demo-flag">
+        <!--
+          발표용 도구. 결과는 사용자의 실제 배분으로 계산되므로 손실 화면을 보려면
+          하락 종목에 몰아넣는 조합을 미리 알아야 한다. 발표 중에 그럴 수 없어
+          방향을 강제하는 전환을 둔다. 목 모드에서만 보인다.
+        -->
+        <div v-if="USE_MOCK" class="demo-box">
+          <div class="demo-head">
+            <span class="demo-tag">DEMO</span>
+            <span class="demo-title">결과 시나리오</span>
+          </div>
+          <div class="demo-chips" role="radiogroup" aria-label="결과 시나리오">
+            <button
+              v-for="opt in OUTCOMES"
+              :key="opt.key"
+              type="button"
+              class="demo-chip"
+              :class="{ active: currentOutcome === opt.key }"
+              role="radio"
+              :aria-checked="currentOutcome === opt.key"
+              @click="switchOutcome(opt.key)"
+            >
+              {{ opt.label }}
+            </button>
+          </div>
+          <p v-if="r.revealed" class="demo-note">
+            <i class="fa-solid fa-flask" aria-hidden="true"></i>
+            발표용 미리 보기입니다. 실제 공개일은 {{ resultDate }}입니다.
+          </p>
+        </div>
+
+        <!-- 실 모드에서는 미리 보기 안내만 남는다 -->
+        <p v-else-if="r.revealed" class="demo-flag">
           <i class="fa-solid fa-flask" aria-hidden="true"></i>
           발표용 미리 보기입니다. 실제 공개일은 {{ resultDate }}입니다.
         </p>
@@ -209,6 +240,15 @@ import { useGameStore } from '@/store/game.js'
 import NoticeCard from '@/components/game/NoticeCard.vue'
 import { REWARD_POLICY } from '@/mock/scenario.js'
 import { useCountUp } from '@/composables/useCountUp.js'
+import { USE_MOCK } from '@/config.js'
+
+/** 발표용 결과 시나리오. 'actual' 은 사용자가 실제로 배분한 결과다. */
+const OUTCOMES = [
+  { key: 'actual', label: '실제' },
+  { key: 'profit', label: '수익' },
+  { key: 'loss', label: '손실' },
+  { key: 'flat', label: '0%' }
+]
 
 const game = useGameStore()
 const r = computed(() => game.gameResult)
@@ -300,10 +340,21 @@ const daysLeft = computed(() => {
   return Math.max(0, Math.ceil(ms / 86400000))
 })
 
-function load(reveal = false) {
-  game.loadGameResult({ reveal }).catch(() => {
+const currentOutcome = computed(() => r.value?.outcome ?? 'actual')
+
+function load(reveal = false, outcome = 'actual') {
+  game.loadGameResult({ reveal, outcome }).catch(() => {
     // game.resultError 로 화면에 표시된다
   })
+}
+
+/**
+ * 시나리오만 바꾼다. 미리 보기 상태는 유지해야 예정일 전에도 계속 볼 수 있다.
+ * 결과가 바뀌면 스토어가 리워드를 비우므로 리워드 화면도 새 수익률을 따라간다.
+ */
+function switchOutcome(outcome) {
+  if (outcome === currentOutcome.value) return
+  load(r.value?.revealed ?? false, outcome)
 }
 
 onMounted(() => {
@@ -377,6 +428,58 @@ onMounted(() => {
 .holding { margin-bottom: 24px; }
 
 /* ── 결과 공개 ─────────────────────────────────────────── */
+/* ── 발표용 결과 시나리오 전환 ─────────────────────────── */
+.demo-box {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px dashed var(--color-border-hover);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-tertiary);
+}
+
+.demo-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+
+.demo-tag {
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-muted);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.demo-title { color: var(--color-text-secondary); font-size: 0.78rem; font-weight: 700; }
+
+.demo-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.demo-chip {
+  padding: 7px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.demo-chip.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.demo-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
 .demo-flag {
   display: flex;
   align-items: center;

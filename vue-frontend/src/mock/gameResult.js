@@ -30,6 +30,47 @@ export const RESULT_PRICES = {
   106: 1425  // 미르물류     1500 →  −5.0%  (NORMAL)
 }
 
+/**
+ * 발표용 대체 가격표.
+ *
+ * 결과는 사용자의 실제 배분으로 계산되므로, 손실 화면을 보려면 하락 종목에
+ * 몰아넣는 조합을 미리 알아야 한다. 발표 중에 그럴 수 없어 방향을 강제하는 표를 둔다.
+ *
+ * 전 종목이 한 방향이되 **폭은 제각각**으로 뒀다 — 종목별 결과가 전부 같은 %면
+ * 만든 티가 나서 데모 가치가 없다. 폭은 RESULT_PRICES 와 같은 원칙으로
+ * 위험도에 맞췄다 (HIGH ±17~21% / NORMAL ±5~7% / LOW ±1.5~2.5%).
+ */
+export const DEMO_PRICES = {
+  loss: {
+    101: 1992, // 가온반도체   2400 → −17.0%  (HIGH)
+    102: 1764, // 한별금융지주 1800 →  −2.0%  (LOW)
+    103: 2528, // 누리바이오   3200 → −21.0%  (HIGH)
+    104: 1182, // 들안식품     1200 →  −1.5%  (LOW)
+    105: 1860, // 새빛에너지   2000 →  −7.0%  (NORMAL)
+    106: 1428  // 미르물류     1500 →  −4.8%  (NORMAL)
+  },
+  profit: {
+    101: 2808, // 가온반도체   2400 → +17.0%  (HIGH)
+    102: 1845, // 한별금융지주 1800 →  +2.5%  (LOW)
+    103: 3872, // 누리바이오   3200 → +21.0%  (HIGH)
+    104: 1218, // 들안식품     1200 →  +1.5%  (LOW)
+    105: 2140, // 새빛에너지   2000 →  +7.0%  (NORMAL)
+    106: 1572  // 미르물류     1500 →  +4.8%  (NORMAL)
+  }
+}
+
+/**
+ * 시나리오에 맞는 결과가를 고른다.
+ * flat 은 기준가를 그대로 돌려줘 배분이 무엇이든 정확히 0% 가 나오게 한다.
+ */
+function priceFor(outcome, stockId, buyPrice) {
+  if (outcome === 'flat') return buyPrice
+  if (outcome === 'loss' || outcome === 'profit') {
+    return DEMO_PRICES[outcome][stockId] ?? buyPrice
+  }
+  return RESULT_PRICES[stockId] ?? buyPrice
+}
+
 function round2(n) {
   return Math.round(n * 100) / 100
 }
@@ -40,9 +81,12 @@ function round2(n) {
  * @param {object}  submitResult  gameApi.submitInvestment 의 응답 (orders·cashBalance·resultAvailableAt)
  * @param {Array}   stocks        게임에 제시된 종목 목록 (이름·섹터를 붙이는 용도)
  * @param {number}  initialCash   시나리오 초기 자금
- * @param {boolean} reveal        결과 예정일 전이라도 결과를 공개할지 (발표 데모용)
+ * @param {object}  opts
+ * @param {boolean} opts.reveal   결과 예정일 전이라도 결과를 공개할지 (발표 데모용)
+ * @param {string}  opts.outcome  'actual'(실제 배분 결과) | 'profit' | 'loss' | 'flat' — 발표 데모용
  */
-export function createMockGameResult(submitResult, stocks, initialCash, reveal = false) {
+export function createMockGameResult(submitResult, stocks, initialCash, opts = {}) {
+  const { reveal = false, outcome = 'actual' } = opts
   const byId = Object.fromEntries((stocks || []).map((s) => [s.id, s]))
   const availableAt = submitResult?.resultAvailableAt ?? null
   const due = availableAt ? Date.now() >= new Date(availableAt).getTime() : true
@@ -50,7 +94,7 @@ export function createMockGameResult(submitResult, stocks, initialCash, reveal =
   const orders = (submitResult?.orders || []).map((o) => {
     const stock = byId[o.courseId] || {}
     const buyPrice = Number(o.stockPrice) || 0
-    const resultPrice = RESULT_PRICES[o.courseId] ?? buyPrice
+    const resultPrice = priceFor(outcome, o.courseId, buyPrice)
     const quantity = Number(o.quantity) || 0
     const investedAmount = Number(o.investmentAmount) || 0
     const evaluatedAmount = resultPrice * quantity
@@ -81,6 +125,8 @@ export function createMockGameResult(submitResult, stocks, initialCash, reveal =
     // 예정일 전에는 PENDING. reveal 은 발표에서 3일을 기다릴 수 없어 두는 우회로다.
     status: due || reveal ? 'CONFIRMED' : 'PENDING',
     revealed: !due && reveal,
+    /** 지금 어떤 시나리오로 계산된 결과인지 — 화면의 데모 칩이 선택 상태를 표시하는 데 쓴다 */
+    outcome,
     resultAvailableAt: availableAt,
     initialCash,
     investedTotal,

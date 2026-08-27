@@ -125,6 +125,11 @@
         </div>
         <p class="home-link">
           <router-link to="/">홈으로</router-link>
+          <!-- 시나리오 전환은 결과 화면 한 곳에만 둔다. 두 곳이면 어느 쪽이 진짜인지 어긋난다. -->
+          <template v-if="USE_MOCK">
+            <span aria-hidden="true"> · </span>
+            <router-link to="/game/result">결과 시나리오 바꾸기</router-link>
+          </template>
         </p>
       </template>
     </div>
@@ -137,6 +142,7 @@ import { useGameStore } from '@/store/game.js'
 import NoticeCard from '@/components/game/NoticeCard.vue'
 import { REWARD_POLICY } from '@/mock/scenario.js'
 import { useCountUp } from '@/composables/useCountUp.js'
+import { USE_MOCK } from '@/config.js'
 
 const game = useGameStore()
 const w = computed(() => game.reward)

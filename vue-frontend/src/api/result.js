@@ -46,11 +46,12 @@ export const resultApi = {
    * @param {Array}   ctx.stocks        제시 종목 — 이름·섹터를 붙이는 용도. **목 전용**
    * @param {number}  ctx.initialCash   초기 자금. **목 전용**
    * @param {boolean} ctx.reveal        예정일 전 결과 공개(발표 데모용). **목 전용**
+   * @param {string}  ctx.outcome       'actual' | 'profit' | 'loss' | 'flat' — 결과 방향 강제. **목 전용**
    */
-  getGameResult({ submitResult, stocks, initialCash, reveal = false }) {
+  getGameResult({ submitResult, stocks, initialCash, reveal = false, outcome = 'actual' }) {
     if (USE_MOCK) {
       return wrap(
-        createMockGameResult(submitResult, stocks, initialCash, reveal),
+        createMockGameResult(submitResult, stocks, initialCash, { reveal, outcome }),
         '투자 결과 조회 성공'
       )
     }

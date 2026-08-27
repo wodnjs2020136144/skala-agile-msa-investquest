@@ -372,9 +372,10 @@ export const useGameStore = defineStore('game', () => {
   /**
    * 3일 뒤 결과를 불러온다.
    *
-   * @param {boolean} reveal 예정일 전이라도 결과를 공개한다 (발표 데모용, 목 모드에서만 의미 있음)
+   * @param {boolean} reveal  예정일 전이라도 결과를 공개한다 (발표 데모용, 목 모드에서만 의미 있음)
+   * @param {string}  outcome 'actual' | 'profit' | 'loss' | 'flat' — 결과 방향을 강제한다 (발표 데모용)
    */
-  async function loadGameResult({ reveal = false } = {}) {
+  async function loadGameResult({ reveal = false, outcome = 'actual' } = {}) {
     if (!result.value) return null
 
     loadingResult.value = true
@@ -384,9 +385,15 @@ export const useGameStore = defineStore('game', () => {
         submitResult: result.value,
         stocks: stocks.value,
         initialCash: initialCash.value,
-        reveal
+        reveal,
+        outcome
       })
       gameResult.value = res?.data?.data ?? res?.data
+      /*
+       * 리워드는 결과의 수익률에서 파생된다. 결과가 바뀌었는데 리워드를 그대로 두면
+       * 손실 화면인데 10,000P 가 남는다. 비워 두면 리워드 화면이 onMounted 에서 다시 받아 온다.
+       */
+      reward.value = null
       return gameResult.value
     } catch (e) {
       resultError.value = '투자 결과를 불러오지 못했습니다.'
