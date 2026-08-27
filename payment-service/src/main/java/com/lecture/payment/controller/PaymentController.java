@@ -27,6 +27,20 @@ public class PaymentController {
         return ResponseEntity.ok(result);
     }
 
+    /** 게임 결과에 따라 5,000P 또는 10,000P 리워드 재투자를 시작한다. */
+    @PostMapping("/internal/rewards")
+    public ResponseEntity<PaymentDto.RewardResponse> createReward(
+            @Valid @RequestBody PaymentDto.InternalRewardRequest request) {
+        return ResponseEntity.ok(paymentService.createReward(request));
+    }
+
+    /** 기존 Payment의 생성 시각을 기준으로 3일 재투자와 출금 가능 여부를 확인한다. */
+    @GetMapping("/internal/rewards/{paymentId}")
+    public ResponseEntity<PaymentDto.RewardResponse> getReward(
+            @PathVariable Long paymentId) {
+        return ResponseEntity.ok(paymentService.getReward(paymentId));
+    }
+
     /**
      * GET /payments/{id} - 결제 단건 조회
      */

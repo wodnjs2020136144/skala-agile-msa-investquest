@@ -57,7 +57,6 @@ class RiskLevel(str, Enum):
 class InvestmentAllocation(BaseModel):
     stockId: int = Field(gt=0)
     name: str = Field(min_length=1, max_length=100)
-    symbol: Optional[str] = Field(default=None, max_length=20)
     sector: Optional[str] = Field(default=None, max_length=50)
     risk: RiskLevel
     amount: int = Field(gt=0)

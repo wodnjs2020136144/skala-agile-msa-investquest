@@ -21,7 +21,6 @@
             <li v-for="row in rows" :key="row.key" class="rc-row">
               <span class="rc-name">
                 {{ row.name }}
-                <span v-if="row.symbol" class="rc-symbol">{{ row.symbol }}</span>
               </span>
               <span class="rc-qty">{{ row.qty }}</span>
               <span class="rc-amount">{{ format(row.amount) }}원</span>
@@ -54,7 +53,7 @@
 
             <dl class="metric-grid">
               <div><dt>투자 비율</dt><dd>{{ game.profile.metrics.investmentRatio }}%</dd></div>
-              <div><dt>고위험 비중</dt><dd>{{ game.profile.metrics.highRiskRatio }}%</dd></div>
+              <div><dt>포트폴리오 변동성</dt><dd>{{ game.profile.metrics.weightedRiskRatio }}점</dd></div>
               <div><dt>최대 종목 비중</dt><dd>{{ game.profile.metrics.concentrationRatio }}%</dd></div>
               <div><dt>분산 점수</dt><dd>{{ game.profile.metrics.diversificationScore }}점</dd></div>
             </dl>
@@ -81,11 +80,7 @@
 
         <NoticeCard
           title="다음 단계"
-          :items="[
-            '결과 산정 기간 동안에는 투자 내역을 변경할 수 없습니다.',
-            '결과 확인 시 참여 리워드가 지급됩니다.',
-            '결과와 함께 행동 기반 투자 성향 분석을 제공합니다.'
-          ]"
+          :items="nextSteps"
         />
 
         <NoticeCard
@@ -111,6 +106,7 @@ import { computed } from 'vue'
 import { useGameStore } from '@/store/game.js'
 import GameProgress from '@/components/game/GameProgress.vue'
 import NoticeCard from '@/components/game/NoticeCard.vue'
+import { REWARD_POLICY } from '@/mock/scenario.js'
 
 const game = useGameStore()
 const r = computed(() => game.result)
@@ -119,8 +115,16 @@ function format(n) {
   return Number(n).toLocaleString('ko-KR')
 }
 
+const rewardPolicy = computed(() => r.value?.rewardPolicy || REWARD_POLICY)
+const nextSteps = computed(() => [
+  '투자 확정 후 3일 동안에는 투자 내역을 변경할 수 없습니다.',
+  `결과에 따라 최대 ${format(rewardPolicy.value.profitRewardPoints)}원의 참여 리워드가 지급됩니다.`,
+  `지급된 포인트는 ${rewardPolicy.value.reinvestmentDays}일 동안 재투자한 후 출금할 수 있습니다.`,
+  '결과와 함께 행동 기반 투자 성향 분석을 제공합니다.'
+])
+
 const resultDate = computed(() => {
-  if (!r.value?.resultAvailableAt) return '약 일주일 뒤'
+  if (!r.value?.resultAvailableAt) return '3일 뒤'
   return new Date(r.value.resultAvailableAt).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -139,7 +143,6 @@ const rows = computed(() => {
     return {
       key: `s-${o.courseId}`,
       name: s.name || `종목 ${o.courseId}`,
-      symbol: s.symbol || '',
       qty: `${o.quantity}주`,
       amount: o.investmentAmount,
       weight: (o.investmentAmount / total) * 100
@@ -151,7 +154,6 @@ const rows = computed(() => {
     stockRows.push({
       key: 'cash',
       name: '현금 보유',
-      symbol: '',
       qty: '-',
       amount: cash,
       weight: (cash / total) * 100
@@ -288,13 +290,6 @@ const rows = computed(() => {
 .rc-row:last-child { border-bottom: none; }
 
 .rc-name { font-weight: 600; color: var(--color-text-primary); }
-
-.rc-symbol {
-  margin-left: 6px;
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: var(--color-text-muted);
-}
 
 .rc-qty,
 .rc-amount,

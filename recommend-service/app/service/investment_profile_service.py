@@ -102,7 +102,7 @@ class InvestmentProfileService:
             reasons=[
                 f"가상자금 {request.initialCash:,}원 중 {invested:,}원({metrics.investmentRatio:.0f}%)을 투자했습니다.",
                 f"{len(request.allocations)}개 종목에 배분했고, 최대 비중은 {largest.name} {metrics.concentrationRatio:.0f}%입니다.",
-                f"고위험 종목 투자 비중은 {metrics.highRiskRatio:.0f}%입니다.",
+                f"포트폴리오의 가중 변동성 점수는 {metrics.weightedRiskRatio:.0f}점입니다.",
             ],
             recommendedContents=self.CONTENTS[profile_type],
             cautions=[

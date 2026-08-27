@@ -87,18 +87,33 @@ export const useGameStore = defineStore('game', () => {
 
   function setAllocation(stockId, amount) {
     const before = Number(allocations.value[stockId]) || 0
+    const stock = stocks.value.find((item) => item.id === stockId)
+    const stockPrice = Math.floor(Number(stock?.price) || 0)
     let next = Math.max(0, Math.floor(Number(amount) || 0))
+
+    // 주문은 항상 정수 주 단위다. 금액 입력이 들어와도 살 수 있는 정수 주만 남긴다.
+    if (stockPrice > 0) next = Math.floor(next / stockPrice) * stockPrice
 
     // 예산을 넘기지 않도록 잘라낸다. 넘긴 값을 그대로 두면
     // 확정 버튼만 막히고 왜 막혔는지 화면에서 알기 어렵다.
     const others = investedTotal.value - before
     const room = initialCash.value - others
-    if (next > room) next = Math.max(0, room)
+    if (next > room) {
+      next = stockPrice > 0
+        ? Math.floor(Math.max(0, room) / stockPrice) * stockPrice
+        : Math.max(0, room)
+    }
 
     if (next === before) return
 
     allocations.value = { ...allocations.value, [stockId]: next }
-    track('ALLOCATION_CHANGED', { stockId, beforeAmount: before, afterAmount: next })
+    track('ALLOCATION_CHANGED', {
+      stockId,
+      beforeAmount: before,
+      afterAmount: next,
+      beforeQuantity: stockPrice > 0 ? Math.floor(before / stockPrice) : 0,
+      afterQuantity: stockPrice > 0 ? Math.floor(next / stockPrice) : 0
+    })
   }
 
   function clearAllocations() {
@@ -176,7 +191,7 @@ export const useGameStore = defineStore('game', () => {
             price: s.price,
             amount,
             // 정수 주 단위. 남는 금액은 현금으로 돌아간다
-            quantity: Math.floor(amount / s.price)
+            quantity: amount / s.price
           }
         })
 
@@ -225,7 +240,6 @@ export const useGameStore = defineStore('game', () => {
         .map((stock) => ({
           stockId: stock.id,
           name: stock.name,
-          symbol: stock.symbol,
           sector: stock.sector,
           risk: stock.risk,
           amount: Number(allocations.value[stock.id])

@@ -20,14 +20,14 @@ class InvestmentProfileRouterTest(unittest.TestCase):
             "/api/recommend/analyze",
             json={
                 "participationId": 9001,
-                "initialCash": 10_000,
-                "cashBalance": 2_500,
+                "initialCash": 10_000_000,
+                "cashBalance": 2_500_000,
                 "changeCount": 3,
                 "decisionSeconds": 60,
                 "allocations": [
-                    {"stockId": 1, "name": "성장산업", "risk": "NORMAL", "amount": 3_000},
-                    {"stockId": 2, "name": "안정금융", "risk": "LOW", "amount": 2_500},
-                    {"stockId": 3, "name": "혁신기술", "risk": "HIGH", "amount": 2_000},
+                    {"stockId": 1, "name": "성장산업", "risk": "NORMAL", "amount": 3_000_000},
+                    {"stockId": 2, "name": "안정금융", "risk": "LOW", "amount": 2_500_000},
+                    {"stockId": 3, "name": "혁신기술", "risk": "HIGH", "amount": 2_000_000},
                 ],
             },
         )
@@ -44,10 +44,10 @@ class InvestmentProfileRouterTest(unittest.TestCase):
             "/api/recommend/analyze",
             json={
                 "participationId": 9001,
-                "initialCash": 10_000,
-                "cashBalance": 5_000,
+                "initialCash": 10_000_000,
+                "cashBalance": 5_000_000,
                 "allocations": [
-                    {"stockId": 1, "name": "안정금융", "risk": "LOW", "amount": 4_000}
+                    {"stockId": 1, "name": "안정금융", "risk": "LOW", "amount": 4_000_000}
                 ],
             },
         )

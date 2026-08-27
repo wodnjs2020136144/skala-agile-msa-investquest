@@ -8,7 +8,7 @@ class InvestmentProfileServiceTest(unittest.TestCase):
     def analyze(self, allocations, cash_balance, changes=3, seconds=60):
         request = InvestmentProfileRequest(
             participationId=1,
-            initialCash=10_000,
+            initialCash=10_000_000,
             cashBalance=cash_balance,
             changeCount=changes,
             decisionSeconds=seconds,
@@ -18,8 +18,8 @@ class InvestmentProfileServiceTest(unittest.TestCase):
 
     def test_conservative_profile(self):
         result = self.analyze(
-            [{"stockId": 1, "name": "안정금융", "risk": "LOW", "amount": 3_000}],
-            cash_balance=7_000,
+            [{"stockId": 1, "name": "안정금융", "risk": "LOW", "amount": 3_000_000}],
+            cash_balance=7_000_000,
             changes=7,
             seconds=120,
         )
@@ -30,11 +30,11 @@ class InvestmentProfileServiceTest(unittest.TestCase):
     def test_balanced_profile(self):
         result = self.analyze(
             [
-                {"stockId": 1, "name": "성장산업", "risk": "NORMAL", "amount": 3_000},
-                {"stockId": 2, "name": "안정금융", "risk": "LOW", "amount": 2_500},
-                {"stockId": 3, "name": "혁신기술", "risk": "HIGH", "amount": 2_000},
+                {"stockId": 1, "name": "성장산업", "risk": "NORMAL", "amount": 3_000_000},
+                {"stockId": 2, "name": "안정금융", "risk": "LOW", "amount": 2_500_000},
+                {"stockId": 3, "name": "혁신기술", "risk": "HIGH", "amount": 2_000_000},
             ],
-            cash_balance=2_500,
+            cash_balance=2_500_000,
         )
         self.assertEqual("BALANCED", result.profileType)
         self.assertEqual(3, result.metrics.selectedStockCount)
@@ -42,7 +42,7 @@ class InvestmentProfileServiceTest(unittest.TestCase):
 
     def test_aggressive_profile(self):
         result = self.analyze(
-            [{"stockId": 1, "name": "고변동기술", "risk": "HIGH", "amount": 10_000}],
+            [{"stockId": 1, "name": "고변동기술", "risk": "HIGH", "amount": 10_000_000}],
             cash_balance=0,
             changes=1,
             seconds=20,
@@ -55,10 +55,10 @@ class InvestmentProfileServiceTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             InvestmentProfileRequest(
                 participationId=1,
-                initialCash=10_000,
-                cashBalance=5_000,
+                initialCash=10_000_000,
+                cashBalance=5_000_000,
                 allocations=[
-                    {"stockId": 1, "name": "종목", "risk": "LOW", "amount": 4_000}
+                    {"stockId": 1, "name": "종목", "risk": "LOW", "amount": 4_000_000}
                 ],
             )
 

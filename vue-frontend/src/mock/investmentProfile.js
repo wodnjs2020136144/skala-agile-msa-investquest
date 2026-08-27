@@ -93,7 +93,7 @@ export function createMockInvestmentProfile(payload) {
     reasons: [
       `가상자금 ${payload.initialCash.toLocaleString('ko-KR')}원 중 ${invested.toLocaleString('ko-KR')}원(${Math.round(investmentRatio * 100)}%)을 투자했습니다.`,
       `${payload.allocations.length}개 종목에 배분했고, 최대 비중은 ${largest.name} ${Math.round(concentrationRatio * 100)}%입니다.`,
-      `고위험 종목 투자 비중은 ${Math.round(highRiskRatio * 100)}%입니다.`
+      `포트폴리오의 가중 변동성 점수는 ${Math.round(weightedRiskRatio * 100)}점입니다.`
     ],
     recommendedContents: profile.contents.map(([title, reason]) => ({ title, reason })),
     cautions: [

@@ -3,11 +3,9 @@
     <div class="ar-head">
       <div class="ar-ident">
         <span class="ar-name">{{ stock.name }}</span>
-        <span class="ar-symbol">{{ stock.symbol }}</span>
       </div>
       <div class="ar-tags">
         <span class="badge badge-gray">{{ stock.sector }}</span>
-        <span class="risk-badge" :class="risk.className">위험 {{ risk.label }}</span>
       </div>
     </div>
 
@@ -20,19 +18,19 @@
       </div>
 
       <div class="ar-input-group">
-        <label class="sr-only" :for="inputId">{{ stock.name }} 투자 금액</label>
+        <label class="sr-only" :for="inputId">{{ stock.name }} 주문 수량</label>
         <input
           :id="inputId"
           class="ar-input"
           type="number"
           inputmode="numeric"
           min="0"
-          :step="step"
-          :max="maxAmount"
-          :value="amount"
+          step="1"
+          :max="maxQuantity"
+          :value="quantity"
           @input="onInput"
         />
-        <span class="ar-unit">원</span>
+        <span class="ar-unit">주</span>
       </div>
 
       <div class="ar-quick">
@@ -64,44 +62,45 @@
 
 <script setup>
 import { computed } from 'vue'
-import { getRiskMeta } from '@/mock/stocks.js'
 
 const props = defineProps({
   stock: { type: Object, required: true },
   amount: { type: Number, default: 0 },
   /** 이 종목에 더 넣을 수 있는 상한 = 현재 금액 + 남은 현금 */
   maxAmount: { type: Number, required: true },
-  initialCash: { type: Number, required: true },
-  step: { type: Number, default: 100 }
+  initialCash: { type: Number, required: true }
 })
 
 const emit = defineEmits(['update'])
 
 const inputId = computed(() => `alloc-${props.stock.id}`)
-const risk = computed(() => getRiskMeta(props.stock.risk))
-
 const weight = computed(() =>
   props.initialCash ? (props.amount / props.initialCash) * 100 : 0
 )
 
 /** 정수 주 단위. 남는 금액은 현금으로 돌아간다 */
 const quantity = computed(() => Math.floor(props.amount / props.stock.price))
+const maxQuantity = computed(() => Math.floor(props.maxAmount / props.stock.price))
 
 function format(n) {
   return Number(n).toLocaleString('ko-KR')
 }
 
 function onInput(e) {
-  emit('update', Number(e.target.value))
+  const requestedQuantity = Math.max(0, Math.floor(Number(e.target.value) || 0))
+  const nextQuantity = Math.min(requestedQuantity, maxQuantity.value)
+  emit('update', nextQuantity * props.stock.price)
 }
 
 function setPortion(ratio) {
-  const target = Math.floor((props.initialCash * ratio) / props.step) * props.step
-  emit('update', Math.min(target, props.maxAmount))
+  const targetBudget = props.initialCash * ratio
+  const targetQuantity = Math.floor(targetBudget / props.stock.price)
+  const nextQuantity = Math.min(targetQuantity, maxQuantity.value)
+  emit('update', nextQuantity * props.stock.price)
 }
 
 function setMax() {
-  emit('update', props.maxAmount)
+  emit('update', maxQuantity.value * props.stock.price)
 }
 </script>
 
@@ -129,26 +128,7 @@ function setMax() {
 
 .ar-ident { display: flex; align-items: baseline; gap: 8px; }
 .ar-name { font-weight: 700; color: var(--color-text-primary); }
-.ar-symbol {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
 .ar-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-
-.risk-badge {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-/* 등락 토큰을 위험도에 재사용한다 — 한국 금융 관례상 빨강이 상승·고변동 */
-.risk-high { background: var(--color-up-light); color: var(--color-up); }
-.risk-normal { background: var(--color-neutral-light); color: var(--color-flat); }
-.risk-low { background: var(--color-down-light); color: var(--color-down); }
 
 .ar-desc {
   margin: 8px 0 14px;

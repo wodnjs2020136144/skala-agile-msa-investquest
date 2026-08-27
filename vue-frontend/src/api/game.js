@@ -1,6 +1,6 @@
 import api from './index.js'
 import { wrap } from '@/mock/index.js'
-import { MOCK_SCENARIO } from '@/mock/scenario.js'
+import { MOCK_SCENARIO, REWARD_POLICY } from '@/mock/scenario.js'
 import { MOCK_STOCKS } from '@/mock/stocks.js'
 import { createMockParticipation } from '@/mock/participation.js'
 
@@ -76,7 +76,12 @@ export const gameApi = {
             status: 'PENDING'
           })),
           cashBalance,
-          resultAvailableAt: resultDateAfter(MOCK_SCENARIO.durationDays)
+          resultAvailableAt: resultDateAfter(MOCK_SCENARIO.durationDays),
+          rewardPolicy: {
+            profitRewardPoints: REWARD_POLICY.profitRewardPoints,
+            baseRewardPoints: REWARD_POLICY.baseRewardPoints,
+            reinvestmentDays: REWARD_POLICY.reinvestmentDays
+          }
         },
         '투자 확정 성공'
       )

@@ -16,14 +16,14 @@ Content-Type: application/json
 ```json
 {
   "participationId": 9001,
-  "initialCash": 10000,
-  "cashBalance": 2500,
+  "initialCash": 10000000,
+  "cashBalance": 2500000,
   "changeCount": 3,
   "decisionSeconds": 60,
   "allocations": [
-    { "stockId": 101, "name": "가온반도체", "symbol": "V0101", "sector": "IT", "risk": "HIGH", "amount": 2000 },
-    { "stockId": 102, "name": "한별금융지주", "symbol": "V0102", "sector": "금융", "risk": "LOW", "amount": 2500 },
-    { "stockId": 105, "name": "새빛에너지", "symbol": "V0105", "sector": "에너지", "risk": "NORMAL", "amount": 3000 }
+    { "stockId": 101, "name": "가온반도체", "sector": "IT", "risk": "HIGH", "amount": 2000000 },
+    { "stockId": 102, "name": "한별금융지주", "sector": "금융", "risk": "LOW", "amount": 2500000 },
+    { "stockId": 105, "name": "새빛에너지", "sector": "에너지", "risk": "NORMAL", "amount": 3000000 }
   ]
 }
 ```
