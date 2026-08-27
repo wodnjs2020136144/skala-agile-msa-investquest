@@ -176,6 +176,14 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 
 .page-inner { max-width: 720px; }
 
+/*
+ * 1024px 미만에서 aside 는 래퍼일 뿐이다. display: contents 로 상자를 없애
+ * .summary 가 .page-inner 흐름에 직접 놓이게 한다 — 그래야 sticky 가 리스트 끝까지
+ * 따라온다 (래퍼 높이가 카드와 같으면 sticky 가 움직일 공간이 없다).
+ */
+.side,
+.side-inner { display: contents; }
+
 /* 주문 헤더 카드 — sticky. 모바일에서는 리스트를 덜 가리도록 낮게 짠다. */
 .summary {
   position: sticky;
@@ -310,8 +318,9 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   }
   .col-head { grid-area: head; }
   .col-body { grid-area: body; }
-  .side { grid-area: side; }
+  .side { grid-area: side; display: block; }
   .side-inner {
+    display: block;
     position: sticky;
     top: calc(var(--header-h) + var(--space-4));
   }
