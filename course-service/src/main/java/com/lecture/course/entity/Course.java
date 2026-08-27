@@ -44,6 +44,9 @@ public class Course {
     @Builder.Default
     private Integer enrollmentCount = 0;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal temp_price;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -61,7 +64,7 @@ public class Course {
     }
 
     public enum Status {
-        ACTIVE, INACTIVE
+        LOW,HIGH
     }
 
     public void increaseEnrollmentCount() {
