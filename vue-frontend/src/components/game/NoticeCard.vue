@@ -1,7 +1,8 @@
 <template>
   <aside class="notice-card" :class="tone">
     <h3 v-if="title" class="nc-title">
-      <span class="nc-icon" aria-hidden="true">{{ icon }}</span>
+      <!-- 모든 안내 카드의 아이콘은 Font Awesome 클래스로 통일한다. -->
+      <i class="nc-icon" :class="icon" aria-hidden="true"></i>
       {{ title }}
     </h3>
     <ul class="nc-list">
@@ -22,7 +23,7 @@ defineProps({
   title: { type: String, default: '' },
   items: { type: Array, required: true },
   tone: { type: String, default: 'info' }, // info | warn
-  icon: { type: String, default: 'ℹ️' }
+  icon: { type: String, default: 'fa-solid fa-circle-info' }
 })
 </script>
 
@@ -31,7 +32,7 @@ defineProps({
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 16px 18px;
-  background: var(--color-bg-secondary);
+  background: var(--color-bg-tertiary);
 }
 
 .notice-card.warn {
@@ -50,6 +51,14 @@ defineProps({
 }
 
 .notice-card.warn .nc-title { color: var(--color-warning); }
+
+.nc-icon {
+  width: 1.1em;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.notice-card.warn .nc-icon { color: var(--color-warning); }
 
 .nc-list {
   margin: 0;

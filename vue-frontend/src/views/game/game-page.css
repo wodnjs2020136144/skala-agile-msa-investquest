@@ -6,24 +6,26 @@
  * 이 파일 하나를 <style scoped> 안에서 @import 해 쓴다.
  */
 .page {
-  min-height: calc(100vh - 64px);
-  background: var(--color-bg-secondary);
-  padding: 40px 24px 72px;
+  min-height: calc(100vh - 72px);
+  background: transparent;
+  padding: 46px 24px 80px;
 }
 
 .page-inner {
-  max-width: 760px;
+  max-width: 820px;
   margin: 0 auto;
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: 32px;
+  border-radius: var(--radius-xl);
+  box-shadow: none;
+  padding: 36px;
+  background: var(--color-bg-primary);
 }
 
 .page-title {
   font-size: clamp(1.4rem, 3.5vw, 1.9rem);
   font-weight: 800;
+  letter-spacing: -0.035em;
   color: var(--color-text-primary);
   margin: 0 0 8px;
 }
@@ -49,6 +51,8 @@
   padding-top: 24px;
   border-top: 1px solid var(--color-border);
 }
+
+.actions .btn { min-height: 44px; padding-inline: 22px; }
 
 .error-msg {
   margin: 20px 0 0;

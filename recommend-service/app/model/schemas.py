@@ -100,6 +100,26 @@ class RecommendedContent(BaseModel):
     reason: str
 
 
+class RecommendedProduct(BaseModel):
+    """성향 분석 후 탐색할 수 있는 증권사 상품·서비스 카드."""
+    id: str
+    name: str
+    category: str
+    description: str
+    reason: str
+    tags: List[str]
+
+
+class PersonalizedCoaching(BaseModel):
+    """행동 지표에서 도출한 설명 가능한 개인화 코칭 결과."""
+    headline: str
+    feedback: str
+    focusMetric: str
+    nextMissionTitle: str
+    nextMissionDescription: str
+    target: str
+
+
 class InvestmentProfileResponse(BaseModel):
     participationId: int
     profileType: str
@@ -110,4 +130,6 @@ class InvestmentProfileResponse(BaseModel):
     decisionStyle: DecisionStyle
     reasons: List[str]
     recommendedContents: List[RecommendedContent]
+    recommendedProducts: List[RecommendedProduct]
+    personalizedCoaching: PersonalizedCoaching
     cautions: List[str]

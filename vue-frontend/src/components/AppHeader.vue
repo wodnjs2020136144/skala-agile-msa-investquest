@@ -26,6 +26,15 @@
 
       <!-- 우측 액션 -->
       <div class="header-actions">
+        <button
+          type="button"
+          class="theme-toggle"
+          :aria-label="theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'"
+          :title="theme === 'dark' ? '라이트 모드' : '다크 모드'"
+          @click="toggleTheme"
+        >
+          <i :class="theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'" aria-hidden="true"></i>
+        </button>
         <template v-if="auth.isAuthenticated">
           <!--
             로그인 사용자 표시는 Sprint1 완료 조건이라 목 모드에서도 남긴다.
@@ -49,12 +58,30 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue'
 import { useAuthStore } from '@/store/auth.js'
 import { useRouter } from 'vue-router'
 import { USE_MOCK } from '@/config.js'
 
 const auth = useAuthStore()
 const router = useRouter()
+const theme = ref('light')
+
+function applyTheme(nextTheme) {
+  theme.value = nextTheme
+  document.documentElement.dataset.theme = nextTheme
+  localStorage.setItem('investquest-theme', nextTheme)
+}
+
+function toggleTheme() {
+  applyTheme(theme.value === 'dark' ? 'light' : 'dark')
+}
+
+onMounted(() => {
+  const savedTheme = localStorage.getItem('investquest-theme')
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  applyTheme(savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : systemTheme)
+})
 
 function handleLogout() {
   auth.logout()
@@ -64,10 +91,12 @@ function handleLogout() {
 
 <style scoped>
 .app-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
-  background: rgba(255,255,255,0.92);
+  background: color-mix(in srgb, var(--color-bg-primary) 94%, transparent);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
 }
@@ -75,7 +104,7 @@ function handleLogout() {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 64px;
+  height: 72px;
   display: flex;
   align-items: center;
   gap: 32px;
@@ -90,11 +119,12 @@ function handleLogout() {
   width: 36px;
   height: 36px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
 }
 .logo-text {
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--color-text-primary);
   letter-spacing: -0.3px;
 }
@@ -116,6 +146,7 @@ function handleLogout() {
 .nav-link.active {
   color: var(--color-primary);
   background: var(--color-primary-light);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 .header-actions {
   display: flex;
@@ -123,6 +154,18 @@ function handleLogout() {
   gap: 8px;
   margin-left: auto;
 }
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  transition: var(--transition);
+}
+.theme-toggle:hover { color: var(--color-primary); border-color: var(--color-primary); }
 .btn-sm {
   padding: 7px 16px;
   font-size: 13px;
@@ -140,6 +183,7 @@ function handleLogout() {
   justify-content: center;
   cursor: pointer;
   transition: var(--transition);
+  border: 1px solid var(--color-border);
 }
 .user-avatar:hover {
   background: var(--color-primary);
