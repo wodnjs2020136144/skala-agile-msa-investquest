@@ -25,7 +25,7 @@
           {{ format(w.rewardPoints) }}원 상당의 포인트가 적립되었습니다.
         </p>
 
-        <div class="points-hero" :class="{ celebrate: profitable }">
+        <div class="points-hero animated">
           <i class="fa-solid fa-coins" aria-hidden="true"></i>
           <strong>{{ format(displayPoints) }}<em>P</em></strong>
         </div>
@@ -114,7 +114,7 @@
           :items="[
             '모의 투자이며 실제 매매가 이루어지지 않았습니다.',
             '리워드는 참여 보상이며 투자 수익금이 아닙니다.',
-            '등장하는 종목은 모두 가상이며 실존 기업과 무관합니다.'
+            '실존 종목명을 쓰지만 제시 가격과 결과는 가상이며 실제 시세가 아닙니다.'
           ]"
         />
 
@@ -201,21 +201,15 @@ const daysLeft = computed(() => {
   return Math.max(0, Math.ceil((end - Date.now()) / 86400000))
 })
 
-/*
- * 수익일 때만 포인트를 롤업한다.
- * 손실 쪽 5,000P 가 차오르는 연출은 위로가 아니라 보상 강조가 되어
- * 다음 판을 부추기는 인상이 된다.
- */
+/* 지급 포인트 롤업. 수익·손실 모두 같은 연출을 준다. */
 const pointsUp = useCountUp()
-const displayPoints = computed(() =>
-  profitable.value ? Math.round(pointsUp.value.value) : Number(w.value?.rewardPoints ?? 0)
-)
+const displayPoints = computed(() => Math.round(pointsUp.value.value))
 
 watch(
-  () => [w.value?.rewardPoints, profitable.value],
-  () => {
-    if (!profitable.value) return
-    pointsUp.start(Number(w.value?.rewardPoints ?? 0))
+  () => w.value?.rewardPoints,
+  (points) => {
+    if (points == null) return
+    pointsUp.start(Number(points))
   },
   { immediate: true }
 )
@@ -283,14 +277,11 @@ onMounted(() => {
 
 .points-hero i { color: var(--color-primary); font-size: 1.5rem; }
 
-/*
- * 수익 축하 — 진입 팝 + 글로우 1회, 코인 아이콘 팝.
- * 손실 쪽에는 붙이지 않는다. 정적인 화면이 위로의 형태다.
- */
-.points-hero.celebrate { animation: pointsRise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.points-hero.celebrate i { animation: coinPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
+/* 진입 팝 + 글로우 1회, 코인 아이콘 팝. 수익·손실 모두 같다. */
+.points-hero.animated { animation: pointsRise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.points-hero.animated i { animation: coinPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
 
-.points-hero.celebrate::after {
+.points-hero.animated::after {
   content: '';
   position: absolute;
   inset: -40%;

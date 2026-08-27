@@ -109,14 +109,10 @@
           발표용 미리 보기입니다. 실제 공개일은 {{ resultDate }}입니다.
         </p>
 
-        <!--
-          손익별 마크. 손실에 큰 하락 화살표를 박으면 질책으로 읽힌다.
-          기획 초안 §7 은 "수익이 많이 난 사용자를 무조건 좋은 투자자로 평가해서는 안 된다"고
-          적어 두었다. 뒤집으면 손실자를 나쁜 투자자로 표현해서도 안 된다 — 손실은 중립 마크를 쓴다.
-        -->
+        <!-- 손익별 마크. 방향만 다르고 연출은 같다. -->
         <div class="verdict-mark" :class="tone" aria-hidden="true">
           <i v-if="tone === 'up'" class="fa-solid fa-arrow-trend-up"></i>
-          <i v-else-if="tone === 'down'" class="fa-solid fa-minus"></i>
+          <i v-else-if="tone === 'down'" class="fa-solid fa-arrow-trend-down"></i>
           <i v-else class="fa-solid fa-equals"></i>
         </div>
 
@@ -124,11 +120,11 @@
         <h1 class="page-title center">{{ headline }}</h1>
 
         <!--
-          수익일 때만 숫자를 롤업하고 글로우를 준다.
-          색으로는 감정을 가를 수 없다 — --color-up 이 --color-danger 와,
-          --color-down 이 --color-primary 와 값이 같아서다. 그래서 모션·형태·밀도로 가른다.
+          수익·손실 모두 같은 연출을 준다 — 진입 팝, 숫자 롤업, 글로우 1회.
+          방향은 색(상승 빨강 / 하락 파랑)과 마크로만 가른다.
+          0% 는 움직임이 의미가 없어 정적으로 둔다.
         -->
-        <div class="hero" :class="[tone, { celebrate: tone === 'up' }]">
+        <div class="hero" :class="[tone, { animated: tone !== 'flat' }]">
           <span class="hero-label">수익률</span>
           <strong class="hero-rate">{{ signed(displayRate) }}%</strong>
           <span class="hero-amount">{{ signed(displayAmount, true) }}원</span>
@@ -212,7 +208,7 @@
           title="유의사항"
           :items="[
             '모의 투자이며 실제 매매가 이루어지지 않았습니다.',
-            '등장하는 종목은 모두 가상이며 실존 기업과 무관합니다.',
+            '실존 종목명을 쓰지만 제시 가격과 결과는 가상이며 실제 시세가 아닙니다.',
             '이 결과는 참고용 보조 정보이며 공식 투자자 성향 진단을 대체하지 않습니다.'
           ]"
         />
@@ -293,25 +289,27 @@ const rewardReason = computed(() => {
 })
 
 /*
- * 수익일 때만 숫자를 롤업한다.
- * 손실 금액이 0 에서 차오르는 연출은 질책처럼 읽혀서 쓰지 않는다.
- * 손실·0% 는 최종값을 그대로 내보낸다.
+ * 수익·손실 모두 숫자를 롤업한다. 0 에서 최종값으로 가므로
+ * 손실이면 음수 방향으로 자란다 — 메커니즘은 같고 방향만 다르다.
+ * 0% 는 0 에서 0 이라 움직임이 없으므로 최종값을 그대로 내보낸다.
  */
 const rateUp = useCountUp()
 const amountUp = useCountUp()
 
+const animatable = computed(() => tone.value !== 'flat')
+
 const displayRate = computed(() =>
-  tone.value === 'up' ? rateUp.value.value : Number(r.value?.returnRate ?? 0)
+  animatable.value ? rateUp.value.value : Number(r.value?.returnRate ?? 0)
 )
 const displayAmount = computed(() =>
-  tone.value === 'up' ? Math.round(amountUp.value.value) : Number(r.value?.profitAmount ?? 0)
+  animatable.value ? Math.round(amountUp.value.value) : Number(r.value?.profitAmount ?? 0)
 )
 
 /** 결과가 도착하거나 바뀌면(데모 미리 보기 포함) 다시 센다 */
 watch(
   () => [r.value?.returnRate, tone.value],
   () => {
-    if (tone.value !== 'up') return
+    if (!animatable.value) return
     rateUp.start(Number(r.value?.returnRate ?? 0))
     amountUp.start(Number(r.value?.profitAmount ?? 0))
   },
@@ -520,11 +518,17 @@ onMounted(() => {
   border-color: var(--color-up);
   background: var(--color-up-light);
   color: var(--color-up);
-  animation: markPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* 손실·0% 는 팝하지 않는다. 축하 연출의 반대는 요란한 실패 연출이 아니라 정적인 화면이다. */
-.verdict-mark.down { border-color: var(--color-border-hover); }
+.verdict-mark.down {
+  border-color: var(--color-down);
+  background: var(--color-down-light);
+  color: var(--color-down);
+}
+
+/* 방향과 무관하게 같은 등장 연출 */
+.verdict-mark.up,
+.verdict-mark.down { animation: markPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 @keyframes markPop {
   from { transform: scale(0.82); opacity: 0; }
@@ -570,22 +574,22 @@ onMounted(() => {
 /* flat 은 override 가 없어 기본 배경으로 남아 있었다. 중립 톤을 명시한다. */
 .hero.flat { background: var(--color-bg-secondary); border-color: var(--color-border); }
 
-/*
- * 수익 축하 — 진입 팝 + 방사 글로우 1회.
- * 손실 히어로는 이 블록이 붙지 않아 정적으로 남는다. 그게 '위로'의 형태다.
- */
-.hero.celebrate { animation: heroRise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+/* 진입 팝 + 방사 글로우 1회. 수익·손실 모두 같고 글로우 색만 방향을 따른다. */
+.hero.animated { animation: heroRise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-.hero.celebrate::after {
+.hero.animated::after {
   content: '';
   position: absolute;
   inset: -40%;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--color-up) 0%, transparent 62%);
+  background: radial-gradient(circle, var(--glow) 0%, transparent 62%);
   opacity: 0;
   pointer-events: none;
   animation: heroGlow 1.1s ease-out 0.15s both;
 }
+
+.hero.up { --glow: var(--color-up); }
+.hero.down { --glow: var(--color-down); }
 
 @keyframes heroRise {
   from { transform: scale(0.96); opacity: 0; }
@@ -597,17 +601,6 @@ onMounted(() => {
   45%  { opacity: 0.28; }
   100% { opacity: 0; transform: scale(1.1); }
 }
-
-/*
- * 손실 — 소리를 낮춘다. 숫자를 한 단계 줄이고 여백을 늘린다.
- * 같은 크기로 두면 손실이 수익만큼 크게 외쳐진다.
- */
-.hero.down {
-  padding: 30px 20px;
-  margin-bottom: 16px;
-}
-
-.hero.down .hero-rate { font-size: clamp(2rem, 7vw, 2.6rem); }
 
 /* ── 안심 배너 (손실·0%) ───────────────────────────────── */
 .assure {

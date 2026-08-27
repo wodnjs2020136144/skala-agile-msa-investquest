@@ -123,6 +123,18 @@ HLB 를 1000주 사서 크게 잃어도 삼성바이오로직스 1주만 끼우�
 > 참고: `GET /api/payments/internal/rewards/{paymentId}` 는 **이미 구현돼 있고 응답 필드도
 > 프런트 목과 1:1로 맞다.** 1번만 고쳐지면 이 경로는 바로 쓸 수 있다.
 
+## 5. 종목명에서 종목 코드를 떼 달라 (새 요청)
+
+시드가 종목 코드를 `title` 안에 넣어 두었다 — `삼성전자(005930)`.
+정책(`SPRINT2_REWARD_POLICY.md`)은 **"종목 코드는 사용하거나 화면에 표시하지 않는다"** 이므로
+그대로 렌더하면 규정을 어긴다.
+
+프런트 목은 이미 분리해 두었다 (`name: '삼성전자'`, `code: '005930'` — `code` 는 렌더하지 않음).
+
+**요청**: `courses` 에 종목 코드를 별도 컬럼으로 두거나, 응답에서 `name` 과 `code` 를 나눠 달라.
+지금 상태로는 프런트가 괄호를 정규식으로 떼야 하는데, 종목명에 괄호가 들어가는 경우를
+구분할 수 없어 안전하지 않다.
+
 ---
 
 ## 팀 결정이 필요한 것
@@ -148,18 +160,31 @@ HLB 를 1000주 사서 크게 잃어도 삼성바이오로직스 1주만 끼우�
 `recommend-service` 의 `PRODUCTS` 위에 "실존 상품의 매수를 권유하지 않기 위한
 데모용 카탈로그"라고 그어 둔 선과도 어긋난다.
 
-**`VITE_USE_MOCK=false` 로 넘기는 순간 화면에 실존 종목명이 뜬다.** 그 전에 정해야 한다.
-프런트 목의 가상 6종으로 시드를 교체하면 문서·화면·정책이 한 번에 맞는다.
+**팀 결정: 실존 종목 유지.** 프런트 목을 시드에 맞춰 실존 6종으로 교체했다
+(`vue-frontend/src/mock/stocks.js` — 종목명·업종·기준가·결과가가 시드와 1:1).
 
-### B. 카테고리 축이 3중으로 갈라져 있다
+그에 맞춰 화면 고지 문구를 고쳤다. 그대로 두면 **화면에 거짓이 표시되기 때문이다**:
 
-| 위치 | 값 |
+| | |
 |---|---|
-| 시드 (`courses.category`, String) | 반도체 · 바이오 · 방산 |
-| 프런트 목 (`stocks.js` 의 `sector`) | IT · 금융 · 바이오 · 소비재 · 에너지 · 운송 |
-| recommend (`CourseCategory` enum) | BACKEND · FRONTEND · … (구 강의 축) |
+| 전 | 등장하는 종목은 모두 가상이며 실존 기업과 무관합니다. |
+| 후 | **실존 종목명을 쓰지만 제시 가격과 결과는 가상이며 실제 시세가 아닙니다.** |
 
-세 번째 것 때문에 `GET /api/recommend/{user_id}` 가 **500** 이다 —
+HomeView · GameGuideView · GameResultView · GameRewardView 4곳.
+
+⚠️ **아직 남은 것 두 가지**
+1. `docs/sprint1-demo.md` 와 `README.md` 의 안내 문구가 여전히 "모두 가상"이다 — 발표 대본이라 같이 고쳐야 한다.
+2. 정책의 **"종목 코드 표시 금지"** 와 시드의 `삼성전자(005930)` 형식이 아직 충돌한다 (위 5번 참고).
+
+### B. recommend 의 카테고리 enum 이 아직 구 강의 축이다
+
+| 위치 | 값 | 상태 |
+|---|---|---|
+| 시드 (`courses.category`, String) | 반도체 · 바이오 · 방산 | 기준 |
+| 프런트 목 (`stocks.js` 의 `sector`) | 반도체 · 바이오 · 방산 | ✅ 시드에 맞춤 |
+| recommend (`CourseCategory` enum) | BACKEND · FRONTEND · … | ❌ 구 강의 축 |
+
+프런트는 시드에 맞췄으므로 남은 것은 recommend 쪽 하나다. 이것 때문에 `GET /api/recommend/{user_id}` 가 **500** 이다 —
 course-service 가 `86e922d` 로 카테고리를 String 으로 바꿨는데
 파이썬 스키마가 아직 enum 이라 `CourseResponse(**c)` 에서 ValidationError 가 난다.
 (같은 경로가 부르는 `GET /api/courses/internal/recommend` 도 주석 처리돼 404 다.)
