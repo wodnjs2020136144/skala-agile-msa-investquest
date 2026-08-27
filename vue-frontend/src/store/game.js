@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { gameApi } from '@/api/game.js'
+import { recommendApi } from '@/api/recommend.js'
 import { GAME_RULES } from '@/mock/scenario.js'
 
 /**
@@ -24,6 +25,9 @@ export const useGameStore = defineStore('game', () => {
   const error = ref(null)
   const submitting = ref(false)
   const result = ref(null)
+  const profile = ref(null)
+  const analyzing = ref(false)
+  const analysisError = ref(null)
 
   /**
    * 행동 이벤트 로그.
@@ -176,18 +180,33 @@ export const useGameStore = defineStore('game', () => {
 
   function setAllocation(stockId, amount) {
     const before = Number(allocations.value[stockId]) || 0
+    const stock = stocks.value.find((item) => item.id === stockId)
+    const stockPrice = Math.floor(Number(stock?.price) || 0)
     let next = Math.max(0, Math.floor(Number(amount) || 0))
+
+    // 주문은 항상 정수 주 단위다. 금액 입력이 들어와도 살 수 있는 정수 주만 남긴다.
+    if (stockPrice > 0) next = Math.floor(next / stockPrice) * stockPrice
 
     // 예산을 넘기지 않도록 잘라낸다. 넘긴 값을 그대로 두면
     // 확정 버튼만 막히고 왜 막혔는지 화면에서 알기 어렵다.
     const others = investedTotal.value - before
     const room = initialCash.value - others
-    if (next > room) next = Math.max(0, room)
+    if (next > room) {
+      next = stockPrice > 0
+        ? Math.floor(Math.max(0, room) / stockPrice) * stockPrice
+        : Math.max(0, room)
+    }
 
     if (next === before) return
 
     allocations.value = { ...allocations.value, [stockId]: next }
-    track('ALLOCATION_CHANGED', { stockId, beforeAmount: before, afterAmount: next })
+    track('ALLOCATION_CHANGED', {
+      stockId,
+      beforeAmount: before,
+      afterAmount: next,
+      beforeQuantity: stockPrice > 0 ? Math.floor(before / stockPrice) : 0,
+      afterQuantity: stockPrice > 0 ? Math.floor(next / stockPrice) : 0
+    })
   }
 
   function clearAllocations() {
@@ -265,7 +284,7 @@ export const useGameStore = defineStore('game', () => {
             price: s.price,
             amount,
             // 정수 주 단위. 남는 금액은 현금으로 돌아간다
-            quantity: Math.floor(amount / s.price)
+            quantity: amount / s.price
           }
         })
 
@@ -281,6 +300,7 @@ export const useGameStore = defineStore('game', () => {
         cashBalance: cashBalance.value
       })
       result.value = res?.data?.data ?? res?.data
+      await analyzeProfile()
       return result.value
     } catch (e) {
       error.value = '투자 확정에 실패했습니다. 다시 시도해 주세요.'
@@ -290,24 +310,73 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  /**
+   * 최종 배분과 프런트에서 수집한 행동 로그를 AI 서비스 계약으로 변환한다.
+   * 분석 실패는 이미 완료된 투자 확정을 되돌리지 않고 결과 화면에서 재시도할 수 있게 한다.
+   */
+  async function analyzeProfile() {
+    if (!participation.value || selectedCount.value === 0) return null
+
+    analyzing.value = true
+    analysisError.value = null
+    try {
+      const started = events.value.find((event) => event.type === 'GAME_STARTED')
+      const submitted = [...events.value].reverse()
+        .find((event) => event.type === 'INVESTMENT_SUBMITTED')
+      const startedAt = started ? Date.parse(started.at) : Date.now()
+      const submittedAt = submitted ? Date.parse(submitted.at) : Date.now()
+      const decisionSeconds = Math.max(0, Math.round((submittedAt - startedAt) / 1000))
+
+      const profileAllocations = stocks.value
+        .filter((stock) => Number(allocations.value[stock.id]) > 0)
+        .map((stock) => ({
+          stockId: stock.id,
+          name: stock.name,
+          sector: stock.sector,
+          risk: stock.risk,
+          amount: Number(allocations.value[stock.id])
+        }))
+
+      const res = await recommendApi.analyzeInvestment({
+        participationId: participation.value.participationId,
+        initialCash: initialCash.value,
+        cashBalance: cashBalance.value,
+        changeCount: changeCount.value,
+        decisionSeconds,
+        allocations: profileAllocations
+      })
+      profile.value = res?.data?.data ?? res?.data
+      return profile.value
+    } catch (error) {
+      analysisError.value = '투자는 확정됐지만 성향 분석을 불러오지 못했습니다.'
+      return null
+    } finally {
+      analyzing.value = false
+    }
+  }
+
   function reset() {
     participation.value = null
     scenario.value = null
     stocks.value = []
     allocations.value = {}
     result.value = null
+    profile.value = null
+    analyzing.value = false
+    analysisError.value = null
     error.value = null
     events.value = []
   }
 
   return {
     participation, scenario, stocks, allocations, loading, error, submitting, result, events,
+    profile, analyzing, analysisError,
     initialCash, investedTotal, cashBalance, selectedCount, changeCount,
     isOverBudget, canSubmit, cashWeight,
     concentrationRatio, sectorWeights, highRiskRatio,
     rules: GAME_RULES,
     weightOf, setAllocation, clearAllocations, allocateAllToCash,
     decisionSeconds, behaviorMetrics,
-    startGame, loadScenario, loadStocks, submit, reset, track
+    startGame, loadScenario, loadStocks, submit, analyzeProfile, reset, track
   }
 })

@@ -58,7 +58,6 @@
           :amount="Number(game.allocations[stock.id]) || 0"
           :max-amount="maxFor(stock.id)"
           :initial-cash="game.initialCash"
-          :step="game.rules.amountStep"
           @update="(v) => game.setAllocation(stock.id, v)"
         />
       </div>
