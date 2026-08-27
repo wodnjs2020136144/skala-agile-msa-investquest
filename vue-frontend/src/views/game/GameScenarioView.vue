@@ -30,15 +30,16 @@
           </div>
           <div class="term">
             <dt>목표</dt>
-            <dd>자신의 판단 기준에 따라 투자하기</dd>
+            <dd>제한된 기간 안에 최고의 수익률 달성</dd>
           </div>
         </dl>
 
         <NoticeCard
+          icon="fa-solid fa-lightbulb"
           title="참고"
           :items="[
-            '정답은 없습니다. 어떤 배분이든 유효한 선택입니다.',
-            '투자금을 전부 쓰지 않고 현금으로 남겨 두어도 됩니다.',
+            '수익률이 순위를 결정하지만, 모든 선택 과정은 투자 성향 분석에 활용됩니다.',
+            '공격적으로 기회를 잡거나 현금을 남겨 변동성에 대비할 수 있습니다.',
             '모의 투자이며 실제 투자 수익을 보장하지 않습니다.'
           ]"
         />
@@ -96,6 +97,8 @@ onMounted(() => {
   font-size: 0.76rem;
   font-weight: 700;
   margin-bottom: 14px;
+  border: 1px solid var(--color-border);
+  letter-spacing: 0.08em;
 }
 
 .situation {
@@ -115,8 +118,9 @@ onMounted(() => {
   margin: 0 0 28px;
   padding: 0;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  background: var(--color-bg-tertiary);
 }
 
 .term {

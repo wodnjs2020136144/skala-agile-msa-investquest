@@ -4,10 +4,10 @@
       v-for="(step, i) in steps"
       :key="step"
       class="gp-step"
-      :class="{ done: i < current - 1, active: i === current - 1 }"
+      :class="{ complete: i < current - 1, active: i === current - 1, reached: i < current }"
       :aria-current="i === current - 1 ? 'step' : undefined"
     >
-      <span class="gp-num" aria-hidden="true">{{ i < current - 1 ? '✓' : i + 1 }}</span>
+      <span class="gp-line" aria-hidden="true"></span>
       <span class="gp-label">{{ step }}</span>
     </li>
   </ol>
@@ -28,58 +28,38 @@ const steps = ['상황 확인', '종목 선택', '투자 확정']
 
 <style scoped>
 .game-progress {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   list-style: none;
-  margin: 0 0 24px;
+  margin: 0 0 30px;
   padding: 0;
-  flex-wrap: wrap;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .gp-step {
-  display: flex;
-  align-items: center;
+  display: grid;
   gap: 8px;
   color: var(--color-text-muted);
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.gp-step:not(:last-child)::after {
-  content: '';
-  width: 28px;
-  height: 1px;
-  background: var(--color-border);
-  margin-left: 8px;
-}
-
-.gp-num {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-muted);
   font-size: 0.8rem;
-  flex-shrink: 0;
+  font-weight: 500;
 }
 
-.gp-step.active { color: var(--color-primary); }
-.gp-step.active .gp-num {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
+.gp-line {
+  display: block;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-border);
 }
 
-.gp-step.done { color: var(--color-success); }
-.gp-step.done .gp-num {
-  background: var(--color-success-light);
-  color: var(--color-success);
-}
+.gp-step.reached .gp-line { background: var(--color-primary); }
+.gp-step.active { color: var(--color-text-primary); font-weight: 800; }
+.gp-step.complete { color: var(--color-text-secondary); }
 
 @media (max-width: 480px) {
-  .gp-label { font-size: 0.82rem; }
-  .gp-step:not(:last-child)::after { width: 14px; margin-left: 4px; }
+  .game-progress { gap: 5px; }
+  .gp-label { font-size: 0.74rem; }
 }
 </style>

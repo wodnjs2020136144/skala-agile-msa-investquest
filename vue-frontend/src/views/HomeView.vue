@@ -6,10 +6,10 @@
         <p class="welcome">
           <strong>{{ auth.user?.name || '투자자' }}</strong>님, 반갑습니다.
         </p>
-        <h1 class="signed-title">오늘의 투자 성향 게임이 준비돼 있어요</h1>
+        <h1 class="signed-title">최고 수익률에 도전할 준비가 됐나요?</h1>
         <p class="signed-desc">
-          가상의 상황에서 직접 투자금을 배분해 보세요.
-          선택 하나하나가 당신의 투자 성향을 말해 줍니다.
+          제한된 시간 안에 기회와 안정성 사이에서 전략을 세워 보세요.
+          수익률을 향한 선택 하나하나가 당신의 투자 성향을 보여 줍니다.
         </p>
 
         <div class="status-row">
@@ -17,15 +17,16 @@
           <span class="status-note">아직 참여한 게임이 없습니다.</span>
         </div>
 
-        <router-link to="/game/guide" class="btn btn-primary btn-lg">
-          게임 시작하기
-        </router-link>
-
         <NoticeCard
           class="signed-notice"
+          icon="fa-solid fa-circle-info"
           title="시작하기 전에 확인해 주세요"
           :items="noticeItems"
         />
+
+        <router-link to="/game/guide" class="btn btn-primary btn-lg signed-start">
+          게임 시작하기
+        </router-link>
       </div>
     </section>
 
@@ -37,7 +38,8 @@
             <span class="hero-badge">증권사 신규 고객 온보딩</span>
             <h1 class="hero-title">게임으로 알아보는<br />나의 투자 성향</h1>
             <p class="hero-desc">
-              가상 투자 게임에 참여하고 3일 뒤 결과와 최대 1만원의 리워드를 확인하세요.
+              제한된 시간 안에 나만의 전략으로 최고 수익률에 도전해 보세요.
+              3일 뒤 최종 수익률과 최대 1만원의 리워드를 확인할 수 있습니다.
             </p>
             <div class="hero-actions">
               <router-link to="/login" class="btn btn-primary btn-lg">
@@ -82,7 +84,7 @@
 
       <section class="notice-section">
         <div class="section-inner narrow">
-          <NoticeCard tone="warn" icon="⚠️" title="안내" :items="legalItems" />
+          <NoticeCard tone="warn" icon="fa-solid fa-triangle-exclamation" title="안내" :items="legalItems" />
         </div>
       </section>
     </template>
@@ -97,9 +99,9 @@ const auth = useAuthStore()
 
 /** 기획 초안 §10 화면 1 — 게임 방식 3단계 소개 */
 const steps = [
-  { title: '가상 미션 확인', desc: '달 기지행 셔틀 출발 전, 3일간 운용할 가상 투자금을 확인합니다.' },
-  { title: '종목 선택과 모의 투자', desc: '제시된 종목과 현금에 투자금을 원하는 대로 나눠 담습니다.' },
-  { title: '결과·성향·리워드 확인', desc: '3일 뒤 결과와 투자 성향 분석, 최대 1만원의 참여 리워드를 확인합니다.' }
+  { title: ' 규칙 확인', desc: '3일 동안 최고의 수익률을 목표로, 주어진 가상 투자금과 조건을 확인합니다.' },
+  { title: '전략 수립과 모의 투자', desc: '기회를 잡을지 현금을 지킬지 판단하며 종목별 투자 비중을 직접 정합니다.' },
+  { title: '수익률·성향·리워드 확인', desc: '3일 뒤 최종 수익률과 투자 성향 분석, 최대 1만원의 참여 리워드를 확인합니다.' }
 ]
 
 /** 기획 초안 §10 화면 2 — 핵심 안내사항 4줄 */
@@ -130,12 +132,17 @@ const previewRows = [
 .signed {
   padding: 64px 24px 80px;
   background: var(--gradient-hero);
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 72px);
 }
 
 .signed-inner {
   max-width: 640px;
   margin: 0 auto;
+  padding: 38px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-primary);
+  box-shadow: none;
 }
 
 .welcome {
@@ -180,11 +187,17 @@ const previewRows = [
 .status-note { font-size: 0.85rem; color: var(--color-text-muted); }
 
 .signed-notice { margin-top: 28px; }
+.signed-start {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+  margin-top: 14px;
+}
 
 /* ── 비로그인 히어로 ─────────────────────────────────────── */
 .hero {
   background: var(--gradient-hero);
-  padding: 72px 24px;
+  padding: 88px 24px 82px;
 }
 
 .hero-inner {
@@ -205,6 +218,9 @@ const previewRows = [
   font-size: 0.78rem;
   font-weight: 700;
   margin-bottom: 18px;
+  border: 1px solid var(--color-border);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .hero-title {
@@ -213,6 +229,7 @@ const previewRows = [
   line-height: 1.25;
   margin: 0 0 16px;
   color: var(--color-text-primary);
+  letter-spacing: -0.045em;
 }
 
 .hero-desc {
@@ -232,11 +249,23 @@ const previewRows = [
 
 /* 히어로 시각 요소 — 배분 화면을 미리 보여 준다 */
 .mock-panel {
+  position: relative;
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 22px;
+  border-radius: var(--radius-xl);
+  box-shadow: none;
+  padding: 28px;
+  overflow: hidden;
+}
+
+.mock-panel::before {
+  content: 'PORTFOLIO SIMULATION';
+  display: block;
+  margin-bottom: 18px;
+  color: var(--color-primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
 }
 
 .mp-head {
@@ -319,7 +348,7 @@ const previewRows = [
 
 .step-card:hover {
   border-color: var(--color-border-hover);
-  box-shadow: var(--shadow-md);
+  background: var(--color-bg-tertiary);
 }
 
 .step-num {
@@ -332,6 +361,7 @@ const previewRows = [
   color: var(--color-on-primary);
   font-weight: 800;
   margin-bottom: 14px;
+  box-shadow: none;
 }
 
 .step-title {

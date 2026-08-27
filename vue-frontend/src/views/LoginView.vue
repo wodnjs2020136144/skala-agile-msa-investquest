@@ -139,6 +139,12 @@ async function handleRegister() {
   display: flex;
   flex-direction: column;
   gap: 48px;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--color-border);
+}
+.login-left::after {
+  content: none;
 }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; }
@@ -157,9 +163,17 @@ async function handleRegister() {
   align-items: center;
   justify-content: center;
   padding: 48px;
-  background: var(--color-bg-primary);
+  background: var(--color-bg-secondary);
 }
-.login-box { width: 100%; max-width: 400px; }
+.login-box {
+  width: 100%;
+  max-width: 420px;
+  padding: 34px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-primary);
+  box-shadow: none;
+}
 .back-link {
   display: inline-block;
   font-size: 13px;
@@ -183,7 +197,7 @@ async function handleRegister() {
   font-size: 14px;
   font-family: var(--font-sans);
   color: var(--color-text-primary);
-  background: var(--color-bg-primary);
+  background: var(--color-bg-tertiary);
   transition: var(--transition);
   outline: none;
 }
@@ -221,5 +235,11 @@ async function handleRegister() {
   border-radius: var(--radius-md);
   font-size: 13px;
   color: var(--color-success);
+}
+
+@media (max-width: 800px) {
+  .login-layout { grid-template-columns: 1fr; }
+  .login-left { display: none; }
+  .login-right { padding: 24px; }
 }
 </style>

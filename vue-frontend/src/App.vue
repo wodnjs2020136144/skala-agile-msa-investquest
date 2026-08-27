@@ -4,9 +4,16 @@
     라우트 메타 hideChrome으로 로그인·콜백만 제외하고 여기서 한 번만 렌더한다.
   -->
   <AppHeader v-if="!$route.meta.hideChrome" />
-  <router-view />
+  <!-- 고정 헤더가 게임 진행 단계·본문을 덮지 않도록 헤더 높이만큼 본문을 내린다. -->
+  <main class="app-content" :class="{ 'with-header': !$route.meta.hideChrome }">
+    <router-view />
+  </main>
 </template>
 
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
 </script>
+
+<style scoped>
+.app-content.with-header { padding-top: 72px; }
+</style>
