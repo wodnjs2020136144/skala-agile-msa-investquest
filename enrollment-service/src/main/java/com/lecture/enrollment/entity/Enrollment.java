@@ -29,9 +29,6 @@ public class Enrollment {
     @Column(name = "course_id", nullable = false)
     private Long courseId;
 
-    @Column(name = "price", nullable = false)
-    private int price;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -43,6 +40,16 @@ public class Enrollment {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+    
+
+@Column(name = "purchase_price", nullable = false)
+private Long purchasePrice;
+
+@Column(name = "quantity", nullable = false)
+private Long quantity;
+
+@Column(name = "invested_amount", nullable = false)
+private Long investedAmount;
 
     public enum Status {
         PENDING,   // 주식 구매 완료, 결과 확인 대기
