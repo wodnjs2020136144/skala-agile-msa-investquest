@@ -20,14 +20,24 @@
         <p class="reward-kicker">참여 리워드</p>
         <h1 class="page-title center">{{ format(w.rewardPoints) }}P 지급되었습니다</h1>
         <p class="page-sub center">
-          {{ profitable ? '수익을 냈으므로' : '이번에는 수익이 나지 않아' }}
+          <!-- 0% 는 손실이 아니다. 결과 화면의 rewardReason 과 같은 기준으로 가른다. -->
+          {{ rewardReason }}
           {{ format(w.rewardPoints) }}원 상당의 포인트가 적립되었습니다.
         </p>
 
-        <div class="points-hero">
+        <div class="points-hero" :class="{ celebrate: profitable }">
           <i class="fa-solid fa-coins" aria-hidden="true"></i>
-          <strong>{{ format(w.rewardPoints) }}<em>P</em></strong>
+          <strong>{{ format(displayPoints) }}<em>P</em></strong>
         </div>
+
+        <!--
+          손실·0% 에게는 이 문장이 유의사항 맨 아래가 아니라 본문에 있어야 한다.
+          5,000P 를 '손실 보전'으로 오해하는 것을 막는 것이 준법상 핵심이다.
+        -->
+        <p v-if="!profitable" class="reward-nature">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          이 포인트는 <strong>참여에 대한 보상</strong>이며 투자 수익금이나 손실 보전이 아닙니다.
+        </p>
 
         <!-- 재투자 진행 상태 — 이 화면의 핵심 정보다 -->
         <section class="stage" :class="w.withdrawable ? 'done' : 'running'">
@@ -90,8 +100,9 @@
           </ul>
           <p class="policy-note">
             내 수익률은 <strong :class="rateTone">{{ signedRate }}%</strong>였습니다.
-            <!-- 0% 규칙은 해당 구간에 걸린 사람에게만 설명이 필요하다 -->
-            <template v-if="!profitable">수익률 0%는 양의 수익이 아니므로 기본 구간으로 처리합니다.</template>
+            <!-- 0% 규칙은 해당 구간에 걸린 사람에게만 설명이 필요하다.
+                 !profitable 로 두면 -20% 손실자에게도 "수익률 0%는..." 이 떠서 어긋난다. -->
+            <template v-if="returnRate === 0">수익률 0%는 양의 수익이 아니므로 기본 구간으로 처리합니다.</template>
           </p>
         </section>
 
@@ -107,20 +118,25 @@
           ]"
         />
 
+        <!-- 재도전은 손익과 무관하게 같은 비중. 손실 쪽에서 강조하면 손실 추종을 부추긴다. -->
         <div class="actions">
           <router-link to="/game/result" class="btn btn-outline">결과 다시 보기</router-link>
-          <router-link to="/" class="btn btn-primary">홈으로</router-link>
+          <router-link to="/game/guide" class="btn btn-primary">다시 도전하기</router-link>
         </div>
+        <p class="home-link">
+          <router-link to="/">홈으로</router-link>
+        </p>
       </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useGameStore } from '@/store/game.js'
 import NoticeCard from '@/components/game/NoticeCard.vue'
 import { REWARD_POLICY } from '@/mock/scenario.js'
+import { useCountUp } from '@/composables/useCountUp.js'
 
 const game = useGameStore()
 const w = computed(() => game.reward)
@@ -141,6 +157,13 @@ function formatDate(iso) {
 
 const returnRate = computed(() => Number(game.gameResult?.returnRate ?? 0))
 const profitable = computed(() => returnRate.value > 0)
+
+/** 수익 / 손실 / 0% 를 각각 다르게 말한다 */
+const rewardReason = computed(() => {
+  if (returnRate.value > 0) return '수익을 냈으므로'
+  if (returnRate.value < 0) return '이번에는 수익이 나지 않아'
+  return '수익률이 0% 이므로'
+})
 
 const signedRate = computed(() => {
   const v = returnRate.value
@@ -171,6 +194,25 @@ const daysLeft = computed(() => {
   if (!Number.isFinite(end)) return policy.reinvestmentDays
   return Math.max(0, Math.ceil((end - Date.now()) / 86400000))
 })
+
+/*
+ * 수익일 때만 포인트를 롤업한다.
+ * 손실 쪽 5,000P 가 차오르는 연출은 위로가 아니라 보상 강조가 되어
+ * 다음 판을 부추기는 인상이 된다.
+ */
+const pointsUp = useCountUp()
+const displayPoints = computed(() =>
+  profitable.value ? Math.round(pointsUp.value.value) : Number(w.value?.rewardPoints ?? 0)
+)
+
+watch(
+  () => [w.value?.rewardPoints, profitable.value],
+  () => {
+    if (!profitable.value) return
+    pointsUp.start(Number(w.value?.rewardPoints ?? 0))
+  },
+  { immediate: true }
+)
 
 function load() {
   game.loadReward().catch(() => {
@@ -220,6 +262,7 @@ onMounted(() => {
 }
 
 .points-hero {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,9 +272,62 @@ onMounted(() => {
   border: 1px solid var(--color-primary);
   border-radius: var(--radius-lg);
   background: var(--color-primary-light);
+  overflow: hidden;
 }
 
 .points-hero i { color: var(--color-primary); font-size: 1.5rem; }
+
+/*
+ * 수익 축하 — 진입 팝 + 글로우 1회, 코인 아이콘 팝.
+ * 손실 쪽에는 붙이지 않는다. 정적인 화면이 위로의 형태다.
+ */
+.points-hero.celebrate { animation: pointsRise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.points-hero.celebrate i { animation: coinPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
+
+.points-hero.celebrate::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 62%);
+  opacity: 0;
+  pointer-events: none;
+  animation: pointsGlow 1.1s ease-out 0.15s both;
+}
+
+@keyframes pointsRise {
+  from { transform: scale(0.96); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes coinPop {
+  from { transform: scale(0.72) rotate(-14deg); }
+  to   { transform: scale(1) rotate(0); }
+}
+
+@keyframes pointsGlow {
+  0%   { opacity: 0; transform: scale(0.7); }
+  45%  { opacity: 0.22; }
+  100% { opacity: 0; transform: scale(1.1); }
+}
+
+/* 손실·0% — 리워드 성격을 본문에서 못 박는다 */
+.reward-nature {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: -14px 0 26px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: 0.79rem;
+  line-height: 1.55;
+}
+
+.reward-nature i { margin-top: 3px; color: var(--color-text-muted); }
+.reward-nature strong { color: var(--color-text-primary); }
 
 .points-hero strong {
   color: var(--color-primary);
@@ -396,6 +492,9 @@ onMounted(() => {
 .policy-note .flat { color: var(--color-flat); font-variant-numeric: tabular-nums; }
 
 .legal { margin-top: 12px; }
+
+.home-link { margin: 14px 0 0; text-align: center; }
+.home-link a { color: var(--color-text-secondary); font-size: 0.85rem; text-decoration: underline; }
 
 @media (max-width: 560px) {
   .stage-dates { grid-template-columns: 1fr; }

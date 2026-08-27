@@ -78,13 +78,44 @@
           발표용 미리 보기입니다. 실제 공개일은 {{ resultDate }}입니다.
         </p>
 
+        <!--
+          손익별 마크. 손실에 큰 하락 화살표를 박으면 질책으로 읽힌다.
+          기획 초안 §7 은 "수익이 많이 난 사용자를 무조건 좋은 투자자로 평가해서는 안 된다"고
+          적어 두었다. 뒤집으면 손실자를 나쁜 투자자로 표현해서도 안 된다 — 손실은 중립 마크를 쓴다.
+        -->
+        <div class="verdict-mark" :class="tone" aria-hidden="true">
+          <i v-if="tone === 'up'" class="fa-solid fa-arrow-trend-up"></i>
+          <i v-else-if="tone === 'down'" class="fa-solid fa-minus"></i>
+          <i v-else class="fa-solid fa-equals"></i>
+        </div>
+
         <p class="result-kicker">3일간의 결과</p>
         <h1 class="page-title center">{{ headline }}</h1>
 
-        <div class="hero" :class="tone">
+        <!--
+          수익일 때만 숫자를 롤업하고 글로우를 준다.
+          색으로는 감정을 가를 수 없다 — --color-up 이 --color-danger 와,
+          --color-down 이 --color-primary 와 값이 같아서다. 그래서 모션·형태·밀도로 가른다.
+        -->
+        <div class="hero" :class="[tone, { celebrate: tone === 'up' }]">
           <span class="hero-label">수익률</span>
-          <strong class="hero-rate">{{ signed(r.returnRate) }}%</strong>
-          <span class="hero-amount">{{ signed(r.profitAmount, true) }}원</span>
+          <strong class="hero-rate">{{ signed(displayRate) }}%</strong>
+          <span class="hero-amount">{{ signed(displayAmount, true) }}원</span>
+        </div>
+
+        <!--
+          손실·0% 안심 배너. 결과 숫자를 본 직후에 둔다 — 여기서 이탈하면 리워드 화면을 못 본다.
+          '손실 보전'으로 오해되지 않게 참여 보상임을 같은 블록에서 못 박는다.
+        -->
+        <div v-if="tone !== 'up'" class="assure">
+          <i class="fa-solid fa-shield-heart" aria-hidden="true"></i>
+          <div>
+            <strong>
+              {{ tone === 'down' ? '손실이 나도' : '수익이 나지 않아도' }}
+              참여 리워드 {{ format(policy.baseRewardPoints) }}P 는 지급됩니다.
+            </strong>
+            <span>리워드는 참여에 대한 보상이며 손실을 보전하지 않습니다.</span>
+          </div>
         </div>
 
         <dl class="sum-grid">
@@ -127,12 +158,13 @@
           </p>
         </section>
 
-        <section class="reward-teaser">
+        <section class="reward-teaser" :class="tone">
           <div>
             <p class="rt-label">참여 리워드</p>
             <strong class="rt-points">{{ format(policy.rewardForReturn(r.returnRate)) }}P</strong>
             <p class="rt-desc">
-              {{ r.returnRate > 0 ? '수익을 냈으므로' : '이번에는 수익이 나지 않아' }}
+              <!-- 0% 는 손실이 아니다. "수익이 나지 않아"로 묶으면 헤드라인(원금을 지켰습니다)과 톤이 갈린다 -->
+              {{ rewardReason }}
               {{ format(policy.rewardForReturn(r.returnRate)) }}원 상당의 리워드가 지급됩니다.
             </p>
           </div>
@@ -154,20 +186,29 @@
           ]"
         />
 
+        <!--
+          재도전 링크는 손익과 무관하게 같은 비중으로 둔다.
+          손실 직후 더 큰 보상을 내세워 다시 하게 만드는 건 손실 추종(loss chasing) 패턴이라
+          증권사 도메인에서는 피한다.
+        -->
         <div class="actions">
-          <router-link to="/game/confirm" class="btn btn-outline">성향 분석 다시 보기</router-link>
-          <router-link to="/" class="btn btn-primary">홈으로</router-link>
+          <router-link to="/game/confirm" class="btn btn-outline">성향 분석 보기</router-link>
+          <router-link to="/game/guide" class="btn btn-primary">다시 도전하기</router-link>
         </div>
+        <p class="home-link">
+          <router-link to="/">홈으로</router-link>
+        </p>
       </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useGameStore } from '@/store/game.js'
 import NoticeCard from '@/components/game/NoticeCard.vue'
 import { REWARD_POLICY } from '@/mock/scenario.js'
+import { useCountUp } from '@/composables/useCountUp.js'
 
 const game = useGameStore()
 const r = computed(() => game.gameResult)
@@ -202,6 +243,40 @@ const headline = computed(() => {
   if (rate < 0) return '손실로 마감했습니다'
   return '원금을 지켰습니다'
 })
+
+/** 0% 는 손실이 아니다. 셋을 각각 다르게 말한다 */
+const rewardReason = computed(() => {
+  const rate = Number(r.value?.returnRate ?? 0)
+  if (rate > 0) return '수익을 냈으므로'
+  if (rate < 0) return '이번에는 수익이 나지 않아'
+  return '수익률이 0% 이므로'
+})
+
+/*
+ * 수익일 때만 숫자를 롤업한다.
+ * 손실 금액이 0 에서 차오르는 연출은 질책처럼 읽혀서 쓰지 않는다.
+ * 손실·0% 는 최종값을 그대로 내보낸다.
+ */
+const rateUp = useCountUp()
+const amountUp = useCountUp()
+
+const displayRate = computed(() =>
+  tone.value === 'up' ? rateUp.value.value : Number(r.value?.returnRate ?? 0)
+)
+const displayAmount = computed(() =>
+  tone.value === 'up' ? Math.round(amountUp.value.value) : Number(r.value?.profitAmount ?? 0)
+)
+
+/** 결과가 도착하거나 바뀌면(데모 미리 보기 포함) 다시 센다 */
+watch(
+  () => [r.value?.returnRate, tone.value],
+  () => {
+    if (tone.value !== 'up') return
+    rateUp.start(Number(r.value?.returnRate ?? 0))
+    amountUp.start(Number(r.value?.profitAmount ?? 0))
+  },
+  { immediate: true }
+)
 
 /** 기여가 큰 순으로 — 무엇이 결과를 갈랐는지 먼저 보이게 한다 */
 const sortedOrders = computed(() =>
@@ -324,7 +399,38 @@ onMounted(() => {
   text-align: center;
 }
 
+/* ── 손익 마크 ─────────────────────────────────────────── */
+.verdict-mark {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 4px auto 18px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+}
+
+.verdict-mark.up {
+  border-color: var(--color-up);
+  background: var(--color-up-light);
+  color: var(--color-up);
+  animation: markPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 손실·0% 는 팝하지 않는다. 축하 연출의 반대는 요란한 실패 연출이 아니라 정적인 화면이다. */
+.verdict-mark.down { border-color: var(--color-border-hover); }
+
+@keyframes markPop {
+  from { transform: scale(0.82); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* ── 히어로 ────────────────────────────────────────────── */
 .hero {
+  position: relative;
   display: grid;
   justify-items: center;
   gap: 4px;
@@ -333,6 +439,7 @@ onMounted(() => {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-bg-tertiary);
+  overflow: hidden;
 }
 
 .hero-label { color: var(--color-text-secondary); font-size: 0.8rem; }
@@ -357,6 +464,75 @@ onMounted(() => {
 .hero.flat .hero-rate, .dt-rate.flat, .dt-profit.flat { color: var(--color-flat); }
 .hero.up { background: var(--color-up-light); border-color: var(--color-up-light); }
 .hero.down { background: var(--color-down-light); border-color: var(--color-down-light); }
+/* flat 은 override 가 없어 기본 배경으로 남아 있었다. 중립 톤을 명시한다. */
+.hero.flat { background: var(--color-bg-secondary); border-color: var(--color-border); }
+
+/*
+ * 수익 축하 — 진입 팝 + 방사 글로우 1회.
+ * 손실 히어로는 이 블록이 붙지 않아 정적으로 남는다. 그게 '위로'의 형태다.
+ */
+.hero.celebrate { animation: heroRise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+.hero.celebrate::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-up) 0%, transparent 62%);
+  opacity: 0;
+  pointer-events: none;
+  animation: heroGlow 1.1s ease-out 0.15s both;
+}
+
+@keyframes heroRise {
+  from { transform: scale(0.96); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes heroGlow {
+  0%   { opacity: 0; transform: scale(0.7); }
+  45%  { opacity: 0.28; }
+  100% { opacity: 0; transform: scale(1.1); }
+}
+
+/*
+ * 손실 — 소리를 낮춘다. 숫자를 한 단계 줄이고 여백을 늘린다.
+ * 같은 크기로 두면 손실이 수익만큼 크게 외쳐진다.
+ */
+.hero.down {
+  padding: 30px 20px;
+  margin-bottom: 16px;
+}
+
+.hero.down .hero-rate { font-size: clamp(2rem, 7vw, 2.6rem); }
+
+/* ── 안심 배너 (손실·0%) ───────────────────────────────── */
+.assure {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-tertiary);
+}
+
+/* 강조는 왼쪽 색 띠 대신 아이콘 배지로 준다 */
+.assure > i {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 0.82rem;
+}
+.assure div { display: grid; gap: 3px; }
+.assure strong { color: var(--color-text-primary); font-size: 0.86rem; line-height: 1.5; }
+.assure span { color: var(--color-text-secondary); font-size: 0.78rem; line-height: 1.5; }
 
 .sum-grid {
   display: grid;
@@ -430,6 +606,20 @@ onMounted(() => {
   background: var(--color-primary-light);
 }
 
+/*
+ * 손실·0% 에서는 리워드 카드도 톤을 낮춘다.
+ * 손실 직후 리워드를 화려하게 내밀면 "잃었지만 돈은 준다"로 읽혀
+ * 손실 추종을 부추기는 인상이 된다.
+ */
+.reward-teaser.down,
+.reward-teaser.flat {
+  border-color: var(--color-border);
+  background: var(--color-bg-tertiary);
+}
+
+.reward-teaser.down .rt-points,
+.reward-teaser.flat .rt-points { color: var(--color-text-primary); }
+
 .rt-label {
   margin: 0 0 4px;
   color: var(--color-text-secondary);
@@ -448,6 +638,9 @@ onMounted(() => {
 .rt-desc { margin: 6px 0 0; color: var(--color-text-secondary); font-size: 0.82rem; line-height: 1.5; }
 
 .legal { margin-top: 12px; }
+
+.home-link { margin: 14px 0 0; text-align: center; }
+.home-link a { color: var(--color-text-secondary); font-size: 0.85rem; text-decoration: underline; }
 
 .rc-list {
   list-style: none;
