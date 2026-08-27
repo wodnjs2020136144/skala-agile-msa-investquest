@@ -4,7 +4,7 @@
       <GameProgress :current="1" />
 
       <h1 class="page-title">게임 안내</h1>
-      <p class="page-sub">시작하기 전에 진행 방식을 확인해 주세요.</p>
+      <p class="page-sub">최고 수익률에 도전하기 전, 대회 규칙과 진행 방식을 확인해 주세요.</p>
 
       <ul class="fact-grid">
         <li v-for="f in facts" :key="f.label" class="fact">
@@ -14,13 +14,13 @@
       </ul>
 
       <section class="how">
-        <h2 class="sec-title">진행 방식</h2>
+        <h2 class="sec-title">대회 진행 방식</h2>
         <ol class="how-list">
           <li v-for="h in how" :key="h">{{ h }}</li>
         </ol>
       </section>
 
-      <NoticeCard tone="warn" icon="⚠️" title="주의사항" :items="cautions" />
+      <NoticeCard tone="warn" icon="fa-solid fa-triangle-exclamation" title="주의사항" :items="cautions" />
 
       <p v-if="game.error" class="error-msg" role="alert">{{ game.error }}</p>
 
@@ -50,15 +50,15 @@ const game = useGameStore()
 
 const facts = [
   { label: '가상 투자금', value: '10,000,000원' },
-  { label: '게임 기간', value: '3일' },
+  { label: '대회 기간', value: '3일' },
   { label: '제시 종목', value: '6종 + 현금' },
   { label: '참여 리워드', value: '최대 1만원' }
 ]
 
 const how = [
-  '달 기지행 셔틀 출발 전, 3일간 수행할 가상 투자 미션을 확인합니다.',
-  '제시된 종목과 현금에 투자금을 원하는 비율로 나눠 담습니다.',
-  '투자를 확정하면 3일 뒤 결과와 투자 성향 분석을 확인할 수 있습니다.',
+  '제한된 3일 동안 최고의 수익률을 목표로 하는 가상 투자 대회에 참여합니다.',
+  '제시된 종목과 현금 사이에서 기회와 안정성을 고려해 투자 비중을 정합니다.',
+  '투자를 확정하면 3일 뒤 최종 수익률과 투자 성향 분석을 확인할 수 있습니다.',
   '지급된 포인트는 3일 동안 재투자한 후 출금할 수 있습니다.'
 ]
 
@@ -94,10 +94,10 @@ async function start() {
 }
 
 .fact {
-  background: var(--color-bg-secondary);
+  background: var(--color-bg-tertiary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 18px;
   display: grid;
   gap: 6px;
 }
@@ -108,6 +108,13 @@ async function start() {
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
 }
+
+.fact:last-child {
+  border-color: rgba(249, 201, 108, 0.3);
+  background: var(--color-warning-light);
+}
+
+.fact:last-child .fact-value { color: var(--color-warning); }
 
 .how { margin-bottom: 28px; }
 

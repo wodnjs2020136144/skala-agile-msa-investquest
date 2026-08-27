@@ -24,6 +24,7 @@ class InvestmentProfileServiceTest(unittest.TestCase):
             seconds=120,
         )
         self.assertEqual("CONSERVATIVE", result.profileType)
+        self.assertEqual("CMA 자동 운용 서비스", result.recommendedProducts[0].name)
         self.assertEqual("CAREFUL", result.decisionStyle.type)
         self.assertEqual(30.0, result.metrics.investmentRatio)
 
@@ -37,6 +38,7 @@ class InvestmentProfileServiceTest(unittest.TestCase):
             cash_balance=2_500_000,
         )
         self.assertEqual("BALANCED", result.profileType)
+        self.assertEqual("ETF 적립식 투자 서비스", result.recommendedProducts[0].name)
         self.assertEqual(3, result.metrics.selectedStockCount)
         self.assertEqual(26.7, result.metrics.highRiskRatio)
 
@@ -48,6 +50,7 @@ class InvestmentProfileServiceTest(unittest.TestCase):
             seconds=20,
         )
         self.assertEqual("AGGRESSIVE", result.profileType)
+        self.assertEqual("글로벌 성장 ETF 탐색", result.recommendedProducts[0].name)
         self.assertEqual(100, result.riskScore)
         self.assertEqual("QUICK", result.decisionStyle.type)
 

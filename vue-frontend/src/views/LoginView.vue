@@ -139,27 +139,41 @@ async function handleRegister() {
   display: flex;
   flex-direction: column;
   gap: 48px;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--color-border);
+}
+.login-left::after {
+  content: none;
 }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; }
-.brand-name { font-size: 18px; font-weight: 700; color: var(--color-on-primary); }
+.brand-name { font-size: 18px; font-weight: 700; color: var(--color-text-primary); }
 .brand-content h2 {
-  font-size: 32px; font-weight: 700; color: var(--color-on-primary);
+  font-size: 32px; font-weight: 700; color: var(--color-text-primary);
   line-height: 1.35; margin-bottom: 14px;
 }
-.brand-content p { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 28px; }
+.brand-content p { font-size: 15px; color: var(--color-text-secondary); margin-bottom: 28px; }
 .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-.feature-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,0.85); }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.6); flex-shrink: 0; }
+.feature-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--color-text-secondary); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-primary); flex-shrink: 0; }
 
 .login-right {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 48px;
-  background: var(--color-bg-primary);
+  background: var(--color-bg-secondary);
 }
-.login-box { width: 100%; max-width: 400px; }
+.login-box {
+  width: 100%;
+  max-width: 420px;
+  padding: 34px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-primary);
+  box-shadow: none;
+}
 .back-link {
   display: inline-block;
   font-size: 13px;
@@ -183,7 +197,7 @@ async function handleRegister() {
   font-size: 14px;
   font-family: var(--font-sans);
   color: var(--color-text-primary);
-  background: var(--color-bg-primary);
+  background: var(--color-bg-tertiary);
   transition: var(--transition);
   outline: none;
 }
@@ -221,5 +235,11 @@ async function handleRegister() {
   border-radius: var(--radius-md);
   font-size: 13px;
   color: var(--color-success);
+}
+
+@media (max-width: 800px) {
+  .login-layout { grid-template-columns: 1fr; }
+  .login-left { display: none; }
+  .login-right { padding: 24px; }
 }
 </style>

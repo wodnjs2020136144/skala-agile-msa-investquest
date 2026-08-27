@@ -107,15 +107,15 @@ function setMax() {
 <style scoped>
 .alloc-row {
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 16px;
+  border-radius: var(--radius-lg);
+  padding: 19px;
   background: var(--color-bg-primary);
   transition: var(--transition);
 }
 
 .alloc-row.selected {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary-light);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .ar-head {
@@ -127,7 +127,7 @@ function setMax() {
 }
 
 .ar-ident { display: flex; align-items: baseline; gap: 8px; }
-.ar-name { font-weight: 700; color: var(--color-text-primary); }
+.ar-name { font-size: 1.02rem; font-weight: 800; color: var(--color-text-primary); }
 .ar-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .ar-desc {
@@ -164,7 +164,8 @@ function setMax() {
   font-variant-numeric: tabular-nums;
   text-align: right;
   color: var(--color-text-primary);
-  background: var(--color-bg-primary);
+  background: var(--color-bg-tertiary);
+  font-weight: 700;
 }
 
 .ar-input:focus-visible { outline: none; box-shadow: var(--focus-ring); }
@@ -178,7 +179,7 @@ function setMax() {
   font-weight: 600;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: var(--color-bg-primary);
+  background: var(--color-bg-tertiary);
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: var(--transition);
@@ -187,6 +188,7 @@ function setMax() {
 .ar-chip:hover:not(:disabled) {
   border-color: var(--color-primary);
   color: var(--color-primary);
+  background: var(--color-primary-light);
 }
 
 .ar-chip:disabled { opacity: 0.4; cursor: not-allowed; }

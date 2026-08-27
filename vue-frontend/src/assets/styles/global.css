@@ -1,71 +1,115 @@
 :root {
-  --color-primary: #185FA5;
-  --color-primary-dark: #0C447C;
-  --color-primary-light: #E6F1FB;
-  --color-secondary: #378ADD;
-  --color-text-primary: #1a1a2e;
-  --color-text-secondary: #6b7280;
-  --color-text-muted: #9ca3af;
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8fafc;
-  --color-bg-tertiary: #f1f5f9;
-  --color-border: #e2e8f0;
-  --color-border-hover: #cbd5e1;
-  --color-success: #0F6E56;
-  --color-success-light: #E1F5EE;
-  --color-warning: #854F0B;
-  --color-warning-light: #FAEEDA;
-  --color-danger: #dc2626;
-  --color-danger-light: #FEF2F2;
-  --color-danger-border: #FECACA;
-  --color-success-border: #BBF7D0;
-
-  /* 흰 배경 위가 아니라 색상 위에 얹는 글자색 */
-  --color-on-primary: #ffffff;
-
-  /* 중립 보조 — 상태 배지의 '해당 없음' 톤 */
-  --color-neutral-light: #F3F4F6;
+  /* Toss 스타일의 밝고 절제된 금융 UI 기본 팔레트 */
+  color-scheme: light;
+  --color-primary: #3182F6;
+  --color-primary-dark: #1B64DA;
+  --color-primary-light: #E8F3FF;
+  --color-secondary: #4E5968;
+  --color-text-primary: #191F28;
+  --color-text-secondary: #4E5968;
+  --color-text-muted: #8B95A1;
+  --color-bg-primary: #FAFBFC;
+  --color-bg-secondary: #F1F3F5;
+  --color-bg-tertiary: #F5F6F8;
+  --color-border: #E2E6EA;
+  --color-border-hover: #CDD3D9;
+  --color-success: #00A86B;
+  --color-success-light: #E8FAF1;
+  --color-warning: #E89200;
+  --color-warning-light: #FFF7E6;
+  --color-danger: #F04452;
+  --color-danger-light: #FFF0F1;
+  --color-danger-border: #FFD5D8;
+  --color-success-border: #BDEFD7;
+  --color-on-primary: #FFFFFF;
+  --color-neutral-light: #F2F4F6;
 
   /*
    * 배지·썸네일 팔레트.
    * 원본은 이 3쌍에 토큰이 없어서 6개 파일이 값을 각자 다시 타이핑했다.
    */
-  --color-accent-purple: #534AB7;
-  --color-accent-purple-light: #EEEDFE;
-  --color-accent-pink: #993556;
-  --color-accent-pink-light: #FBEAF0;
-  --color-accent-gray: #5F5E5A;
-  --color-accent-gray-light: #F1EFE8;
+  --color-accent-purple: #7C6EE6;
+  --color-accent-purple-light: #F0EEFF;
+  --color-accent-pink: #E66D9A;
+  --color-accent-pink-light: #FFF0F5;
+  --color-accent-gray: #6B7684;
+  --color-accent-gray-light: #F2F4F6;
 
   /* 스켈레톤 시머 */
-  --color-skeleton-base: #F0F0F0;
-  --color-skeleton-highlight: #E0E0E0;
+  --color-skeleton-base: #EEF0F2;
+  --color-skeleton-highlight: #FFFFFF;
 
   /*
    * 등락 색 — 한국 금융 관례를 따른다: 빨강 = 상승, 파랑 = 하락.
    * 브랜드 색(파랑)과 반드시 분리한다. 원본은 모든 가격을 --color-primary(파랑)로
    * 칠해서 전 종목이 '하락'으로 보였다.
    */
-  --color-up: #D8232A;
-  --color-up-light: #FDECEC;
-  --color-down: #1261C4;
-  --color-down-light: #E8F1FB;
-  --color-flat: #6B7280;
+  --color-up: #F04452;
+  --color-up-light: #FFF0F1;
+  --color-down: #3182F6;
+  --color-down-light: #E8F3FF;
+  --color-flat: #8B95A1;
 
   /* 그라디언트 */
-  --gradient-hero: linear-gradient(135deg, #F0F7FF 0%, #E8F4FD 50%, #F0F9FF 100%);
-  --gradient-brand: linear-gradient(160deg, #1A4F8A 0%, #185FA5 50%, #1E7BC4 100%);
+  --gradient-hero: #F2F4F6;
+  --gradient-brand: #FAFBFC;
 
   --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-md: 12px;
   --radius-lg: 14px;
-  --radius-xl: 20px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
-  --shadow-lg: 0 10px 32px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 2px rgba(25, 31, 40, 0.04);
+  --shadow-md: 0 8px 24px rgba(25, 31, 40, 0.06);
+  --shadow-lg: 0 16px 40px rgba(25, 31, 40, 0.08);
   --font-sans: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
   --transition: all 0.2s ease;
-  --focus-ring: 0 0 0 3px rgba(24, 95, 165, 0.35);
+  --focus-ring: 0 0 0 3px rgba(49, 130, 246, 0.22);
+}
+
+/* 토스증권 다크 화면처럼 차분한 차콜 바탕에 블루 포인트를 둔다. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-primary: #4D8DFF;
+  --color-primary-dark: #70A4FF;
+  --color-primary-light: rgba(77, 141, 255, 0.15);
+  --color-secondary: #B0B8C1;
+  --color-text-primary: #F2F4F6;
+  --color-text-secondary: #B0B8C1;
+  --color-text-muted: #7A838E;
+  --color-bg-primary: #17181D;
+  --color-bg-secondary: #0F1014;
+  --color-bg-tertiary: #202126;
+  --color-border: #2C2D34;
+  --color-border-hover: #3A3B43;
+  --color-success: #45D19B;
+  --color-success-light: rgba(69, 209, 155, 0.13);
+  --color-warning: #FFB020;
+  --color-warning-light: rgba(255, 176, 32, 0.12);
+  --color-danger: #FF6573;
+  --color-danger-light: rgba(255, 101, 115, 0.12);
+  --color-danger-border: rgba(255, 101, 115, 0.32);
+  --color-success-border: rgba(69, 209, 155, 0.28);
+  --color-on-primary: #FFFFFF;
+  --color-neutral-light: #202126;
+  --color-accent-purple: #B8ADFF;
+  --color-accent-purple-light: rgba(184, 173, 255, 0.14);
+  --color-accent-pink: #F7A8C3;
+  --color-accent-pink-light: rgba(247, 168, 195, 0.13);
+  --color-accent-gray: #C5CBD3;
+  --color-accent-gray-light: #202126;
+  --color-skeleton-base: #202126;
+  --color-skeleton-highlight: #2C2D34;
+  --color-up: #FF6573;
+  --color-up-light: rgba(255, 101, 115, 0.12);
+  --color-down: #4D8DFF;
+  --color-down-light: rgba(77, 141, 255, 0.14);
+  --color-flat: #8E98A4;
+  --gradient-hero: #0F1014;
+  --gradient-brand: #17181D;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.22);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.28);
+  --focus-ring: 0 0 0 3px rgba(77, 141, 255, 0.3);
 }
 
 *, *::before, *::after {
@@ -83,11 +127,18 @@ body {
   font-family: var(--font-sans);
   color: var(--color-text-primary);
   background: var(--color-bg-secondary);
+  background-attachment: fixed;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   /* 금액·비중이 세로로 줄맞춤되도록 고정폭 숫자를 쓴다 */
   font-variant-numeric: tabular-nums;
 }
+
+body::before {
+  content: none;
+}
+
+#app { min-height: 100vh; isolation: isolate; }
 
 a {
   text-decoration: none;
@@ -142,7 +193,7 @@ img {
   padding: 10px 20px;
   border-radius: var(--radius-md);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   transition: var(--transition);
 }
 .btn-primary {
@@ -154,7 +205,7 @@ img {
   background: var(--color-primary-dark);
   border-color: var(--color-primary-dark);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
 }
 .btn-outline {
   background: transparent;

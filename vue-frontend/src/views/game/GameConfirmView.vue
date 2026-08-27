@@ -12,7 +12,7 @@
         <div class="done-mark" aria-hidden="true">✓</div>
         <h1 class="page-title center">투자를 확정했습니다</h1>
         <p class="page-sub center">
-          결과는 <strong>{{ resultDate }}</strong>에 확인할 수 있습니다.
+          최종 수익률과 투자 성향 분석은 <strong>{{ resultDate }}</strong>에 확인할 수 있습니다.
         </p>
 
         <section class="receipt">
@@ -68,17 +68,51 @@
               <span>{{ game.profile.decisionStyle.description }}</span>
             </div>
 
-            <h3 class="profile-subtitle">추천 학습 콘텐츠</h3>
-            <ul class="content-list">
-              <li v-for="content in game.profile.recommendedContents" :key="content.title">
-                <strong>{{ content.title }}</strong>
-                <span>{{ content.reason }}</span>
-              </li>
-            </ul>
+            <section v-if="game.profile.recommendedProducts?.length" class="product-section">
+              <div class="product-section-head">
+                <div>
+                  <p>PERSONALIZED PRODUCT DISCOVERY</p>
+                  <h3 class="profile-subtitle">성향 기반 상품 탐색</h3>
+                </div>
+                <i class="fa-solid fa-compass" aria-hidden="true"></i>
+              </div>
+              <p class="product-intro">분석된 투자 성향을 바탕으로 탐색해 볼 수 있는 증권사 상품·서비스입니다.</p>
+              <ul class="product-list">
+                <li v-for="product in game.profile.recommendedProducts" :key="product.id" class="product-card">
+                  <div class="product-top">
+                    <span>{{ product.category }}</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                  </div>
+                  <strong>{{ product.name }}</strong>
+                  <p>{{ product.description }}</p>
+                  <div class="product-reason"><i class="fa-solid fa-sparkles" aria-hidden="true"></i>{{ product.reason }}</div>
+                  <div class="product-tags"><span v-for="tag in product.tags" :key="tag">{{ tag }}</span></div>
+                </li>
+              </ul>
+              <p class="product-disclaimer">상품 탐색을 돕기 위한 예시이며, 실제 가입 또는 매수 전에는 적합성 확인이 필요합니다.</p>
+            </section>
+
+            <section v-if="game.profile.personalizedCoaching" class="coach-card">
+              <div class="coach-head">
+                <span><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> AI 코칭 추천</span>
+                <strong>{{ game.profile.personalizedCoaching.focusMetric }}</strong>
+              </div>
+              <h3>{{ game.profile.personalizedCoaching.headline }}</h3>
+              <p>{{ game.profile.personalizedCoaching.feedback }}</p>
+              <div class="next-mission">
+                <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+                <div>
+                  <strong>{{ game.profile.personalizedCoaching.nextMissionTitle }}</strong>
+                  <span>{{ game.profile.personalizedCoaching.nextMissionDescription }}</span>
+                  <em>목표: {{ game.profile.personalizedCoaching.target }}</em>
+                </div>
+              </div>
+            </section>
           </template>
         </section>
 
         <NoticeCard
+          icon="fa-solid fa-arrow-right"
           title="다음 단계"
           :items="nextSteps"
         />
@@ -86,7 +120,8 @@
         <NoticeCard
           class="legal"
           tone="warn"
-          icon="⚠️"
+          icon="fa-solid fa-triangle-exclamation"
+          title="유의사항"
           :items="[
             '모의 투자이며 실제 매매가 이루어지지 않았습니다.',
             '이 결과는 참고용 보조 정보이며 공식 투자자 성향 진단을 대체하지 않습니다.'
@@ -118,9 +153,9 @@ function format(n) {
 const rewardPolicy = computed(() => r.value?.rewardPolicy || REWARD_POLICY)
 const nextSteps = computed(() => [
   '투자 확정 후 3일 동안에는 투자 내역을 변경할 수 없습니다.',
-  `결과에 따라 최대 ${format(rewardPolicy.value.profitRewardPoints)}원의 참여 리워드가 지급됩니다.`,
+  `결과에 따라 최대 ${format(rewardPolicy.value.profitRewardPoints)}원의 참여 리워드가 지급됩니다.(손해 발생 시 5천원 지급)`,
   `지급된 포인트는 ${rewardPolicy.value.reinvestmentDays}일 동안 재투자한 후 출금할 수 있습니다.`,
-  '결과와 함께 행동 기반 투자 성향 분석을 제공합니다.'
+  '최종 수익률 결과와 함께 행동 기반 투자 성향 분석을 제공합니다.'
 ])
 
 const resultDate = computed(() => {
@@ -174,10 +209,12 @@ const rows = computed(() => {
   height: 56px;
   margin: 8px auto 20px;
   border-radius: 50%;
-  background: var(--color-success-light);
-  color: var(--color-success);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
   font-size: 1.7rem;
   font-weight: 800;
+  border: 1px solid var(--color-primary);
+  box-shadow: none;
 }
 
 .page-title.center,
@@ -189,9 +226,10 @@ const rows = computed(() => {
 .profile-card {
   margin-bottom: 24px;
   padding: 22px;
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  background: var(--color-primary-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-tertiary);
+  box-shadow: none;
 }
 
 .profile-head {
@@ -204,7 +242,7 @@ const rows = computed(() => {
 .profile-kicker {
   display: block;
   margin-bottom: 5px;
-  color: var(--color-primary);
+  color: var(--color-text-secondary);
   font-size: 0.75rem;
   font-weight: 800;
 }
@@ -216,7 +254,7 @@ const rows = computed(() => {
   padding: 8px 12px;
   border-radius: 999px;
   background: var(--color-primary);
-  color: white;
+  color: var(--color-on-primary);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
@@ -236,6 +274,7 @@ const rows = computed(() => {
   padding: 12px;
   border-radius: var(--radius-sm);
   background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
   text-align: center;
 }
 
@@ -253,10 +292,39 @@ const rows = computed(() => {
   background: var(--color-bg-primary);
 }
 
-.decision-box span,
-.content-list span { color: var(--color-text-secondary); font-size: 0.82rem; line-height: 1.5; }
-.content-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.content-list li { display: grid; gap: 4px; padding: 12px; border-radius: var(--radius-sm); background: var(--color-bg-primary); }
+.decision-box span { color: var(--color-text-secondary); font-size: 0.82rem; line-height: 1.5; }
+
+.product-section { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--color-border); }
+.product-section-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.product-section-head p { margin: 0 0 5px; color: var(--color-text-muted); font-size: .65rem; font-weight: 800; letter-spacing: .08em; }
+.product-section-head .profile-subtitle { margin: 0; }
+.product-section-head > .fa-solid { color: var(--color-text-secondary); font-size: 1.1rem; }
+.product-intro, .product-disclaimer { margin: 8px 0 0; color: var(--color-text-secondary); font-size: .8rem; line-height: 1.55; }
+.product-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 14px 0 0; padding: 0; list-style: none; }
+.product-card { display: grid; align-content: start; gap: 8px; padding: 14px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bg-primary); }
+.product-top { display: flex; justify-content: space-between; align-items: center; color: var(--color-text-muted); font-size: .7rem; font-weight: 700; }
+.product-top span { padding: 4px 6px; border: 1px solid var(--color-border); border-radius: 999px; }
+.product-top .fa-solid { font-size: .72rem; }
+.product-card > strong { color: var(--color-text-primary); font-size: .9rem; }
+.product-card > p { margin: 0; color: var(--color-text-secondary); font-size: .78rem; line-height: 1.55; }
+.product-reason { padding: 9px; border-left: 2px solid var(--color-border-hover); background: var(--color-bg-tertiary); color: var(--color-text-secondary); font-size: .74rem; line-height: 1.5; }
+.product-reason .fa-solid { margin-right: 5px; color: var(--color-text-primary); }
+.product-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.product-tags span { padding: 4px 6px; border-radius: 999px; background: var(--color-bg-tertiary); color: var(--color-text-secondary); font-size: .68rem; }
+.product-disclaimer { color: var(--color-text-muted); font-size: .72rem; }
+
+.coach-card { margin-top: 20px; padding: 16px; border: 1px solid var(--color-border-hover); border-radius: var(--radius-md); background: var(--color-bg-primary); }
+.coach-head { display: flex; justify-content: space-between; gap: 12px; color: var(--color-text-secondary); font-size: .75rem; font-weight: 800; }
+.coach-head span .fa-solid { margin-right: 5px; color: var(--color-text-primary); }
+.coach-head strong { color: var(--color-text-primary); font-variant-numeric: tabular-nums; }
+.coach-card h3 { margin: 14px 0 6px; color: var(--color-text-primary); font-size: 1rem; }
+.coach-card > p { margin: 0; color: var(--color-text-secondary); font-size: .84rem; line-height: 1.65; }
+.next-mission { display: flex; gap: 10px; margin-top: 14px; padding: 13px; border-radius: var(--radius-sm); background: var(--color-bg-tertiary); }
+.next-mission > .fa-solid { margin-top: 2px; color: var(--color-text-primary); }
+.next-mission div { display: grid; gap: 4px; }
+.next-mission strong { color: var(--color-text-primary); font-size: .84rem; }
+.next-mission span, .next-mission em { color: var(--color-text-secondary); font-size: .78rem; line-height: 1.5; }
+.next-mission em { color: var(--color-text-primary); font-style: normal; font-weight: 700; }
 
 .retry {
   margin-left: 8px;
@@ -341,5 +409,6 @@ const rows = computed(() => {
   }
   .rc-qty { grid-column: 1; font-size: 0.8rem; }
   .rc-weight { grid-column: 2; }
+  .product-list { grid-template-columns: 1fr; }
 }
 </style>
