@@ -4,6 +4,7 @@ import com.lecture.course.dto.Result;
 
 public record PaymentRewardRequest(
         Long userId,
+        Long CourseId,
         Result result
 ) {
 }

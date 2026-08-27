@@ -117,7 +117,7 @@ public class CourseService {
                 ? Result.SUCCESS
                 : Result.FAILED;
 
-        paymentClient.sendResult(new PaymentRewardRequest(userId, result));
+        paymentClient.sendResult(new PaymentRewardRequest(userId,999,result));
         return result;
     }
 }
