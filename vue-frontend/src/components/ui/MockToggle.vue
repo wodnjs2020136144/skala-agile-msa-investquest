@@ -18,7 +18,8 @@
       @click="open = !open"
     >
       <span class="mt-dot" aria-hidden="true"></span>
-      {{ USE_MOCK ? 'MOCK' : 'LIVE' }}
+      <!-- 좁은 화면에서는 라벨을 접는다. 상태는 점 색으로 남는다 -->
+      <span class="mt-label">{{ USE_MOCK ? 'MOCK' : 'LIVE' }}</span>
     </button>
 
     <div v-if="open" class="mt-panel">
@@ -215,5 +216,12 @@ function choose(value) {
 @media (max-width: 560px) {
   .mock-toggle { left: 12px; bottom: 12px; }
   .mt-panel { width: calc(100vw - 24px); max-width: 268px; }
+
+  /*
+   * 모바일에서는 본문이 화면 끝까지 차서 라벨이 붙은 배지가 목록 위를 덮는다.
+   * 점만 남겨 가리는 면적을 줄인다 — 상태는 점 색(주황=목 / 초록=실 API)으로 읽힌다.
+   */
+  .mt-label { display: none; }
+  .mt-badge { gap: 0; padding: 9px; }
 }
 </style>
