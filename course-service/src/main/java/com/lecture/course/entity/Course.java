@@ -28,9 +28,8 @@ public class Course {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category;
+    private String category;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
@@ -44,13 +43,13 @@ public class Course {
     @Builder.Default
     private Integer enrollmentCount = 0;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal temp_price;
+    @Column(name = "temp_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal tempPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private Status status = Status.ACTIVE;
+    private Status status = Status.LOW;
 
     @CreatedDate
     @Column(updatable = false)
@@ -58,10 +57,6 @@ public class Course {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    public enum Category {
-        BACKEND, FRONTEND, DEVOPS, DATA_SCIENCE, MOBILE, SECURITY, DATABASE, OTHER
-    }
 
     public enum Status {
         LOW,HIGH

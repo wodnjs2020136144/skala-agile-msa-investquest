@@ -28,6 +28,9 @@ public class Enrollment {
     @Column(name = "course_id", nullable = false)
     private Long courseId;
 
+    @Column(name = "price", nullable = false)
+    private int price;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
