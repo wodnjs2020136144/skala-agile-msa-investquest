@@ -1,0 +1,218 @@
+:root {
+  --color-primary: #185FA5;
+  --color-primary-dark: #0C447C;
+  --color-primary-light: #E6F1FB;
+  --color-secondary: #378ADD;
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-tertiary: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e1;
+  --color-success: #0F6E56;
+  --color-success-light: #E1F5EE;
+  --color-warning: #854F0B;
+  --color-warning-light: #FAEEDA;
+  --color-danger: #dc2626;
+  --color-danger-light: #FEF2F2;
+  --color-danger-border: #FECACA;
+  --color-success-border: #BBF7D0;
+
+  /* 흰 배경 위가 아니라 색상 위에 얹는 글자색 */
+  --color-on-primary: #ffffff;
+
+  /* 중립 보조 — 상태 배지의 '해당 없음' 톤 */
+  --color-neutral-light: #F3F4F6;
+
+  /*
+   * 배지·썸네일 팔레트.
+   * 원본은 이 3쌍에 토큰이 없어서 6개 파일이 값을 각자 다시 타이핑했다.
+   */
+  --color-accent-purple: #534AB7;
+  --color-accent-purple-light: #EEEDFE;
+  --color-accent-pink: #993556;
+  --color-accent-pink-light: #FBEAF0;
+  --color-accent-gray: #5F5E5A;
+  --color-accent-gray-light: #F1EFE8;
+
+  /* 스켈레톤 시머 */
+  --color-skeleton-base: #F0F0F0;
+  --color-skeleton-highlight: #E0E0E0;
+
+  /*
+   * 등락 색 — 한국 금융 관례를 따른다: 빨강 = 상승, 파랑 = 하락.
+   * 브랜드 색(파랑)과 반드시 분리한다. 원본은 모든 가격을 --color-primary(파랑)로
+   * 칠해서 전 종목이 '하락'으로 보였다.
+   */
+  --color-up: #D8232A;
+  --color-up-light: #FDECEC;
+  --color-down: #1261C4;
+  --color-down-light: #E8F1FB;
+  --color-flat: #6B7280;
+
+  /* 그라디언트 */
+  --gradient-hero: linear-gradient(135deg, #F0F7FF 0%, #E8F4FD 50%, #F0F9FF 100%);
+  --gradient-brand: linear-gradient(160deg, #1A4F8A 0%, #185FA5 50%, #1E7BC4 100%);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 32px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+  --font-sans: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+  --transition: all 0.2s ease;
+  --focus-ring: 0 0 0 3px rgba(24, 95, 165, 0.35);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  /* 금액·비중이 세로로 줄맞춤되도록 고정폭 숫자를 쓴다 */
+  font-variant-numeric: tabular-nums;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-sans);
+  border: none;
+}
+
+/*
+ * 원본은 button에 outline:none만 걸고 대체 표시가 없어서
+ * 키보드 사용자가 앱 전체에서 포커스를 볼 수 없었다.
+ * 마우스 클릭에는 링을 띄우지 않고 키보드 포커스에만 띄운다.
+ */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg-tertiary); }
+::-webkit-scrollbar-thumb { background: var(--color-border-hover); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fade-in-up  { animation: fadeInUp  0.4s ease both; }
+.fade-in     { animation: fadeIn    0.3s ease both; }
+
+/* 공통 버튼 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 1.5px solid var(--color-primary);
+}
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+}
+.btn-outline:hover {
+  background: var(--color-primary-light);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1.5px solid var(--color-border);
+}
+.btn-ghost:hover {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-border-hover);
+}
+
+/* 배지 */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.badge-blue   { background: var(--color-primary-light);      color: var(--color-primary); }
+.badge-teal   { background: var(--color-success-light);      color: var(--color-success); }
+.badge-amber  { background: var(--color-warning-light);      color: var(--color-warning); }
+.badge-purple { background: var(--color-accent-purple-light); color: var(--color-accent-purple); }
+.badge-pink   { background: var(--color-accent-pink-light);   color: var(--color-accent-pink); }
+.badge-gray   { background: var(--color-accent-gray-light);   color: var(--color-accent-gray); }
+
+/*
+ * 썸네일 배경 팔레트.
+ * 원본은 4개 파일에 각자 정의돼 있었고 파일마다 종류가 달라서
+ * (CourseDetailView·LandingView 에는 amber 가 없다) 카테고리를 늘리면
+ * 일부 화면에서만 배경이 사라졌다.
+ */
+.thumb-teal   { background: var(--color-success-light); }
+.thumb-blue   { background: var(--color-primary-light); }
+.thumb-amber  { background: var(--color-warning-light); }
+.thumb-purple { background: var(--color-accent-purple-light); }
+.thumb-pink   { background: var(--color-accent-pink-light); }
+.thumb-gray   { background: var(--color-accent-gray-light); }
+
+/*
+ * 원본에는 prefers-reduced-motion 대응이 0건인데
+ * shimmer(1.4s)·spin(0.8s) 무한 루프가 무조건 돌았다.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,68 @@
+/*
+ * 게임 화면 4개가 공유하는 페이지 뼈대.
+ *
+ * 원본 템플릿은 .page-wrapper > .page-layout 구조를 4개 뷰에 복붙해 뒀고
+ * 그래서 한 곳을 고치면 나머지 3곳이 어긋났다. 게임 화면은 처음부터
+ * 이 파일 하나를 <style scoped> 안에서 @import 해 쓴다.
+ */
+.page {
+  min-height: calc(100vh - 64px);
+  background: var(--color-bg-secondary);
+  padding: 40px 24px 72px;
+}
+
+.page-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 32px;
+}
+
+.page-title {
+  font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 8px;
+}
+
+.page-sub {
+  color: var(--color-text-secondary);
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+
+.sec-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.error-msg {
+  margin: 20px 0 0;
+  padding: 12px 14px;
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-danger);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 560px) {
+  .page { padding: 24px 14px 56px; }
+  .page-inner { padding: 22px 18px; }
+  .actions { flex-direction: column-reverse; }
+  .actions .btn { width: 100%; justify-content: center; }
+}
