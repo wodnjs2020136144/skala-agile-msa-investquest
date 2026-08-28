@@ -19,7 +19,7 @@
 
 | 기존 데이터 | 게임 도메인에서의 사용 |
 |---|---|
-| `courses` | 가상 종목과 기준 가격 |
+| `courses` | 실존 종목명과 가상 기준 가격 |
 | `enrollments` | 사용자가 확정한 종목별 투자 주문 |
 | `payments.amount` | 지급할 리워드 포인트 |
 | `payments.status=PENDING` | 포인트 재투자 또는 출금 대기 |
