@@ -121,8 +121,10 @@ const legalItems = [
 ]
 
 const previewRows = [
-  { name: 'IT', weight: 40 },
-  { name: '금융', weight: 25 },
+  // 섹터명은 mock/stocks.js(= init-db 시드)와 같은 축을 쓴다.
+  // 여기만 옛 축(IT·금융)으로 남으면 홈에서 본 섹터가 배분 화면에 없다.
+  { name: '반도체', weight: 40 },
+  { name: '바이오', weight: 25 },
   { name: '현금', weight: 35 }
 ]
 </script>

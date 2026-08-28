@@ -62,6 +62,14 @@
               <dt>출금 가능일</dt>
               <dd>{{ formatDate(w.withdrawalAvailableAt) }}</dd>
             </div>
+            <!--
+              실 API 모드에서만 채워진다. 리워드 조회 엔드포인트가 없어
+              적립 결과를 users.money 로 관측한다 (config.js 의 MOCK.reward 주석 참고).
+            -->
+            <div v-if="w.balance !== null && w.balance !== undefined">
+              <dt>계정 잔액</dt>
+              <dd>{{ format(w.balance) }}원</dd>
+            </div>
           </dl>
 
           <p class="stage-note">

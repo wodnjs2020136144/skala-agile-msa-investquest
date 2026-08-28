@@ -45,6 +45,37 @@ export const USE_MOCK_OVERRIDDEN = override !== null
 export const USE_MOCK = override ?? USE_MOCK_DEFAULT
 
 /**
+ * 영역별 목 스위치.
+ *
+ * USE_MOCK 하나로는 "절반만 붙은" 지금 상태를 표현할 수 없다. 프런트가 부르는 경로 중
+ * 일부는 백엔드에 있고 일부는 없어서, 플래그를 끄면 없는 경로까지 전부 실 API 로 나간다.
+ *
+ * 붙일 수 있는 영역은 USE_MOCK 을 따라가고, 백엔드에 없는 영역은 막힌 이유를 적어
+ * true 로 고정한다. 백엔드가 생기면 그 줄만 USE_MOCK 으로 바꾸면 된다.
+ */
+export const MOCK = {
+  auth: USE_MOCK, //     POST /oauth2/token · GET /api/users/me
+  stocks: USE_MOCK, //   GET /api/courses
+  profile: USE_MOCK, //  POST /api/recommend/analyze
+  result: USE_MOCK, //   POST /api/courses/internal/result
+  reward: USE_MOCK, //   조회 경로가 없어 users.me 의 money 로 우회한다
+
+  // ↓ 백엔드가 못 주는 것들. USE_MOCK 을 꺼도 목으로 남는다.
+  session: true, //      POST /api/enrollments/games — 엔드포인트 없음
+  scenario: true, //     GET /api/courses/scenarios/{id} — 엔드포인트 없음
+  invest: true //        POST /api/enrollments — 컨트롤러가 /enrollments 라 게이트웨이 404
+}
+
+/**
+ * 강사 템플릿 화면(강의 목록·개설·상세, 수강 목록, 마이페이지) 노출 여부.
+ *
+ * 원래 이 차단이 USE_MOCK 에 묶여 있어 실 API 로 전환하는 순간 5개 화면이 한꺼번에
+ * 열렸다. 이 화면들은 GET /api/enrollments/my 처럼 백엔드에 없는 경로를 부르므로
+ * 열면 깨진다. 게임 동선과 수명이 다르니 별도 스위치로 분리한다.
+ */
+export const SHOW_TEMPLATE_SCREENS = false
+
+/**
  * 모드를 바꾸고 새로고침한다.
  *
  * 새로고침하는 이유: USE_MOCK 은 모듈 로드 시점에 한 번 정해지는 상수이고,

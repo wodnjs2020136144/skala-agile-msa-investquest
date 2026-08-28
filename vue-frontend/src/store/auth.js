@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authApi } from '@/api/auth.js'
-import { USE_MOCK } from '@/config.js'
+import { MOCK } from '@/config.js'
 
 const AUTH_SERVER_URL = import.meta.env.VITE_AUTH_SERVER_URL || 'http://localhost:8080'
 
@@ -59,15 +59,38 @@ export const useAuthStore = defineStore('auth', () => {
       setUser(userData)
     } catch (error) {
       console.error('[AuthStore] 사용자 정보 조회 실패:', error)
-      logout(false)
+      await logout(false)
     }
   }
 
-  function logout(redirect = true) {
+  /**
+   * 로그아웃.
+   *
+   * 프런트 세션(sessionStorage)만 지우면 **로그아웃이 풀리지 않는다.**
+   * auth-server 의 JSESSIONID 가 살아 있어 다음 /oauth2/authorize 가 로그인 폼 없이
+   * 곧바로 인가 코드를 내주고, 화면에서는 로그인 상태가 그대로인 것처럼 보인다.
+   *
+   * 그래서 서버 세션도 같이 끊는다. 쿠키는 포트를 구분하지 않으므로
+   * :8080 이 심은 JSESSIONID 가 :3000 에도 실려 오고, dev 프록시를 태우면
+   * 동일 출처 요청으로 끊을 수 있다 (vite.config.js 의 /logout 참고).
+   *
+   * @param {boolean} redirect 끝나고 로그인 화면으로 보낼지
+   */
+  async function logout(redirect = true) {
     accessToken.value = null
     user.value = null
     sessionStorage.removeItem('access_token')
     sessionStorage.removeItem('user')
+    sessionStorage.removeItem('post_login_redirect')
+
+    if (!MOCK.auth) {
+      try {
+        await fetch('/logout', { credentials: 'include' })
+      } catch {
+        // 게이트웨이가 죽어 있어도 프런트 로그아웃 자체는 되게 둔다.
+        // 서버 세션은 남지만 여기서 막으면 로그아웃이 아예 안 된다.
+      }
+    }
 
     if (redirect) {
       window.location.href = '/login'
@@ -76,7 +99,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // OAuth2 Authorization Code Flow
   function redirectToLogin(redirectTo = '/') {
-    if (USE_MOCK) {
+    if (MOCK.auth) {
       setToken('mock-access-token')
       setUser(MOCK_USER)
       window.location.href = redirectTo
@@ -95,6 +118,20 @@ export const useAuthStore = defineStore('auth', () => {
     })
 
     window.location.href = `${AUTH_SERVER_URL}/oauth2/authorize?${params.toString()}`
+  }
+
+  /**
+   * 앱 안의 폼으로 로그인한다.
+   *
+   * auth-server 의 기본 로그인 페이지를 거치지 않으려고 자격증명을 직접 보내
+   * 세션을 만든 뒤, 곧바로 평소의 OAuth 리다이렉트를 태운다. 세션이 있으므로
+   * /oauth2/authorize 가 폼 없이 인가 코드를 내주고 /callback 으로 돌아온다.
+   *
+   * @throws {Error} 자격증명이 틀렸을 때 — 화면이 받아서 표시한다
+   */
+  async function loginWithPassword(username, password, redirectTo = '/') {
+    await authApi.login(username, password)
+    redirectToLogin(redirectTo)
   }
 
   async function handleCallback(code) {
@@ -120,6 +157,7 @@ export const useAuthStore = defineStore('auth', () => {
     fetchUser,
     logout,
     redirectToLogin,
+    loginWithPassword,
     handleCallback
   }
 })

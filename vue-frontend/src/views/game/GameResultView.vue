@@ -164,7 +164,19 @@
           </div>
         </dl>
 
-        <section class="detail">
+        <!--
+          종목별 결과는 백엔드가 합계만 주면 채울 수 없다.
+          course-service 의 ResultResponse 에 종목별 내역이 없고 CourseResponse 에
+          tempPrice 도 없어 프런트가 계산할 방법이 없다. 빈 표를 띄우는 대신 안내로 바꾼다.
+        -->
+        <section v-if="!sortedOrders.length" class="detail">
+          <h2 class="sec-title">종목별 결과</h2>
+          <p class="detail-note">
+            종목별 손익은 준비 중입니다. 위의 합계는 실제 기준가와 3일 뒤 가격으로 계산한 값입니다.
+          </p>
+        </section>
+
+        <section v-else class="detail">
           <h2 class="sec-title">종목별 결과</h2>
           <ul class="dt-list">
             <li v-for="o in sortedOrders" :key="o.stockId" class="dt-row">

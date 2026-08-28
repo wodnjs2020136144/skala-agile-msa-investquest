@@ -10,15 +10,14 @@
       <!--
         네비게이션.
 
-        강의·내 학습·마이페이지는 강사 템플릿 화면이고 목 분기가 없다
-        (목은 게임 API 에만 있다). 목 모드에서 누르면 vite 프록시가
-        localhost:8080 으로 나갔다가 연결 실패해 에러 화면이 뜬다.
-        그래서 목 모드에서는 링크를 내린다. 라우트와 뷰 파일은 그대로 두므로
-        VITE_USE_MOCK=false 면 지금까지와 똑같이 보인다.
+        강의·내 학습·마이페이지는 강사 템플릿 화면이고 목 분기가 없다.
+        부르는 경로도 백엔드에 없어(GET /api/enrollments/my 등) 누르면 에러 화면이 뜬다.
+        라우터 가드가 같은 상수로 막고 있으니 링크도 같이 내린다 —
+        메뉴만 보이고 눌러도 홈으로 튕기는 상태를 만들지 않기 위해서다.
       -->
       <nav class="nav-links" v-if="auth.isAuthenticated">
         <router-link to="/game/guide" class="nav-link" :class="{ active: $route.path.startsWith('/game') }">투자 게임</router-link>
-        <template v-if="!USE_MOCK">
+        <template v-if="SHOW_TEMPLATE_SCREENS">
           <router-link to="/courses" class="nav-link nav-secondary" :class="{ active: $route.path.startsWith('/courses') }">강의</router-link>
           <router-link to="/enrollments" class="nav-link nav-secondary" :class="{ active: $route.path === '/enrollments' }">내 학습</router-link>
         </template>
@@ -40,7 +39,7 @@
             로그인 사용자 표시는 Sprint1 완료 조건이라 목 모드에서도 남긴다.
             마이페이지로 나가는 링크만 뗀다.
           -->
-          <router-link v-if="!USE_MOCK" to="/mypage" class="user-avatar" :title="auth.user?.name">
+          <router-link v-if="SHOW_TEMPLATE_SCREENS" to="/mypage" class="user-avatar" :title="auth.user?.name">
             {{ auth.user?.name?.charAt(0) || '?' }}
           </router-link>
           <span v-else class="user-avatar is-static" :title="auth.user?.name">
@@ -61,7 +60,7 @@
 import { onMounted, ref } from 'vue'
 import { useAuthStore } from '@/store/auth.js'
 import { useRouter } from 'vue-router'
-import { USE_MOCK } from '@/config.js'
+import { SHOW_TEMPLATE_SCREENS } from '@/config.js'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -119,8 +118,10 @@ function handleLogout() {
   width: 36px;
   height: 36px;
   object-fit: contain;
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
+  /*
+    테두리·라운드는 예전 로고가 흰 배경이 박힌 JPEG 라 타일처럼 감싸 주던 것이다.
+    지금 로고는 배경이 투명해서 그대로 두면 마크 주위에 빈 상자만 그려진다.
+  */
 }
 .logo-text {
   font-size: 17px;
