@@ -96,13 +96,6 @@
                 <label class="form-label">비밀번호</label>
                 <input v-model="registerForm.password" type="password" class="form-input" placeholder="8자 이상" required />
               </div>
-              <div class="form-group">
-                <label class="form-label">역할</label>
-                <select v-model="registerForm.role" class="form-input">
-                  <option value="STUDENT">학생</option>
-                  <option value="INSTRUCTOR">강사</option>
-                </select>
-              </div>
               <div v-if="error" class="error-msg">{{ error }}</div>
               <div v-if="success" class="success-msg">{{ success }}</div>
               <button type="submit" class="btn btn-primary btn-full" :disabled="loading">
@@ -137,6 +130,9 @@ const error = ref('')
 const success = ref('')
 
 const loginForm = ref({ email: '', password: '' })
+// 역할은 화면에서 고르지 않는다 — 가입은 항상 일반 투자자(STUDENT)다.
+// 운영자(INSTRUCTOR)를 회원가입으로 만들 일이 없고, 게임 화면은 전부 STUDENT 전제다.
+// 다만 users.role 이 NOT NULL 이라 필드 자체는 보내야 한다.
 const registerForm = ref({ name: '', email: '', password: '', role: 'STUDENT' })
 
 const features = ['가상 자금으로 하는 모의 투자', '행동 기반 투자 성향 분석', '참여 리워드 지급']
