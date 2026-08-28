@@ -33,6 +33,14 @@ public class EnrollmentService {
             Long userId,
             List<EnrollmentDto.EnrollItem> items
     ) {
+        if (userId == null) {
+            throw new IllegalArgumentException("사용자 ID는 필수입니다");
+        }
+
+        if (enrollmentRepository.existsByUserId(userId)) {
+            throw new IllegalArgumentException("이미 참여한 유저입니다");
+        }
+
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException(
                     "구매할 주식을 하나 이상 선택해야 합니다"
