@@ -5,7 +5,6 @@ import com.lecture.enrollment.repository.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -16,9 +15,9 @@ public class EnrollmentWriteService {
     private final EnrollmentRepository enrollmentRepository;
 
     /**
-     * 반드시 독립 트랜잭션으로 실행
+     * 호출한 서비스의 트랜잭션에 참여해 다중 종목 등록을 원자적으로 처리한다.
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public Enrollment createPendingEnrollment(Long userId, Long courseId, Long purchasePrice, Long quantity, Long investedAmount) {
 
         Enrollment enrollment = enrollmentRepository.save(
